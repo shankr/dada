@@ -19,7 +19,7 @@ public class SortString {
 		{
 			char ch = inStr.charAt(i);
 			
-			if (ch >= 128) throw new IllegalArgumentException("Only ASCII characters are handled.");
+			if (ch >= CHAR_SET_SIZE) throw new IllegalArgumentException("Only ASCII characters are handled.");
 			charCount[ch - 1]++; // ch - 1 because ch cannot be character 0
 		}
 		
