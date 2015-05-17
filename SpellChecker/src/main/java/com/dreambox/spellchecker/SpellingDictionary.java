@@ -75,8 +75,16 @@ public class SpellingDictionary
             // formed by removing vowels and repeating characters.
 
             while ((inputLine = buff.readLine()) != null) {
+                // Note it is important to remove vowels first and then the repeating chars.
+                // In this process we will remove extra characters which were originally
+                // not consecutive and repeating but became so after removing the vowels.
+                // Example: "dodo": If vowels are removed, this becomes "dd". And removing repeating chars causes this
+                // stem to be just "d". If instead we remove repeated chars first, and then vowels as done below,
+                // the stem will be "dd". However, the input dd will be normalized to d and we will miss suggesting dodo 
                 String stemKey = SpellCheckerUtils.stripVowels(inputLine);
                 stemKey = SpellCheckerUtils.stripRepeatingChars(stemKey);
+                
+
                 List<String> candidateWords = wordKeyToSimilarWords.get(stemKey);
 
                 if (candidateWords == null) {
@@ -94,14 +102,14 @@ public class SpellingDictionary
     
     public List<String> getSimilarWords(String input) {
         String inputLowerCase = input.toLowerCase();
-        
-        // Note it is important to remove repeating characters first and then the vowels.
-        // Otherwise it is possible we will remove extra characters which were originally
-        // not consecutive and repeating but became so after removing the vowels.
-        String inputWithoutRepeatingChars = SpellCheckerUtils.stripRepeatingChars(inputLowerCase);
+        // See  comments above in init dictionary on stripping vowels first and then
+        // stripping repeated chars. We better follow the same order of stripping in these
+        // two places after normalizing the input to lower case.
+        String inputWithoutVowels = SpellCheckerUtils.stripVowels(inputLowerCase);
         
         // This is our "stem" for the input words.
-        String inputWithoutVowelsAndRepeatingChars = SpellCheckerUtils.stripVowels(inputWithoutRepeatingChars);
+        String inputWithoutVowelsAndRepeatingChars = SpellCheckerUtils.stripRepeatingChars(inputWithoutVowels);
+        
         // Retrieve the candidates from the "stem"
         List<String> similarWords = wordKeyToSimilarWords.get(inputWithoutVowelsAndRepeatingChars);
         return similarWords;

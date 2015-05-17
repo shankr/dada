@@ -32,10 +32,12 @@ public class SpellChecker
         String inputLowerCase = input.toLowerCase();
         
         List<String> similarWords = spellingDictionary.getSimilarWords(inputLowerCase);
-        
+
         if (similarWords == null) {
             return false; // input word was not found in dictionary
         }
+        
+        LOGGER.debug("List of candidate words: {}", similarWords);
         
         for (String similarWord : similarWords) {
             // if it is an exact match, then return true
