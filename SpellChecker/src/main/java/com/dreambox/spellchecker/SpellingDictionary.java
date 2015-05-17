@@ -109,6 +109,7 @@ public class SpellingDictionary
         
         // This is our "stem" for the input words.
         String inputWithoutVowelsAndRepeatingChars = SpellCheckerUtils.stripRepeatingChars(inputWithoutVowels);
+        LOGGER.debug("Stem for input {} = {}", input, inputWithoutVowelsAndRepeatingChars);
         
         // Retrieve the candidates from the "stem"
         List<String> similarWords = wordKeyToSimilarWords.get(inputWithoutVowelsAndRepeatingChars);

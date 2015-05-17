@@ -35,6 +35,9 @@ public class SpellCheckerWebSvc
         spellCheckResult.suggestions = new ArrayList<String>();
         boolean ret = spellChecker.spellCheck(inputWord, spellCheckResult.suggestions);
         
+        // Future optimization: Store the result of this in a cache and look this up first before even
+        // calling the spell checker. However, the current algorithm is fast enough for our perf purpose
+        
         if (ret) {
             spellCheckResult.correct = true;
             spellCheckResult.suggestions = null;
