@@ -1,5 +1,11 @@
 package com.dreambox.spellchecker;
-
+/**
+ * Bunch of utility classes used by the spell checker. isEquivalent is one of the functions
+ * that is at the heart of the working of this spell checker.
+ * 
+ * @author shankr
+ *
+ */
 public class SpellCheckerUtils
 {
     /**

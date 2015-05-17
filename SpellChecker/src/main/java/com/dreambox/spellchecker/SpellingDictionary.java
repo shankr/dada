@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Maintains a dictionary of the valid words in the form of a map of stemmed word to
  * a list of possible correct words. i.e. the stemmed word is the key and the value is
@@ -81,7 +82,15 @@ public class SpellingDictionary
                 // Example: "dodo": If vowels are removed, this becomes "dd". And removing repeating chars causes this
                 // stem to be just "d". If instead we remove repeated chars first, and then vowels as done below,
                 // the stem will be "dd". However, the input dd will be normalized to d and we will miss suggesting dodo 
-                String stemKey = SpellCheckerUtils.stripVowels(inputLine);
+                String inputLineLowerCase = inputLine.toLowerCase();
+                
+                if (!inputLineLowerCase.equals(inputLine)) {
+                    LOGGER.warn("Input {} in dictionary is not lower case. This is not expected."
+                        + "The spellchecker will convert to lowercase and assume that as the correct form.",
+                        inputLine);
+                }
+                
+                String stemKey = SpellCheckerUtils.stripVowels(inputLineLowerCase);
                 stemKey = SpellCheckerUtils.stripRepeatingChars(stemKey);
                 
 

@@ -5,6 +5,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This bean implements the spellCheck functionality that would return suggestions for an input
+ * word if it can find them. It makes use of a spelling dictionary that contains a mapping of
+ * stemmed words to the actual words, so that it can do a quicker match. 
+ * @author shankr
+ *
+ */
 public class SpellChecker
 {
     public static final Logger LOGGER = LoggerFactory.getLogger(SpellChecker.class);
@@ -21,12 +28,18 @@ public class SpellChecker
         
     /**
      * 
-     * @param input
-     * @param suggestions
-     * @return False if the input word is not found in the dictionary (there will be
-     * no suggestions for it). True, if the input word is 
+     * @param input word whose spelling needs to be checked
+     * @param suggestions - this is a List instantiated by the caller, and cannot b
+     * @return False if no exact match is found for the input word in the dictionary (there could be
+     * suggestions for it though). True, if the input word is an exact match (including casing).
      */
     public boolean spellCheck(String input, List<String> suggestions) {
+        
+        if (suggestions == null) {
+            LOGGER.error("SEVERE error (internal): the spellCheck function has not been called correctly");
+            // let it continue and throw the NPE
+        }
+        
         if (input.isEmpty()) return true;
         
         String inputLowerCase = input.toLowerCase();
