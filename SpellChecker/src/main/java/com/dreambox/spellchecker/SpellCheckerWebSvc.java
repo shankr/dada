@@ -37,7 +37,8 @@ public class SpellCheckerWebSvc
         
         if (ret) {
             spellCheckResult.correct = true;
-            return Response.ok("correct : true").build();
+            spellCheckResult.suggestions = null;
+            return Response.ok(spellCheckResult).build();
         }
         
         if (spellCheckResult.suggestions.isEmpty()) {
