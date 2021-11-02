@@ -1,0 +1,6 @@
+!!com.mparticle.Config
+serverURL: https://c1i55mxsd6.execute-api.us-west-2.amazonaws.com/Live
+targetRPS: 100
+authKey: RIqhxTAKNGaSw2waOY2CW3LhLny2EpI27i56VA6N
+userName: shankr
+numClients: 1
