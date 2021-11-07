@@ -20,6 +20,6 @@ public class Summary {
         System.out.println("Num non-2XX: " + numHttpError.get());
         System.out.println("Num timeouts: " + numTimeoutErrors.get());
         System.out.println("Num Misc errors: " + numError.get());
-        System.out.println("Response code counts" + responseCodeToCount);
+        System.out.println("Response code counts: " + responseCodeToCount);
     }
 }

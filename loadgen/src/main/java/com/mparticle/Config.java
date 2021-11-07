@@ -7,7 +7,7 @@ public class Config {
     String userName = "default";
     int numClients = 1;
     int requestTimeoutInMs = 200;
-    int testDurationInSec = 10;
+    int numCalls = 100;
 
     public String getServerURL() {
         return this.serverURL;
@@ -57,11 +57,11 @@ public class Config {
         this.requestTimeoutInMs = requestTimeoutInMs;
     }
 
-    public int getTestDurationInSec() {
-        return this.testDurationInSec;
+    public int getNumCalls() {
+        return this.numCalls;
     }
 
-    public void setTestDurationInSec(int testDurationInSec) {
-        this.testDurationInSec = testDurationInSec;
+    public void setNumCalls(int numCalls) {
+        this.numCalls = numCalls;
     }
 }

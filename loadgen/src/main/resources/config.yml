@@ -1,8 +1,9 @@
 !!com.mparticle.Config
 serverURL: https://c1i55mxsd6.execute-api.us-west-2.amazonaws.com/Live
-targetRPS: 10
+#serverURL: http://localhost:3001/live
+targetRPS: 70
 authKey: RIqhxTAKNGaSw2waOY2CW3LhLny2EpI27i56VA6N
 userName: shankr
-numClients: 5
-requestTimeoutInMs: 200
-testDurationInSec: 30
+numClients: 16
+requestTimeoutInMs: 100
+numCalls: 3000
