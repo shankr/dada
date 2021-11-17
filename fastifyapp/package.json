@@ -1,0 +1,22 @@
+{
+  "name": "fastifydemo",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server",
+    "dev": "nodemon server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^3.23.1",
+    "fastify-formbody": "^5.1.0",
+    "fastify-static": "^4.5.0",
+    "fastify-swagger": "^4.12.6",
+    "mongoose": "^6.0.12",
+    "nodemon": "^2.0.14",
+    "uuid": "^8.3.2"
+  }
+}

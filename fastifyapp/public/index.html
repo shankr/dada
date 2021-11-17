@@ -1,0 +1,21 @@
+<html>
+    <body>
+        <div>
+            <form method="POST" action="/polls">
+                <input type="text" name="name" placeholder="Enter poll name"/><br><br>
+                <input type="text" name="description" placeholder="Enter poll description"/><br><br>
+                <button name="addOption" onclick="addOption()">Add Option</button><br><br>
+                <div>
+                    <table id="options"></table>
+                </div>
+                <button type="submit">Create Poll</button>
+            </form>
+        </div>
+    </body>
+
+    <script>
+        function addOption() {
+            document.getElementById("options").insertRow(0);
+        }
+    </script>
+</html>
