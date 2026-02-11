@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+
+# Output files
+output/
+*.txt
+*.json
+
+# Resume files (keep private)
+resume.pdf
+*.pdf
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Puppeteer
+.cache/
+.local-chrome/
+
+# Test files
+test/
+tests/
+coverage/

@@ -1,0 +1,89 @@
+# Job Scraper Configuration
+# Add your resume path and job boards here
+
+# Path to your resume PDF file
+resume_path: "./resume.pdf"
+
+# Output file path for results
+output_path: "./output/job-matches.txt"
+
+# Maximum number of jobs to scrape per board (0 = unlimited)
+max_jobs_per_board: 50
+
+# Delay between page requests in milliseconds (be respectful to servers)
+request_delay_ms: 2000
+
+# LLM Configuration for ATS scoring
+llm:
+  # Provider options: groq, ollama, openrouter, gemini
+  provider: "groq"
+  
+  # API key (use environment variable: ${ENV_VAR_NAME} or hardcode for testing)
+  # For Groq: Get free API key at https://console.groq.com
+  # For Gemini: Get free API key at https://ai.google.dev
+  # For OpenRouter: Get API key at https://openrouter.ai
+  # For Ollama: Leave empty (runs locally)
+  api_key: "${GROQ_API_KEY}"
+  
+  # Model to use (provider-specific)
+  # Groq free tier options: llama-3.1-8b-instant, llama-3.1-70b-versatile, mixtral-8x7b-32768
+  # Gemini free tier: gemini-pro
+  # Ollama: llama2, mistral, codellama, etc.
+  model: "llama-3.1-8b-instant"
+  
+  # Ollama specific (only needed if provider is 'ollama')
+  ollama_base_url: "http://localhost:11434"
+
+# Job boards to scrape
+# Supported types: workday, greenhouse, lever, smartrecruiters, custom
+job_boards:
+  - name: "Example Company - Workday"
+    type: "workday"
+    url: "https://company.wd101.myworkdayjobs.com/en-US/Careers?q=software+engineer&location=United+States"
+    selectors:
+      job_list_container: "[data-automation-id='jobPostingList']"
+      job_card: "[data-automation-id='jobPosting']"
+      title: "[data-automation-id='jobPostingTitle']"
+      location: "[data-automation-id='jobPostingLocation']"
+      description: "[data-automation-id='jobPostingDescription']"
+      next_button: "[data-automation-id='nextPage']"
+      job_url_attribute: "data-automation-id"
+    
+  - name: "Example Company - Greenhouse"
+    type: "greenhouse"
+    url: "https://boards.greenhouse.io/examplecompany/jobs?query=software+engineer"
+    selectors:
+      job_list_container: ".main"
+      job_card: ".opening"
+      title: "a"
+      location: ".location"
+      description: ".description"
+      next_button: ".next"
+      job_url_attribute: "href"
+    
+  - name: "Example Company - Lever"
+    type: "lever"
+    url: "https://jobs.lever.co/examplecompany?search=software%20engineer"
+    selectors:
+      job_list_container: ".posts-list"
+      job_card: ".posting"
+      title: "h5"
+      location: ".sort-by-location"
+      team: ".sort-by-team"
+      next_button: null  # Lever typically loads all jobs or uses infinite scroll
+      job_url_attribute: "href"
+      apply_link: ".posting-btn"
+
+# Custom job boards (if not using standard platforms)
+# Uncomment and modify for custom sites:
+#  - name: "Custom Company Site"
+#    type: "custom"
+#    url: "https://company.com/careers?search=software+engineer"
+#    selectors:
+#      job_list_container: ".jobs-list"
+#      job_card: ".job-item"
+#      title: ".job-title"
+#      location: ".job-location"
+#      description: ".job-description"
+#      next_button: ".pagination-next"
+#      job_url_attribute: "data-job-url"
