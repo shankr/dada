@@ -7,12 +7,15 @@ const PDFParser = require('./parsers/pdf-parser');
 const ScraperFactory = require('./scrapers/scraper-factory');
 const ATSScorer = require('./ats/ats-scorer');
 const ReportGenerator = require('./output/report-generator');
+const ATSCacheDB = require('./storage/ats-cache-db');
 
 class JobScraperApp {
   constructor() {
     this.config = null;
     this.resumeData = null;
     this.allJobs = [];
+    this.seenJobUrls = new Set();
+    this.resultsDb = null;
   }
 
   async initialize() {
@@ -23,6 +26,12 @@ class JobScraperApp {
     // Load configuration
     console.log('Loading configuration...');
     this.config = ConfigLoader.load();
+    this.resultsDb = new ATSCacheDB(this.config.ats_cache_db_path);
+    this.resultsDb.initialize();
+    this.config.results_db = this.resultsDb;
+    this.config.known_job_urls = new Set(
+      this.resultsDb.getAllJobUrls().map(url => url.toLowerCase())
+    );
     console.log('✓ Configuration loaded\n');
 
     // Parse resume
@@ -42,7 +51,26 @@ class JobScraperApp {
       try {
         await scraper.initialize();
         const jobs = await scraper.scrape();
-        this.allJobs = this.allJobs.concat(jobs);
+        const uniqueJobs = [];
+        let duplicateCount = 0;
+
+        for (const job of jobs) {
+          const normalizedUrl = (job.url || '').trim().toLowerCase();
+          if (normalizedUrl) {
+            if (this.seenJobUrls.has(normalizedUrl)) {
+              duplicateCount++;
+              continue;
+            }
+            this.seenJobUrls.add(normalizedUrl);
+          }
+          uniqueJobs.push(job);
+        }
+
+        if (duplicateCount > 0) {
+          console.log(`  Skipped ${duplicateCount} duplicate job URLs from ${boardConfig.name}`);
+        }
+
+        this.allJobs = this.allJobs.concat(uniqueJobs);
       } catch (error) {
         console.error(`Error with board "${boardConfig.name}": ${error.message}`);
       } finally {

@@ -9,8 +9,15 @@ class BaseScraper {
   }
   
   async initialize() {
+    // Use system Chrome on macOS to avoid compatibility issues with bundled Chrome
+    const isMac = process.platform === 'darwin';
+    const executablePath = isMac 
+      ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+      : undefined;
+    
     this.browser = await puppeteer.launch({
       headless: 'new',
+      executablePath: executablePath || undefined,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',

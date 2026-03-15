@@ -23,6 +23,7 @@ class ConfigLoader {
       // Resolve relative paths
       config.resume_path = path.resolve(config.resume_path);
       config.output_path = path.resolve(config.output_path);
+      config.ats_cache_db_path = path.resolve(config.ats_cache_db_path || './output/ats-cache.sqlite');
       
       return config;
     } catch (error) {
@@ -75,7 +76,7 @@ class ConfigLoader {
       throw new Error('LLM provider must be specified');
     }
     
-    const validProviders = ['groq', 'ollama', 'openrouter', 'gemini'];
+    const validProviders = ['openrouter', 'local-hybrid'];
     if (!validProviders.includes(config.llm.provider)) {
       throw new Error(`Invalid LLM provider: ${config.llm.provider}`);
     }

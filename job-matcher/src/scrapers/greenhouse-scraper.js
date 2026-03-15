@@ -3,6 +3,7 @@ const BaseScraper = require('./base-scraper');
 class GreenhouseScraper extends BaseScraper {
   async scrape() {
     const jobs = [];
+    const seenJobUrls = new Set();
     const selectors = this.boardConfig.selectors;
     const maxJobs = this.globalConfig.max_jobs_per_board || 50;
     
@@ -44,11 +45,30 @@ class GreenhouseScraper extends BaseScraper {
         // Get details for each job
         for (const job of pageJobs) {
           if (maxJobs > 0 && jobs.length >= maxJobs) break;
+
+          const normalizedUrl = (job.url || '').trim().toLowerCase();
+          if (normalizedUrl && seenJobUrls.has(normalizedUrl)) {
+            continue;
+          }
+
+          const forceRecompute = this.globalConfig.scoring?.force_recompute === true;
+          if (!forceRecompute && normalizedUrl && this.globalConfig.known_job_urls?.has(normalizedUrl)) {
+            const cachedJob = this.globalConfig.results_db?.getJobByUrl(job.url);
+            if (cachedJob) {
+              jobs.push(cachedJob);
+              seenJobUrls.add(normalizedUrl);
+              console.log(`    ↺ Cached ${cachedJob.title}`);
+              continue;
+            }
+          }
           
           try {
             const jobDetail = await this.getJobDetails(job);
             if (jobDetail) {
               jobs.push(jobDetail);
+              if (normalizedUrl) {
+                seenJobUrls.add(normalizedUrl);
+              }
               console.log(`    ✓ ${job.title}`);
             }
           } catch (e) {
