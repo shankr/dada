@@ -1,0 +1,4129 @@
+
+================================================================================
+                    JOB MATCH REPORT - ATS SCORING RESULTS
+================================================================================
+
+Generated: 3/15/2026, 9:58:47 AM
+Resume: /Users/shankr/src/dada/job-matcher/resume.pdf
+Resume Pages: 3
+
+================================================================================
+                              SUMMARY
+================================================================================
+
+Total Jobs Analyzed: 104
+High Matches (70-100): 0
+Medium Matches (40-69): 28
+Low Matches (0-39): 76
+
+================================================================================
+                           RANKED JOB LISTINGS
+================================================================================
+
+
+================================================================================
+                   MEDIUM MATCH JOBS (Score: 40-69)
+================================================================================
+
+
+--------------------------------------------------------------------------------
+ Rank #1 | ATS Score: 54/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer - Global Subscriptions and Pricing Infrastructure
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200649565-3337/senior-software-engineer-global-subscriptions-and-pricing-infrastructure?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 21%. Embedding similarity: 60%. Rule score: 100%. Recency score: 82%. Skill overlap count: 2.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer - Global Subscriptions and Pricing Infrastructure
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Mar 05, 2026
+Weekly Hours:
+40
+Role Number:
+200649565-3337
+Apple’s Pricing Infrastructure team is the engine behind Apple’s global content pricing. We ...
+
+
+--------------------------------------------------------------------------------
+ Rank #2 | ATS Score: 54/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Development Engineer, Database (OpenSearch), AI & Data Platforms (AiDP)
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200646028-3337/software-development-engineer-database-opensearch-ai-data-platforms-aidp?team=CORSV
+
+MATCH ANALYSIS:
+Lexical overlap: 17%. Embedding similarity: 64%. Rule score: 90%. Recency score: 96%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Development Engineer, Database (OpenSearch), AI & Data Platforms (AiDP)
+Seattle, Washington, United States
+Corporate Functions
+Seattle, Washington, United States
+Sunnyvale, California, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Mar 12, 2026
+Weekly Hours:
+40
+Role Number:
+200646028-33...
+
+
+--------------------------------------------------------------------------------
+ Rank #3 | ATS Score: 54/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Build and Release Engineer, Apple Services Engineering
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200651339-3337/senior-build-and-release-engineer-apple-services-engineering?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 19%. Embedding similarity: 57%. Rule score: 100%. Recency score: 94%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Build and Release Engineer, Apple Services Engineering
+Seattle, Washington, United States
+Software and Services
+San Francisco, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Mar 11, 2026
+Role Number:
+200651339-3337
+We are looking for an exper...
+
+
+--------------------------------------------------------------------------------
+ Rank #4 | ATS Score: 51/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineering Manager, Apple Services Engineering
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200647412-3337/software-engineering-manager-apple-services-engineering?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 61%. Rule score: 100%. Recency score: 82%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineering Manager, Apple Services Engineering
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Mar 05, 2026
+Weekly Hours:
+40
+Role Number:
+200647412-3337
+Do you have a passion for data and how it can be used to improve customer experience, protect user privacy, ma...
+
+
+--------------------------------------------------------------------------------
+ Rank #5 | ATS Score: 51/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer, Security Enablement Team ASE
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200644158-3337/senior-software-engineer-security-enablement-team-ase?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 56%. Rule score: 100%. Recency score: 90%. Skill overlap count: 2.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer, Security Enablement Team ASE
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Mar 09, 2026
+Weekly Hours:
+5
+Role Number:
+200644158-3337
+Security is at the heart of Apple’s products and services. The Security Enablement Team at Apple focuses on build...
+
+
+--------------------------------------------------------------------------------
+ Rank #6 | ATS Score: 49/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer, Apple Services Engineering
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200637800-3337/senior-software-engineer-apple-services-engineering?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 17%. Embedding similarity: 49%. Rule score: 100%. Recency score: 82%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer, Apple Services Engineering
+Seattle, Washington, United States
+Software and Services
+San Francisco, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Mar 05, 2026
+Role Number:
+200637800-3337
+Envision the collaborative possibili...
+
+
+--------------------------------------------------------------------------------
+ Rank #7 | ATS Score: 49/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer, App Store Data
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200635234-3337/senior-software-engineer-app-store-data?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 59%. Rule score: 100%. Recency score: 68%. Skill overlap count: 5.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer, App Store Data
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 25, 2026
+Role Number:
+200635234-3337
+Imagine what we could do together. At Apple, new ideas have a way of becoming extraordinary products, services, and customer experiences very q...
+
+
+--------------------------------------------------------------------------------
+ Rank #8 | ATS Score: 48/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Development Engineer in Test
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200648273-3337/software-development-engineer-in-test?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 19%. Embedding similarity: 57%. Rule score: 90%. Recency score: 65%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Development Engineer in Test
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 23, 2026
+Weekly Hours:
+40
+Role Number:
+200648273-3337
+Imagine what we could do together. At Apple, new ideas have a way of becoming extraordinary products, services, and customer expe...
+
+
+--------------------------------------------------------------------------------
+ Rank #9 | ATS Score: 47/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200635097-3337/senior-software-engineer?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 18%. Embedding similarity: 45%. Rule score: 100%. Recency score: 78%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Mar 03, 2026
+Weekly Hours:
+40
+Role Number:
+200635097-3337
+The Apple Service Engineering (ASE) Security team builds and provides secure systems and infrastructure that fuel Apple’s services (such as iC...
+
+
+--------------------------------------------------------------------------------
+ Rank #10 | ATS Score: 46/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer, Apple Services Engineering (ASE)
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200632389-3337/senior-software-engineer-apple-services-engineering-ase?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 54%. Rule score: 100%. Recency score: 59%. Skill overlap count: 2.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer, Apple Services Engineering (ASE)
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Feb 19, 2026
+Weekly Hours:
+40
+Role Number:
+200632389-3337
+ Do you love solv...
+
+
+--------------------------------------------------------------------------------
+ Rank #11 | ATS Score: 45/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer, Apple Video Services
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200607855-3337/software-engineer-apple-video-services?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 57%. Rule score: 90%. Recency score: 58%. Skill overlap count: 2.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer, Apple Video Services
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 18, 2026
+Weekly Hours:
+40
+Role Number:
+200607855-3337
+What happens when the world's most innovative engineers collaborate with the world's most creative storytellers? TV gets reinve...
+
+
+--------------------------------------------------------------------------------
+ Rank #12 | ATS Score: 45/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Tools and Automation Engineer - AI/ML
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200648241-3337/software-tools-and-automation-engineer-ai-ml?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 53%. Rule score: 90%. Recency score: 64%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Tools and Automation Engineer - AI/ML
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 23, 2026
+Role Number:
+200648241-3337
+Imagine what we could do together. At Apple, new ideas have a way of becoming extraordinary products, services, and customer experiences ...
+
+
+--------------------------------------------------------------------------------
+ Rank #13 | ATS Score: 45/100 [█████░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer (GenAi - Platform & Solution), AI & Data Platforms (AiDP)
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200631945-3337/software-engineer-genai-platform-solution-ai-data-platforms-aidp?team=CORSV
+
+MATCH ANALYSIS:
+Lexical overlap: 20%. Embedding similarity: 54%. Rule score: 90%. Recency score: 47%. Skill overlap count: 4.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer (GenAi - Platform & Solution), AI & Data Platforms (AiDP)
+Seattle, Washington, United States
+Corporate Functions
+Seattle, Washington, United States
+Sunnyvale, California, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Feb 09, 2026
+Weekly Hours:
+40
+Role Number:
+200631945-3337
+We...
+
+
+--------------------------------------------------------------------------------
+ Rank #14 | ATS Score: 44/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer - Data
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200646518-3337/senior-software-engineer-data?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 19%. Embedding similarity: 57%. Rule score: 60%. Recency score: 67%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer - Data
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Feb 24, 2026
+Weekly Hours:
+40
+Role Number:
+200646518-3337
+We are looking for a Senior Software Enginee...
+
+
+--------------------------------------------------------------------------------
+ Rank #15 | ATS Score: 44/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Data Engineer – App Store
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200633364-3337/software-data-engineer-app-store?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 18%. Embedding similarity: 66%. Rule score: 90%. Recency score: 26%. Skill overlap count: 4.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Data Engineer – App Store
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Jan 14, 2026
+Weekly Hours:
+40
+Role Number:
+200633364-3337
+Apple’s App Store is the world’s largest and most innovative app marketplace, home to over 1.5 million apps and serving more than ha...
+
+
+--------------------------------------------------------------------------------
+ Rank #16 | ATS Score: 44/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer- ASE Enterprise
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200630852-3337/software-engineer-ase-enterprise?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 16%. Embedding similarity: 51%. Rule score: 50%. Recency score: 99%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer- ASE Enterprise
+Seattle, Washington, United States
+Software and Services
+San Francisco, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Mar 13, 2026
+Weekly Hours:
+40
+Role Number:
+200630852-3337
+Apple’s Enterprise Organization is loo...
+
+
+--------------------------------------------------------------------------------
+ Rank #17 | ATS Score: 44/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior / Staff Software Engineer, Apple Data Registry, Apple Data Platform
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200645408-3337/senior-staff-software-engineer-apple-data-registry-apple-data-platform?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 19%. Embedding similarity: 65%. Rule score: 60%. Recency score: 55%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior / Staff Software Engineer, Apple Data Registry, Apple Data Platform
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 16, 2026
+Role Number:
+200645408-3337
+Do you love solving complex challenges? Are you an inventive self-starter who takes pride in making ideas com...
+
+
+--------------------------------------------------------------------------------
+ Rank #18 | ATS Score: 43/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Staff Security Software Engineer
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200635032-3337/staff-security-software-engineer?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 17%. Embedding similarity: 39%. Rule score: 100%. Recency score: 61%. Skill overlap count: 2.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Staff Security Software Engineer
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 20, 2026
+Weekly Hours:
+40
+Role Number:
+200635032-3337
+We are the Apple Service Engineering (ASE) Security team. We are the team that secures the systems and infrastructure that fuel Apple’...
+
+
+--------------------------------------------------------------------------------
+ Rank #19 | ATS Score: 43/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software QA Engineer Apple Services Engineering
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200632890-3337/software-qa-engineer-apple-services-engineering?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 51%. Rule score: 90%. Recency score: 58%. Skill overlap count: 4.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software QA Engineer Apple Services Engineering
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Feb 18, 2026
+Weekly Hours:
+40
+Role Number:
+200632890-3337
+The Apple Services Engineeri...
+
+
+--------------------------------------------------------------------------------
+ Rank #20 | ATS Score: 43/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Data Engineer
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200643840-3337/data-engineer?team=CORSV
+
+MATCH ANALYSIS:
+Lexical overlap: 19%. Embedding similarity: 53%. Rule score: 90%. Recency score: 37%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Data Engineer
+Seattle, Washington, United States
+Corporate Functions
+San Francisco, California, United States
+Seattle, Washington, United States
+Sunnyvale, California, United States
+Work Locations (3)
+Submit Resume
+Summary
+Posted:
+Jan 30, 2026
+Weekly Hours:
+40
+Role Number:
+200643840-3337
+Imagine what you could ...
+
+
+--------------------------------------------------------------------------------
+ Rank #21 | ATS Score: 42/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Principal Security Software Engineer
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200644326-3337/principal-security-software-engineer?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 16%. Embedding similarity: 34%. Rule score: 100%. Recency score: 68%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Principal Security Software Engineer
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 25, 2026
+Weekly Hours:
+40
+Role Number:
+200644326-3337
+We are seeking a Principal Security Software Engineer to lead the charge in safeguarding our platforms and products with world-cla...
+
+
+--------------------------------------------------------------------------------
+ Rank #22 | ATS Score: 42/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Backend Software Engineer, Creativity Apps
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200646702-3337/backend-software-engineer-creativity-apps?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 48%. Rule score: 90%. Recency score: 55%. Skill overlap count: 5.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Backend Software Engineer, Creativity Apps
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+San Diego, California, United States
+Seattle, Washington, United States
+Work Locations (3)
+Submit Resume
+Summary
+Posted:
+Feb 16, 2026
+Weekly Hours:
+40
+Role Number:
+200646702-3...
+
+
+--------------------------------------------------------------------------------
+ Rank #23 | ATS Score: 42/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Sr. Software Engineer, ML Platform Technologies (MLPT)
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200619953-3337/sr-software-engineer-ml-platform-technologies-mlpt?team=MLAI
+
+MATCH ANALYSIS:
+Lexical overlap: 24%. Embedding similarity: 60%. Rule score: 90%. Recency score: 3%. Skill overlap count: 9.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Sr. Software Engineer, ML Platform Technologies (MLPT)
+Seattle, Washington, United States
+Machine Learning and AI
+Santa Clara, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Oct 15, 2025
+Role Number:
+200619953-3337
+Join us in enabling the next gener...
+
+
+--------------------------------------------------------------------------------
+ Rank #24 | ATS Score: 41/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer, AI Developer Tools
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200634889-3337/software-engineer-ai-developer-tools?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 16%. Embedding similarity: 53%. Rule score: 90%. Recency score: 37%. Skill overlap count: 2.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer, AI Developer Tools
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Jan 29, 2026
+Role Number:
+200634889-3337
+At Apple, we don't just build products—we craft experiences that redefine entire ecosystems. The Developer Experience team is at the heart of this...
+
+
+--------------------------------------------------------------------------------
+ Rank #25 | ATS Score: 40/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer, Commerce Engineering
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200647389-3337/software-engineer-commerce-engineering?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 58%. Rule score: 50%. Recency score: 62%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer, Commerce Engineering
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 21, 2026
+Role Number:
+200647389-3337
+The Apple Services Engineering team is one of the most exciting examples of Apple’s long-held passion for combining art and technology. These ar...
+
+
+--------------------------------------------------------------------------------
+ Rank #26 | ATS Score: 40/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer, Media Processing
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200634942-3337/senior-software-engineer-media-processing?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 58%. Rule score: 100%. Recency score: 11%. Skill overlap count: 3.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer, Media Processing
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Dec 08, 2025
+Weekly Hours:
+40
+Role Number:
+200634942-3337
+The Apple Services Engineering team is one of the most exciting examples of Apple’s long-held passion for combining art and ...
+
+
+--------------------------------------------------------------------------------
+ Rank #27 | ATS Score: 40/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Full-Stack Software Engineer - Cloud Capacity Management
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200647763-3337/full-stack-software-engineer-cloud-capacity-management?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 59%. Rule score: 50%. Recency score: 58%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Full-Stack Software Engineer - Cloud Capacity Management
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 18, 2026
+Role Number:
+200647763-3337
+Are you ready to make a significant impact in Apple Services’ infrastructure space?
+
+As a Full-Stack Software Engineer focusing...
+
+
+--------------------------------------------------------------------------------
+ Rank #28 | ATS Score: 40/100 [████░░░░░░] 🟡
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Sr Software Developer / Site Reliability Engineer - ASE iCloud Content
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200627818-3337/sr-software-developer-site-reliability-engineer-ase-icloud-content?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 17%. Embedding similarity: 60%. Rule score: 50%. Recency score: 48%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Sr Software Developer / Site Reliability Engineer - ASE iCloud Content
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 10, 2026
+Weekly Hours:
+40
+Role Number:
+200627818-3337
+People at Apple don’t just build products — they craft the kind of experience that have revoluti...
+
+
+================================================================================
+                      LOW MATCH JOBS (Score: 0-39)
+================================================================================
+
+
+--------------------------------------------------------------------------------
+ Rank #29 | ATS Score: 39/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Senior Software Developer - Core Agent Tools
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60182
+
+MATCH ANALYSIS:
+Lexical overlap: 28%. Embedding similarity: 39%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #30 | ATS Score: 38/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer, Apple Services Engineering
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200621787-3337/senior-software-engineer-apple-services-engineering?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 58%. Rule score: 100%. Recency score: 2%. Skill overlap count: 4.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer, Apple Services Engineering
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Sep 25, 2025
+Role Number:
+200621787-3337
+The iCloud Services team includes iCloud Platform, iCloud SRE, iCloud Data Science, and Data Engineering. The team ensures the avai...
+
+
+--------------------------------------------------------------------------------
+ Rank #31 | ATS Score: 37/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Senior Development Engineer in Test (SDET) - iOS, Swift, Xcode
+Location:   Glendale,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/senior-development-engineer-in-test-sdet-ios-swift-xcode/391/87220912224
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 49%. Rule score: 60%. Recency score: 50%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #32 | ATS Score: 37/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer, Apple Services Engineering, iCloud Platform
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200636744-3337/software-engineer-apple-services-engineering-icloud-platform?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 54%. Rule score: 90%. Recency score: 13%. Skill overlap count: 2.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer, Apple Services Engineering, iCloud Platform
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Dec 15, 2025
+Role Number:
+200636744-3337
+Apple is seeking Software Engi...
+
+
+--------------------------------------------------------------------------------
+ Rank #33 | ATS Score: 37/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer, Apple Services Engineering, iCloud Platform
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200635733-3337/software-engineer-apple-services-engineering-icloud-platform?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 53%. Rule score: 90%. Recency score: 11%. Skill overlap count: 2.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer, Apple Services Engineering, iCloud Platform
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Dec 08, 2025
+Role Number:
+200635733-3337
+Apple is seeking Software Engineers to contribute to the development of the next generation of cloud services infrastruct...
+
+
+--------------------------------------------------------------------------------
+ Rank #34 | ATS Score: 37/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      ML Frameworks Engineer, Personalization
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200581498-3337/ml-frameworks-engineer-personalization?team=MLAI
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 60%. Rule score: 90%. Recency score: 0%. Skill overlap count: 2.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+ML Frameworks Engineer, Personalization
+Seattle, Washington, United States
+Machine Learning and AI
+Submit Resume
+Summary
+Posted:
+Mar 03, 2025
+Role Number:
+200581498-3337
+The Apple Services Engineering (ASE) team is one of the most exciting examples of Apple’s long-held passion for combining art and technology. ...
+
+
+--------------------------------------------------------------------------------
+ Rank #35 | ATS Score: 37/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Senior Software Developer - Data Platform
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60009
+
+MATCH ANALYSIS:
+Lexical overlap: 25%. Embedding similarity: 35%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #36 | ATS Score: 36/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Senior Software Engineer - Cloud (AWS) Account Management
+Location:   Santa Monica,  California / Glendale,  California / San Francisco,  California / Seattle,  Washington / New York,  New York
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/santa-monica/senior-software-engineer-cloud-aws-account-management/391/92435935696
+
+MATCH ANALYSIS:
+Lexical overlap: 10%. Embedding similarity: 52%. Rule score: 60%. Recency score: 50%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #37 | ATS Score: 36/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Sr Machine Learning Engineer
+Location:   Lake Buena Vista,  Florida / Burbank,  California / Seattle,  Washington / Orlando,  Florida
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/lake-buena-vista/sr-machine-learning-engineer/391/92056178256
+
+MATCH ANALYSIS:
+Lexical overlap: 10%. Embedding similarity: 55%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #38 | ATS Score: 36/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer - Frameworks for Engineering Experience
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200643475-3337/senior-software-engineer-frameworks-for-engineering-experience?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 53%. Rule score: 60%. Recency score: 35%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer - Frameworks for Engineering Experience
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Jan 27, 2026
+Weekly Hours:
+40
+Role Number:
+200643475-3337
+Imagine what you could do here. The people here at Apple don’t just build products — we craft the kind...
+
+
+--------------------------------------------------------------------------------
+ Rank #39 | ATS Score: 36/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Full Stack Software Engineer - Information Security
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200621754-3337/full-stack-software-engineer-information-security?team=CORSV
+
+MATCH ANALYSIS:
+Lexical overlap: 16%. Embedding similarity: 54%. Rule score: 90%. Recency score: 2%. Skill overlap count: 8.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Full Stack Software Engineer - Information Security
+Seattle, Washington, United States
+Corporate Functions
+Austin, Texas, United States
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (3)
+Submit Resume
+Summary
+Posted:
+Sep 17, 2025
+Role Number:
+200621754-3337
+Imagine what y...
+
+
+--------------------------------------------------------------------------------
+ Rank #40 | ATS Score: 36/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Development Engineer- ASE- Observabilty
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200644064-3337/software-development-engineer-ase-observabilty?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 17%. Embedding similarity: 56%. Rule score: 50%. Recency score: 36%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Development Engineer- ASE- Observabilty
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Jan 28, 2026
+Role Number:
+200644064-3337
+The ASE Observability team is responsible for designing, building, and operating the core observability platforms
+that enable engineeri...
+
+
+--------------------------------------------------------------------------------
+ Rank #41 | ATS Score: 36/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Software Developer II - Core Agent Tools
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60181
+
+MATCH ANALYSIS:
+Lexical overlap: 24%. Embedding similarity: 37%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #42 | ATS Score: 35/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Senior Software Engineer - AI Core Engineering
+Location:   Glendale,  California / San Francisco,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/senior-software-engineer-ai-core-engineering/391/90921191648
+
+MATCH ANALYSIS:
+Lexical overlap: 10%. Embedding similarity: 49%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #43 | ATS Score: 35/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Staff Product Manager, AI Platforms
+Location:   Seattle,  Washington / Burbank,  California
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/seattle/staff-product-manager-ai-platforms/391/91429467280
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 51%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #44 | ATS Score: 35/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Senior UI/UX Designer – AI
+Location:   Seattle,  Washington / Burbank,  California
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/seattle/senior-ui-ux-designer-ai/391/91441446016
+
+MATCH ANALYSIS:
+Lexical overlap: 10%. Embedding similarity: 47%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #45 | ATS Score: 35/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Senior Machine Learning Engineer, Ads Research
+Location:   Seattle,  Washington / Santa Monica,  California
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/seattle/senior-machine-learning-engineer-ads-research/391/90912803408
+
+MATCH ANALYSIS:
+Lexical overlap: 13%. Embedding similarity: 45%. Rule score: 60%. Recency score: 50%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #46 | ATS Score: 35/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Developer - Site Reliability Engineering / ASE iCloud
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200621474-3337/senior-software-developer-site-reliability-engineering-ase-icloud?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 16%. Embedding similarity: 58%. Rule score: 60%. Recency score: 10%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Developer - Site Reliability Engineering / ASE iCloud
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Dec 05, 2025
+Weekly Hours:
+40
+Role Number:
+200621474-3337
+People at Apple don’t just build products — they craft the kind of experience that have revolutio...
+
+
+--------------------------------------------------------------------------------
+ Rank #47 | ATS Score: 35/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Senior Product Manager II - User Growth, New Content
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=58901
+
+MATCH ANALYSIS:
+Lexical overlap: 22%. Embedding similarity: 30%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #48 | ATS Score: 35/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Senior Software Engineer, Machine Learning - Remote Eligible
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=58709
+
+MATCH ANALYSIS:
+Lexical overlap: 21%. Embedding similarity: 34%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Hybrid from Seattle is the preferred loc
+
+
+--------------------------------------------------------------------------------
+ Rank #49 | ATS Score: 35/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Remote Senior Applied Machine Learning Engineer - Applied Machine Learning Team
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60133
+
+MATCH ANALYSIS:
+Lexical overlap: 21%. Embedding similarity: 34%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Hybrid from Seattle is the preferred loc
+
+
+--------------------------------------------------------------------------------
+ Rank #50 | ATS Score: 35/100 [████░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Software Developer II - Conversational Search
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59842
+
+MATCH ANALYSIS:
+Lexical overlap: 26%. Embedding similarity: 32%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Our Conversational Search team is buildi
+
+
+--------------------------------------------------------------------------------
+ Rank #51 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Principal Software Engineer
+Location:   Glendale,  California / San Francisco,  California / New York,  New York / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/principal-software-engineer/391/89300382000
+
+MATCH ANALYSIS:
+Lexical overlap: 10%. Embedding similarity: 47%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #52 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Lead Software Engineer - K8s
+Location:   Santa Monica,  California / San Francisco,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/santa-monica/lead-software-engineer-k8s/391/90960653968
+
+MATCH ANALYSIS:
+Lexical overlap: 8%. Embedding similarity: 49%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #53 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Senior Software Engineer - Build Tooling Infrastructure
+Location:   New York,  New York / Santa Monica,  California / Glendale,  California / San Francisco,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/new-york/senior-software-engineer-build-tooling-infrastructure/391/92441786160
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 47%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #54 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Principal Full Stack Software Engineer - Ad Experiences
+Location:   Glendale,  California / Santa Monica,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/principal-full-stack-software-engineer-ad-experiences/391/87823378000
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 45%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #55 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Senior Platform Engineer
+Location:   Burbank,  California / Orlando,  Florida / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/burbank/senior-platform-engineer/391/86510389152
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 44%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #56 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Lead Machine Learning Engineer
+Location:   Glendale,  California / Santa Monica,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/lead-machine-learning-engineer/391/91065109760
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 46%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #57 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Senior Machine Learning Engineer
+Location:   Glendale,  California / Santa Monica,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/senior-machine-learning-engineer/391/91061307408
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 46%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #58 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Lead Machine Learning Engineer, Ads Research
+Location:   Seattle,  Washington / Santa Monica,  California / Glendale,  California
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/seattle/lead-machine-learning-engineer-ads-research/391/91417602400
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 45%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #59 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer, Apple Services Engineering
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200622482-3337/senior-software-engineer-apple-services-engineering?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 16%. Embedding similarity: 62%. Rule score: 60%. Recency score: 3%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer, Apple Services Engineering
+Seattle, Washington, United States
+Software and Services
+San Francisco, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Oct 14, 2025
+Role Number:
+200622482-3337
+We are looking for an experienced So...
+
+
+--------------------------------------------------------------------------------
+ Rank #60 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineering Manager, ASE Storage Infrastructure
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200635446-3337/software-engineering-manager-ase-storage-infrastructure?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 17%. Embedding similarity: 54%. Rule score: 60%. Recency score: 11%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineering Manager, ASE Storage Infrastructure
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Dec 09, 2025
+Role Number:
+200635446-3337
+Apple Services Engineering (ASE) bui...
+
+
+--------------------------------------------------------------------------------
+ Rank #61 | ATS Score: 34/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Senior Software Engineer
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59828
+
+MATCH ANALYSIS:
+Lexical overlap: 23%. Embedding similarity: 29%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #62 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Principal Software Engineer
+Location:   Glendale,  California / Santa Monica,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/principal-software-engineer/391/91842072928
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 42%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #63 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Sr Software Engineer - Business Operations
+Location:   Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/seattle/sr-software-engineer-business-operations/391/91160903520
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 48%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #64 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Senior Software Engineer
+Location:   Burbank,  California / Santa Monica,  California / Seattle,  Washington / Orlando,  Florida
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/burbank/senior-software-engineer/391/88276493360
+
+MATCH ANALYSIS:
+Lexical overlap: 8%. Embedding similarity: 45%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #65 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Software Engineer II (Cloud Provisioning)
+Location:   Glendale,  California / Santa Monica,  California / San Francisco,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/software-engineer-ii-cloud-provisioning/391/92200447712
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 49%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #66 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Principal Front-end Engineer (Front-end / UI/ Full Stack)
+Location:   Glendale,  California / Santa Monica,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/principal-front-end-engineer-front-end-ui-full-stack/391/91597928848
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 44%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #67 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Lead Full Stack Engineer (Front-end UI), Ad Decisioning
+Location:   Glendale,  California / Santa Monica,  California / San Francisco,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/lead-full-stack-engineer-front-end-ui-ad-decisioning/391/87870104080
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 43%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #68 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Lead Machine Learning Engineer, Ad Platforms
+Location:   Santa Monica,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/santa-monica/lead-machine-learning-engineer-ad-platforms/391/90832069632
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 42%. Rule score: 60%. Recency score: 50%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #69 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Director, Core Player Engineering
+Location:   New York,  New York / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/new-york/director-core-player-engineering/391/88545755824
+
+MATCH ANALYSIS:
+Lexical overlap: 7%. Embedding similarity: 47%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #70 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Lead Technical Program Manager
+Location:   Seattle,  Washington / New York,  New York
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/seattle/lead-technical-program-manager/391/90956788288
+
+MATCH ANALYSIS:
+Lexical overlap: 8%. Embedding similarity: 43%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #71 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer, Apple Services Engineering
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200621777-3337/software-engineer-apple-services-engineering?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 62%. Rule score: 50%. Recency score: 3%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer, Apple Services Engineering
+Seattle, Washington, United States
+Software and Services
+San Francisco, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Oct 14, 2025
+Role Number:
+200621777-3337
+We are looking for an experienced Software ...
+
+
+--------------------------------------------------------------------------------
+ Rank #72 | ATS Score: 33/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Remote - Staff Cloud Database Engineer - AWS & PostgreSQL SME
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59106
+
+MATCH ANALYSIS:
+Lexical overlap: 16%. Embedding similarity: 35%. Rule score: 60%. Recency score: 50%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Hybrid from Seattle is the preferred loc
+
+
+--------------------------------------------------------------------------------
+ Rank #73 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Software Engineer II
+Location:   Seattle,  Washington / San Francisco,  California
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/seattle/software-engineer-ii/391/92736320096
+
+MATCH ANALYSIS:
+Lexical overlap: 8%. Embedding similarity: 46%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #74 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Software Engineer II
+Location:   Seattle,  Washington / Santa Monica,  California
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/seattle/software-engineer-ii/391/92693846240
+
+MATCH ANALYSIS:
+Lexical overlap: 8%. Embedding similarity: 46%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #75 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Sr Data Engineer
+Location:   Glendale,  California / San Francisco,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/glendale/sr-data-engineer/391/92167402800
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 45%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #76 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Sr Machine Learning Engineer
+Location:   Santa Monica,  California / Seattle,  Washington
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/santa-monica/sr-machine-learning-engineer/391/92196442960
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 46%. Rule score: 50%. Recency score: 50%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #77 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Disney
+Title:      Sr Machine Learning Engineer
+Location:   Seattle,  Washington / Santa Monica,  California / Glendale,  California
+Source:     Custom
+URL:        https://www.disneycareers.com/en/job/seattle/sr-machine-learning-engineer/391/91457070816
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 45%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Skip to main content
+JOB ALERTS
+SAVED JOBS
+0
+0
+Search Jobs
+EN
+Career Areas
+Career Areas
+
+As part of The Walt Disney Company, you will contribute to the stories and experiences that touch the lives of people around the globe.
+
+JOB CATEGORIES
+Life At Disney
+Candidate Resources
+Candidate Resources
+
+Explore resources that can help guide and inform you on your candidate journey.
+
+Culture & Values
+Hiring Process
+Students & Recent Graduates
+Students & Recent Graduates
+
+Explore how you can be part of th...
+
+
+--------------------------------------------------------------------------------
+ Rank #78 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Principal Security Software Engineer
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200644469-3337/principal-security-software-engineer?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 35%. Rule score: 60%. Recency score: 43%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Principal Security Software Engineer
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Feb 05, 2026
+Weekly Hours:
+40
+Role Number:
+200644469-3337
+Apple services and platforms face evolving security threats, from cloud vulnerabilities to application layer attacks, that require...
+
+
+--------------------------------------------------------------------------------
+ Rank #79 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer - Traffic (ASE)
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200602631-3337/software-engineer-traffic-ase?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 14%. Embedding similarity: 57%. Rule score: 50%. Recency score: 7%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer - Traffic (ASE)
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Nov 21, 2025
+Role Number:
+200602631-3337
+Help us to build the performant and reliable networking pri...
+
+
+--------------------------------------------------------------------------------
+ Rank #80 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer - Analytics and Data Privacy
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200632363-3337/software-engineer-analytics-and-data-privacy?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 58%. Rule score: 50%. Recency score: 6%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer - Analytics and Data Privacy
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Nov 14, 2025
+Weekly Hours:
+40
+Role Number:
+200632363-3337
+The Apple Services Engineering (ASE) team is one of the most exciting examples of Apple’s long-held passion for combinin...
+
+
+--------------------------------------------------------------------------------
+ Rank #81 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineering Manager - Observability & Resource Management
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200629399-3337/software-engineering-manager-observability-resource-management?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 54%. Rule score: 60%. Recency score: 5%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineering Manager - Observability & Resource Management
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Oct 31, 2025
+Role Number:
+200629399-3337
+Are you ready to lead a team making a significant impact in Apple Services' infrastructure space?
+As an Engineering M...
+
+
+--------------------------------------------------------------------------------
+ Rank #82 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Engineering Manager - Compute, Apple Cloud Engineering
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200623123-3337/engineering-manager-compute-apple-cloud-engineering?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 55%. Rule score: 60%. Recency score: 2%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Engineering Manager - Compute, Apple Cloud Engineering
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Sep 26, 2025
+Weekly Hours:
+40
+Role Number:
+200623123-3337
+
+People at Apple don’t just build products. They craft the kind of experiences that have revolutionized entire i...
+
+
+--------------------------------------------------------------------------------
+ Rank #83 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Software Developer II - Search
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59043
+
+MATCH ANALYSIS:
+Lexical overlap: 22%. Embedding similarity: 27%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #84 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Senior Android Mobile Developer - Conversational Search
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60160
+
+MATCH ANALYSIS:
+Lexical overlap: 20%. Embedding similarity: 23%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is redefining real estate in the
+
+
+--------------------------------------------------------------------------------
+ Rank #85 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Software Developer II - DIME
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59047
+
+MATCH ANALYSIS:
+Lexical overlap: 18%. Embedding similarity: 33%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Job DescriptionRedfin is revolutionizing
+
+
+--------------------------------------------------------------------------------
+ Rank #86 | ATS Score: 32/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Senior Director, SEO & AI Search
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60072
+
+MATCH ANALYSIS:
+Lexical overlap: 21%. Embedding similarity: 25%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Buying or selling a home is one of the b
+
+
+--------------------------------------------------------------------------------
+ Rank #87 | ATS Score: 31/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer, App Store Engineering R&D
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200633369-3337/software-engineer-app-store-engineering-r-d?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 13%. Embedding similarity: 54%. Rule score: 50%. Recency score: 10%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer, App Store Engineering R&D
+Seattle, Washington, United States
+Software and Services
+Submit Resume
+Summary
+Posted:
+Dec 03, 2025
+Weekly Hours:
+40
+Role Number:
+200633369-3337
+The Apple Services Engineering team is one of the most exciting examples of Apple’s passion for combining art and technolo...
+
+
+--------------------------------------------------------------------------------
+ Rank #88 | ATS Score: 31/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineer - Traffic, JVM Frameworks
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200641231-3337/software-engineer-traffic-jvm-frameworks?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 11%. Embedding similarity: 51%. Rule score: 50%. Recency score: 25%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineer - Traffic, JVM Frameworks
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Jan 13, 2026
+Role Number:
+200641231-3337
+Apple services need world class libraries in orde...
+
+
+--------------------------------------------------------------------------------
+ Rank #89 | ATS Score: 31/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Software Engineer - Siri Runtime Platform
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200635677-3337/senior-software-engineer-siri-runtime-platform?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 13%. Embedding similarity: 51%. Rule score: 60%. Recency score: 11%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Software Engineer - Siri Runtime Platform
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Dec 08, 2025
+Weekly Hours:
+40
+Role Number:
+200635677-3337
+Play a part in the next rev...
+
+
+--------------------------------------------------------------------------------
+ Rank #90 | ATS Score: 31/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Development Engineer - Traffic Network Proxying, ASE
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200616665-3337/software-development-engineer-traffic-network-proxying-ase?team=SFTWR
+
+MATCH ANALYSIS:
+Lexical overlap: 13%. Embedding similarity: 56%. Rule score: 50%. Recency score: 6%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Development Engineer - Traffic Network Proxying, ASE
+Seattle, Washington, United States
+Software and Services
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (2)
+Submit Resume
+Summary
+Posted:
+Nov 10, 2025
+Role Number:
+200616665-3337
+Join Apple’s innovative team to...
+
+
+--------------------------------------------------------------------------------
+ Rank #91 | ATS Score: 31/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Senior Product Manager II - User Growth, Mobile Apps
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60132
+
+MATCH ANALYSIS:
+Lexical overlap: 15%. Embedding similarity: 30%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #92 | ATS Score: 31/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Software Developer I
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59686
+
+MATCH ANALYSIS:
+Lexical overlap: 19%. Embedding similarity: 27%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #93 | ATS Score: 31/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Data Engineer II
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60200
+
+MATCH ANALYSIS:
+Lexical overlap: 18%. Embedding similarity: 30%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #94 | ATS Score: 30/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Senior Android Mobile Developer
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60135
+
+MATCH ANALYSIS:
+Lexical overlap: 17%. Embedding similarity: 22%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #95 | ATS Score: 30/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Remote Cloud Database Engineer II - PostgreSQL & AWS
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59101
+
+MATCH ANALYSIS:
+Lexical overlap: 17%. Embedding similarity: 29%. Rule score: 50%. Recency score: 50%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.This is a remote eligible role but prefe
+
+
+--------------------------------------------------------------------------------
+ Rank #96 | ATS Score: 30/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Software Developer II
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59815
+
+MATCH ANALYSIS:
+Lexical overlap: 18%. Embedding similarity: 24%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #97 | ATS Score: 30/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Engineering Manager - Conversational Search
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60159
+
+MATCH ANALYSIS:
+Lexical overlap: 13%. Embedding similarity: 28%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #98 | ATS Score: 30/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Principal Product Manager - Home Valuation (Redfin & Rocket)
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60138
+
+MATCH ANALYSIS:
+Lexical overlap: 16%. Embedding similarity: 23%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.At the intersection of Redfin’s industry
+
+
+--------------------------------------------------------------------------------
+ Rank #99 | ATS Score: 29/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      IOS Mobile Developer - Conversational Search
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=60161
+
+MATCH ANALYSIS:
+Lexical overlap: 17%. Embedding similarity: 26%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #100 | ATS Score: 29/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Analytics Manager, Marketing Analytics
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59904
+
+MATCH ANALYSIS:
+Lexical overlap: 9%. Embedding similarity: 31%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.Redfin is revolutionizing the $75 billio
+
+
+--------------------------------------------------------------------------------
+ Rank #101 | ATS Score: 28/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Software Engineering Internships
+Location:   Various Locations within United States
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200606145-3810/software-engineering-internships?team=STDNT
+
+MATCH ANALYSIS:
+Lexical overlap: 13%. Embedding similarity: 47%. Rule score: 60%. Recency score: 0%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Software Engineering Internships
+United States
+Students
+Submit Resume
+Summary
+Posted:
+May 28, 2025
+Role Number:
+200606145-3810
+Imagine what you could do here. At Apple, extraordinary ideas have a way of becoming phenomenal products, services, and customer experiences very quickly. Bring passion and dedication t...
+
+
+--------------------------------------------------------------------------------
+ Rank #102 | ATS Score: 28/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Apple
+Title:      Senior Full-Stack Engineer
+Location:   Seattle
+Source:     Custom
+URL:        https://jobs.apple.com/en-us/details/200616952-3337/senior-full-stack-engineer?team=CORSV
+
+MATCH ANALYSIS:
+Lexical overlap: 12%. Embedding similarity: 46%. Rule score: 60%. Recency score: 1%. Skill overlap count: 1.
+
+DESCRIPTION PREVIEW:
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0
++
+Careers at Apple
+Work at Apple
+Life at Apple
+Profile
+Sign In
+Search
+Back to search results
+Senior Full-Stack Engineer
+Seattle, Washington, United States
+Corporate Functions
+Austin, Texas, United States
+Cupertino, California, United States
+Seattle, Washington, United States
+Work Locations (3)
+Submit Resume
+Summary
+Posted:
+Aug 19, 2025
+Role Number:
+200616952-3337
+Imagine what you could do here. At Appl...
+
+
+--------------------------------------------------------------------------------
+ Rank #103 | ATS Score: 27/100 [███░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Engineering Manager - Agreement to Close Engineering
+Location:   Seattle, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=59567
+
+MATCH ANALYSIS:
+Lexical overlap: 10%. Embedding similarity: 20%. Rule score: 60%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This position is a hybrid role requiring employees to work from our headquarters location in Seattle, WA every Tuesday and Wednesday, and remote all other days.As Engineering Manager for Agreement to
+
+
+--------------------------------------------------------------------------------
+ Rank #104 | ATS Score: 23/100 [██░░░░░░░░] 🔴
+--------------------------------------------------------------------------------
+
+Company:    Redfin
+Title:      Android Mobile Developer - Latin & South America
+Location:   Remote, Washington, United States of America
+Source:     CustomAPI
+URL:        https://redfin.wd1.myworkdayjobs.com/redfin_careers/?q=58982
+
+MATCH ANALYSIS:
+Lexical overlap: 11%. Embedding similarity: 12%. Rule score: 50%. Recency score: 50%. Skill overlap count: 0.
+
+DESCRIPTION PREVIEW:
+This is a remote contract role to be based in Latin or South America. Only qualified applicants residing in and working from Latin or South America will be considered.Redfin is revolutionizing the $75
+
+
+================================================================================
+                               END OF REPORT
+================================================================================
+
+Notes:
+- ATS scores are generated using AI and should be used as a guide, not definitive
+- Always review job descriptions personally before applying
+- Scores consider skills, experience, education, and keyword matching
+- Job listings are sorted by match score (highest first)
+
