@@ -100,6 +100,27 @@ npm start
 node src/index.js
 ```
 
+## GitHub Actions + S3
+
+This repo includes a GitHub Actions workflow at `.github/workflows/job-matcher.yml` that:
+
+- runs on a daily schedule plus manual dispatch
+- authenticates to AWS using OIDC
+- downloads the latest `ats-cache.sqlite` from `s3://job-matcher-dada/latest/`
+- runs the scraper
+- uploads `job-matches.txt`, `job-matches.json`, and `ats-cache.sqlite` back to the same S3 prefix
+
+Remaining setup required outside the repo:
+
+1. Create an AWS IAM role that GitHub Actions can assume via OIDC.
+2. Add the role ARN as a GitHub Actions secret named `AWS_ROLE_ARN`.
+3. Provide the resume file either:
+   - by committing it to the repo at the configured `resume_path`, or
+   - by setting a GitHub Actions secret named `RESUME_PDF_BASE64` containing the base64-encoded PDF.
+4. Adjust the cron schedule in `.github/workflows/job-matcher.yml` if `0 14 * * *` UTC is not the desired run time.
+
+If you use the `openrouter` provider, also add the corresponding API key as a GitHub Actions secret and ensure `config/jobs.yaml` references it.
+
 ## Output
 
 The application generates two files:

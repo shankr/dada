@@ -8,8 +8,6 @@ yarn.lock
 
 # Output files
 output/
-*.txt
-*.json
 
 # Resume files (keep private)
 resume.pdf

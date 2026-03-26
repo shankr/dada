@@ -1,18 +1,34 @@
 const fs = require('fs');
 const path = require('path');
-const { spawnSync } = require('child_process');
+const initSqlJs = require('sql.js');
 
 class ATSCacheDB {
   constructor(dbPath) {
     this.dbPath = dbPath;
     this.initialized = false;
+    this.db = null;
   }
 
-  initialize() {
+  async initialize() {
     if (this.initialized) return;
 
     fs.mkdirSync(path.dirname(this.dbPath), { recursive: true });
-    this.runSql(`
+
+    if (!ATSCacheDB.SQL) {
+      ATSCacheDB.SQL = await initSqlJs({
+        locateFile: file => require.resolve(`sql.js/dist/${file}`)
+      });
+    }
+
+    const dbBuffer = fs.existsSync(this.dbPath)
+      ? fs.readFileSync(this.dbPath)
+      : null;
+
+    this.db = dbBuffer && dbBuffer.length > 0
+      ? new ATSCacheDB.SQL.Database(dbBuffer)
+      : new ATSCacheDB.SQL.Database();
+
+    this.db.exec(`
       CREATE TABLE IF NOT EXISTS job_results (
         job_url TEXT PRIMARY KEY,
         title TEXT,
@@ -33,8 +49,7 @@ class ATSCacheDB {
 
     if (this.tableExists('ats_scores')) {
       const now = new Date().toISOString();
-      const safeNow = this.escape(now);
-      this.runSql(`
+      this.db.exec(`
         INSERT OR IGNORE INTO job_results (
           job_url, title, company, location, description, source, posted_date, ats_score, ats_reasoning, scored_at, provider, model, first_seen_at, last_seen_at
         )
@@ -48,38 +63,37 @@ class ATSCacheDB {
           '',
           COALESCE(ats_score, 0),
           COALESCE(ats_reasoning, ''),
-          COALESCE(scored_at, '${safeNow}'),
+          COALESCE(scored_at, '${now}'),
           COALESCE(provider, ''),
           COALESCE(model, ''),
-          '${safeNow}',
-          '${safeNow}'
+          '${now}',
+          '${now}'
         FROM ats_scores;
       `);
     }
 
-    this.runSqlAllowError(`ALTER TABLE job_results ADD COLUMN posted_date TEXT;`);
+    if (!this.columnExists('job_results', 'posted_date')) {
+      this.db.exec('ALTER TABLE job_results ADD COLUMN posted_date TEXT;');
+    }
 
+    this.persist();
     this.initialized = true;
   }
 
   getByUrl(jobUrl) {
     if (!jobUrl) return null;
 
-    const safeUrl = this.escape(jobUrl);
-    const output = this.runSql(
-      `SELECT json_object('ats_score', ats_score, 'ats_reasoning', ats_reasoning, 'scored_at', scored_at) FROM job_results WHERE job_url = '${safeUrl}' LIMIT 1;`,
-      true
+    const payload = this.getOne(
+      `
+        SELECT ats_score, ats_reasoning, scored_at
+        FROM job_results
+        WHERE job_url = $jobUrl
+        LIMIT 1;
+      `,
+      { $jobUrl: jobUrl }
     );
 
-    const line = output.split('\n').find(Boolean);
-    if (!line) return null;
-
-    let payload;
-    try {
-      payload = JSON.parse(line);
-    } catch (_) {
-      return null;
-    }
+    if (!payload) return null;
 
     return {
       score: parseInt(payload.ats_score, 10) || 0,
@@ -91,32 +105,29 @@ class ATSCacheDB {
   getJobByUrl(jobUrl) {
     if (!jobUrl) return null;
 
-    const safeUrl = this.escape(jobUrl);
-    const output = this.runSql(
-      `SELECT json_object(
-        'job_url', job_url,
-        'title', title,
-        'location', location,
-        'company', company,
-        'description', description,
-        'source', source,
-        'posted_date', posted_date,
-        'ats_score', ats_score,
-        'ats_reasoning', ats_reasoning,
-        'scored_at', scored_at
-      ) FROM job_results WHERE job_url = '${safeUrl}' LIMIT 1;`,
-      true
+    const payload = this.getOne(
+      `
+        SELECT
+          job_url,
+          title,
+          location,
+          company,
+          description,
+          source,
+          posted_date,
+          first_seen_at,
+          last_seen_at,
+          ats_score,
+          ats_reasoning,
+          scored_at
+        FROM job_results
+        WHERE job_url = $jobUrl
+        LIMIT 1;
+      `,
+      { $jobUrl: jobUrl }
     );
 
-    const line = output.split('\n').find(Boolean);
-    if (!line) return null;
-
-    let payload;
-    try {
-      payload = JSON.parse(line);
-    } catch (_) {
-      return null;
-    }
+    if (!payload) return null;
 
     return {
       url: payload.job_url || '',
@@ -126,6 +137,8 @@ class ATSCacheDB {
       description: payload.description || '',
       source: payload.source || '',
       postedDate: payload.posted_date || '',
+      firstSeenAt: payload.first_seen_at || '',
+      lastSeenAt: payload.last_seen_at || '',
       atsScore: parseInt(payload.ats_score, 10) || 0,
       atsReasoning: payload.ats_reasoning || '',
       scoredAt: payload.scored_at || new Date().toISOString()
@@ -133,94 +146,135 @@ class ATSCacheDB {
   }
 
   getAllJobUrls() {
-    const output = this.runSql('SELECT job_url FROM job_results;', true);
-    if (!output) return [];
-    return output.split('\n').map(line => line.trim()).filter(Boolean);
+    return this.getAll('SELECT job_url FROM job_results;')
+      .map(row => row.job_url)
+      .filter(Boolean);
   }
 
   touchJobUrl(jobUrl) {
     if (!jobUrl) return;
-    const safeUrl = this.escape(jobUrl);
-    const safeNow = this.escape(new Date().toISOString());
-    this.runSql(`
-      UPDATE job_results
-      SET last_seen_at = '${safeNow}'
-      WHERE job_url = '${safeUrl}';
-    `);
+
+    this.run(
+      `
+        UPDATE job_results
+        SET last_seen_at = $lastSeenAt
+        WHERE job_url = $jobUrl;
+      `,
+      {
+        $lastSeenAt: new Date().toISOString(),
+        $jobUrl: jobUrl
+      }
+    );
+    this.persist();
   }
 
   upsert(job, atsResult, provider, model) {
     if (!job?.url) return;
 
     const now = new Date().toISOString();
-    const safe = {
-      jobUrl: this.escape(job.url),
-      title: this.escape(job.title || ''),
-      company: this.escape(job.company || ''),
-      location: this.escape(job.location || ''),
-      description: this.escape(job.description || ''),
-      source: this.escape(job.source || ''),
-      postedDate: this.escape(job.postedDate || ''),
-      reasoning: this.escape(atsResult.reasoning || ''),
-      scoredAt: this.escape(atsResult.timestamp || new Date().toISOString()),
-      provider: this.escape(provider || ''),
-      model: this.escape(model || ''),
-      firstSeenAt: this.escape(now),
-      lastSeenAt: this.escape(now)
-    };
+    const score = Number.isFinite(atsResult.score)
+      ? Math.max(0, Math.min(100, atsResult.score))
+      : 0;
 
-    const score = Number.isFinite(atsResult.score) ? Math.max(0, Math.min(100, atsResult.score)) : 0;
-
-    this.runSql(`
-      INSERT INTO job_results (
-        job_url, title, company, location, description, source, posted_date, ats_score, ats_reasoning, scored_at, provider, model, first_seen_at, last_seen_at
-      ) VALUES (
-        '${safe.jobUrl}', '${safe.title}', '${safe.company}', '${safe.location}', '${safe.description}', '${safe.source}', '${safe.postedDate}', ${score}, '${safe.reasoning}', '${safe.scoredAt}', '${safe.provider}', '${safe.model}', '${safe.firstSeenAt}', '${safe.lastSeenAt}'
-      )
-      ON CONFLICT(job_url) DO UPDATE SET
-        title = excluded.title,
-        company = excluded.company,
-        location = excluded.location,
-        description = excluded.description,
-        source = excluded.source,
-        posted_date = excluded.posted_date,
-        ats_score = excluded.ats_score,
-        ats_reasoning = excluded.ats_reasoning,
-        scored_at = excluded.scored_at,
-        provider = excluded.provider,
-        model = excluded.model,
-        last_seen_at = excluded.last_seen_at;
-    `);
-  }
-
-  runSql(sql, returnOutput = false) {
-    const args = ['-noheader', '-separator', '\t', this.dbPath, sql];
-    const result = spawnSync('sqlite3', args, { encoding: 'utf8' });
-
-    if (result.status !== 0) {
-      const stderr = (result.stderr || '').trim() || 'Unknown sqlite3 error';
-      throw new Error(`SQLite cache error: ${stderr}`);
-    }
-
-    return returnOutput ? (result.stdout || '').trim() : '';
-  }
-
-  runSqlAllowError(sql) {
-    const args = ['-noheader', '-separator', '\t', this.dbPath, sql];
-    spawnSync('sqlite3', args, { encoding: 'utf8' });
-  }
-
-  escape(value) {
-    return String(value).replace(/'/g, "''");
+    this.run(
+      `
+        INSERT INTO job_results (
+          job_url, title, company, location, description, source, posted_date, ats_score, ats_reasoning, scored_at, provider, model, first_seen_at, last_seen_at
+        ) VALUES (
+          $jobUrl, $title, $company, $location, $description, $source, $postedDate, $score, $reasoning, $scoredAt, $provider, $model, $firstSeenAt, $lastSeenAt
+        )
+        ON CONFLICT(job_url) DO UPDATE SET
+          title = excluded.title,
+          company = excluded.company,
+          location = excluded.location,
+          description = excluded.description,
+          source = excluded.source,
+          posted_date = excluded.posted_date,
+          ats_score = excluded.ats_score,
+          ats_reasoning = excluded.ats_reasoning,
+          scored_at = excluded.scored_at,
+          provider = excluded.provider,
+          model = excluded.model,
+          last_seen_at = excluded.last_seen_at;
+      `,
+      {
+        $jobUrl: job.url,
+        $title: job.title || '',
+        $company: job.company || '',
+        $location: job.location || '',
+        $description: job.description || '',
+        $source: job.source || '',
+        $postedDate: job.postedDate || '',
+        $score: score,
+        $reasoning: atsResult.reasoning || '',
+        $scoredAt: atsResult.timestamp || now,
+        $provider: provider || '',
+        $model: model || '',
+        $firstSeenAt: now,
+        $lastSeenAt: now
+      }
+    );
+    this.persist();
   }
 
   tableExists(tableName) {
-    const safeName = this.escape(tableName);
-    const output = this.runSql(
-      `SELECT name FROM sqlite_master WHERE type='table' AND name='${safeName}' LIMIT 1;`,
-      true
+    return Boolean(
+      this.getOne(
+        `
+          SELECT name
+          FROM sqlite_master
+          WHERE type = 'table' AND name = $tableName
+          LIMIT 1;
+        `,
+        { $tableName: tableName }
+      )
     );
-    return Boolean(output.trim());
+  }
+
+  columnExists(tableName, columnName) {
+    const rows = this.getAll(`PRAGMA table_info(${tableName});`);
+    return rows.some(row => row.name === columnName);
+  }
+
+  getOne(sql, params = {}) {
+    const stmt = this.db.prepare(sql);
+    try {
+      stmt.bind(params);
+      if (!stmt.step()) {
+        return null;
+      }
+      return stmt.getAsObject();
+    } finally {
+      stmt.free();
+    }
+  }
+
+  getAll(sql, params = {}) {
+    const stmt = this.db.prepare(sql);
+    const rows = [];
+
+    try {
+      stmt.bind(params);
+      while (stmt.step()) {
+        rows.push(stmt.getAsObject());
+      }
+      return rows;
+    } finally {
+      stmt.free();
+    }
+  }
+
+  run(sql, params = {}) {
+    const stmt = this.db.prepare(sql);
+    try {
+      stmt.run(params);
+    } finally {
+      stmt.free();
+    }
+  }
+
+  persist() {
+    fs.writeFileSync(this.dbPath, Buffer.from(this.db.export()));
   }
 }
 

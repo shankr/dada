@@ -16,6 +16,7 @@ class JobScraperApp {
     this.allJobs = [];
     this.seenJobUrls = new Set();
     this.resultsDb = null;
+    this.initialKnownJobUrls = new Set();
   }
 
   async initialize() {
@@ -27,11 +28,12 @@ class JobScraperApp {
     console.log('Loading configuration...');
     this.config = ConfigLoader.load();
     this.resultsDb = new ATSCacheDB(this.config.ats_cache_db_path);
-    this.resultsDb.initialize();
-    this.config.results_db = this.resultsDb;
-    this.config.known_job_urls = new Set(
+    await this.resultsDb.initialize();
+    this.initialKnownJobUrls = new Set(
       this.resultsDb.getAllJobUrls().map(url => url.toLowerCase())
     );
+    this.config.results_db = this.resultsDb;
+    this.config.known_job_urls = new Set(this.initialKnownJobUrls);
     console.log('✓ Configuration loaded\n');
 
     // Parse resume
@@ -62,6 +64,9 @@ class JobScraperApp {
               continue;
             }
             this.seenJobUrls.add(normalizedUrl);
+            job.isNewThisRun = !this.initialKnownJobUrls.has(normalizedUrl);
+          } else {
+            job.isNewThisRun = false;
           }
           uniqueJobs.push(job);
         }

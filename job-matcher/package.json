@@ -16,14 +16,15 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.6.5",
     "@xenova/transformers": "^2.17.2",
-    "node-fetch": "^2.6.11",
-    "web-streams-polyfill": "^3.3.3",
+    "axios": "^1.6.5",
     "cline": "^2.2.2",
     "dotenv": "^16.3.1",
     "js-yaml": "^4.1.0",
+    "node-fetch": "^2.6.11",
     "pdf-parse": "^1.1.1",
-    "puppeteer": "^24.37.2"
+    "puppeteer": "^24.37.2",
+    "sql.js": "^1.14.1",
+    "web-streams-polyfill": "^3.3.3"
   }
 }

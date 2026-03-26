@@ -9,6 +9,7 @@ class ReportGenerator {
   generate(results, resumeInfo) {
     const timestamp = new Date().toLocaleString();
     const totalJobs = results.length;
+    const newJobs = this.getNewJobsSinceLastRun(results);
     const highMatches = results.filter(r => r.atsScore >= 70).length;
     const mediumMatches = results.filter(r => r.atsScore >= 40 && r.atsScore < 70).length;
     const lowMatches = results.filter(r => r.atsScore < 40).length;
@@ -27,9 +28,12 @@ Resume Pages: ${resumeInfo.numPages}
 ================================================================================
 
 Total Jobs Analyzed: ${totalJobs}
+New Jobs Since Last Run: ${newJobs.length}
 High Matches (70-100): ${highMatches}
 Medium Matches (40-69): ${mediumMatches}
 Low Matches (0-39): ${lowMatches}
+
+${this.formatNewJobsSection(newJobs)}
 
 ================================================================================
                            RANKED JOB LISTINGS
@@ -102,6 +106,7 @@ Title:      ${job.title}
 Location:   ${job.location}
 Source:     ${job.source}${job.team ? `\nTeam:       ${job.team}` : ''}
 URL:        ${job.url}
+${job.postedDate ? `Posted:     ${job.postedDate}\n` : ''}${job.firstSeenAt ? `First Seen: ${job.firstSeenAt}\n` : ''}
 
 MATCH ANALYSIS:
 ${job.atsReasoning}
@@ -120,8 +125,41 @@ ${job.description ? `DESCRIPTION PREVIEW:\n${job.description.substring(0, 500)}$
     return `[${bar}] 🔴`;
   }
 
+  getNewJobsSinceLastRun(results) {
+    return results.filter(job => job.isNewThisRun === true);
+  }
+
+  formatNewJobsSection(newJobs) {
+    let report = `
+================================================================================
+                        NEW JOBS SINCE LAST RUN
+================================================================================
+
+`;
+
+    if (newJobs.length === 0) {
+      report += `No new jobs were detected since the previous run.\n\n`;
+      return report;
+    }
+
+    newJobs.forEach((job, index) => {
+      report += `${index + 1}. ${job.title} | ${job.company} | ${job.location}\n`;
+      report += `   URL: ${job.url}\n`;
+      if (job.postedDate) {
+        report += `   Posted: ${job.postedDate}\n`;
+      }
+      if (job.firstSeenAt) {
+        report += `   First Seen: ${job.firstSeenAt}\n`;
+      }
+      report += `   Score: ${job.atsScore}\n\n`;
+    });
+
+    return report;
+  }
+
   generateJSON(results, resumeInfo) {
     const jsonPath = this.outputPath.replace('.txt', '.json');
+    const newJobs = this.getNewJobsSinceLastRun(results);
     
     const data = {
       generatedAt: new Date().toISOString(),
@@ -131,10 +169,22 @@ ${job.description ? `DESCRIPTION PREVIEW:\n${job.description.substring(0, 500)}$
       },
       summary: {
         totalJobs: results.length,
+        newJobsSinceLastRun: newJobs.length,
         highMatches: results.filter(r => r.atsScore >= 70).length,
         mediumMatches: results.filter(r => r.atsScore >= 40 && r.atsScore < 70).length,
         lowMatches: results.filter(r => r.atsScore < 40).length
       },
+      newJobs: newJobs.map((job, index) => ({
+        rank: index + 1,
+        company: job.company,
+        title: job.title,
+        location: job.location,
+        url: job.url,
+        postedDate: job.postedDate || null,
+        firstSeenAt: job.firstSeenAt || null,
+        isNewThisRun: job.isNewThisRun === true,
+        atsScore: job.atsScore
+      })),
       jobs: results.map((job, index) => ({
         rank: index + 1,
         company: job.company,
@@ -142,10 +192,14 @@ ${job.description ? `DESCRIPTION PREVIEW:\n${job.description.substring(0, 500)}$
         location: job.location,
         url: job.url,
         source: job.source,
+        postedDate: job.postedDate || null,
         atsScore: job.atsScore,
         atsReasoning: job.atsReasoning,
         description: job.description ? job.description.substring(0, 1000) : '',
         team: job.team || null,
+        firstSeenAt: job.firstSeenAt || null,
+        lastSeenAt: job.lastSeenAt || null,
+        isNewThisRun: job.isNewThisRun === true,
         scoredAt: job.scoredAt
       }))
     };

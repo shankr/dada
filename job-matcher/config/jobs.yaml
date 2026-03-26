@@ -31,12 +31,17 @@ llm:
 scoring:
   mode: "hybrid_local"
   force_recompute: false
+  embedding_model: "BAAI/bge-small-en-v1.5"
   weights:
-    lexical: 0.40
-    embedding: 0.30
-    rules: 0.15
+    lexical: 0.20
+    embedding: 0.45
+    rules: 0.20
     recency: 0.15
   min_skill_overlap: 2
+  required_qualifications_threshold: 0.45
+  required_qualifications_penalty_max: 0.30
+  required_qualifications_bullet_penalty_threshold: 0.35
+  required_qualifications_penalty_per_bullet: 0.06
   recency_half_life_days: 30
   max_resume_chars: 4000
   max_job_chars: 4000
@@ -126,3 +131,15 @@ job_boards:
         size_field: "size"
         offset_start: 0
         page_size: 10
+
+  - name: "GEICO"
+    type: "workday"
+    url: "https://geico.wd1.myworkdayjobs.com/en-US/External?q=software%20engineer&locations=1d96ffb7bce60173a914c756f301bdca&jobFamilyGroup=da128ce5a1dc103e7c09aaa3fe312266"
+    selectors:
+      job_list_container: "[data-automation-id='jobResults']"
+      job_card: "section[data-automation-id='jobResults'] ul[role='list'] > li"
+      title: "[data-automation-id='jobTitle']"
+      location: "[data-automation-id='locations']"
+      description: "[data-automation-id='jobPostingDescription']"
+      next_button: "button[aria-label='next']"
+      job_url_attribute: "data-automation-id"

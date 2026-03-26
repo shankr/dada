@@ -124,7 +124,7 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
 
   async scoreJobsBatch(resumeText, jobs, onProgress = null) {
     this.validateProviderConfig();
-    this.cacheDb.initialize();
+    await this.cacheDb.initialize();
     const scoringCfg = this.getScoringConfig();
 
     const results = [];
@@ -153,9 +153,13 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
               this.provider,
               this.config.model
             );
+            const storedJob = this.cacheDb.getJobByUrl(job.url);
             cacheHits++;
             results.push({
               ...job,
+              firstSeenAt: storedJob?.firstSeenAt || '',
+              lastSeenAt: storedJob?.lastSeenAt || '',
+              isNewThisRun: job.isNewThisRun === true,
               atsScore: cached.score,
               atsReasoning: cached.reasoning,
               scoredAt: cached.scoredAt
@@ -176,8 +180,13 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
           this.cacheDb.upsert(job, atsResult, this.provider, this.config.model);
         }
 
+        const storedJob = job.url ? this.cacheDb.getJobByUrl(job.url) : null;
+
         results.push({
           ...job,
+          firstSeenAt: storedJob?.firstSeenAt || '',
+          lastSeenAt: storedJob?.lastSeenAt || '',
+          isNewThisRun: job.isNewThisRun === true,
           atsScore: atsResult.score,
           atsReasoning: atsResult.reasoning,
           scoredAt: atsResult.timestamp
@@ -240,13 +249,18 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
   getScoringConfig() {
     const defaults = {
       mode: 'hybrid_local',
+      embedding_model: 'BAAI/bge-small-en-v1.5',
       weights: {
-        lexical: 0.40,
-        embedding: 0.30,
+        lexical: 0.20,
+        embedding: 0.45,
         rules: 0.20,
-        recency: 0.10
+        recency: 0.15
       },
       min_skill_overlap: 2,
+      required_qualifications_threshold: 0.45,
+      required_qualifications_penalty_max: 0.30,
+      required_qualifications_bullet_penalty_threshold: 0.35,
+      required_qualifications_penalty_per_bullet: 0.06,
       recency_half_life_days: 30,
       force_recompute: false,
       max_resume_chars: 4000,
@@ -258,8 +272,21 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
 
     return {
       mode: cfg.mode || defaults.mode,
+      embeddingModel: cfg.embedding_model || defaults.embedding_model,
       weights,
       minSkillOverlap: Number.isFinite(cfg.min_skill_overlap) ? cfg.min_skill_overlap : defaults.min_skill_overlap,
+      requiredQualificationsThreshold: Number.isFinite(cfg.required_qualifications_threshold)
+        ? cfg.required_qualifications_threshold
+        : defaults.required_qualifications_threshold,
+      requiredQualificationsPenaltyMax: Number.isFinite(cfg.required_qualifications_penalty_max)
+        ? cfg.required_qualifications_penalty_max
+        : defaults.required_qualifications_penalty_max,
+      requiredQualificationsBulletPenaltyThreshold: Number.isFinite(cfg.required_qualifications_bullet_penalty_threshold)
+        ? cfg.required_qualifications_bullet_penalty_threshold
+        : defaults.required_qualifications_bullet_penalty_threshold,
+      requiredQualificationsPenaltyPerBullet: Number.isFinite(cfg.required_qualifications_penalty_per_bullet)
+        ? cfg.required_qualifications_penalty_per_bullet
+        : defaults.required_qualifications_penalty_per_bullet,
       recencyHalfLifeDays: Number.isFinite(cfg.recency_half_life_days) ? cfg.recency_half_life_days : defaults.recency_half_life_days,
       forceRecompute: typeof cfg.force_recompute === 'boolean' ? cfg.force_recompute : defaults.force_recompute,
       maxResumeChars: Number.isFinite(cfg.max_resume_chars) ? cfg.max_resume_chars : defaults.max_resume_chars,
@@ -276,7 +303,14 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     const jobTokens = this.tokenize(jobText);
 
     const lexical = this.lexicalScore(resumeTokens, jobTokens);
-    const embedding = await this.embeddingScore(resume, jobText, job.url || job.title || '');
+    const baseEmbedding = await this.embeddingScore(resume, jobText, job.url || job.title || '');
+    const requiredMatch = await this.requiredQualificationsSemanticMatch(
+      resume,
+      job.description || '',
+      job.url || job.title || '',
+      cfg
+    );
+    const embedding = Math.max(0, baseEmbedding - requiredMatch.penalty);
     const rules = this.rulesScore(resume, job.title || '', resumeTokens, jobTokens, cfg.minSkillOverlap);
     const extractedDate = this.extractPostedDateFromText(job.description || '');
     if (extractedDate && job.postedDate !== extractedDate) {
@@ -296,21 +330,27 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     const score = Math.round(weighted * 100);
     const reasoning = this.buildLocalReasoning({
       lexical,
+      baseEmbedding,
       embedding,
       rules,
       recency,
-      skillOverlap: this.skillOverlapCount(resumeTokens, jobTokens)
+      skillOverlap: this.skillOverlapCount(resumeTokens, jobTokens),
+      requiredMatch
     });
 
     return { score, reasoning };
   }
 
-  buildLocalReasoning({ lexical, embedding, rules, recency, skillOverlap }) {
+  buildLocalReasoning({ lexical, baseEmbedding, embedding, rules, recency, skillOverlap, requiredMatch }) {
+    const requiredReasoning = requiredMatch?.sectionFound
+      ? ` Required qualifications match: ${(requiredMatch.score * 100).toFixed(0)}% across ${requiredMatch.bulletCount} bullets; semantic penalty: ${(requiredMatch.penalty * 100).toFixed(0)}%.`
+      : ' Required qualifications match: n/a.';
     return `Lexical overlap: ${(lexical * 100).toFixed(0)}%. ` +
-      `Embedding similarity: ${(embedding * 100).toFixed(0)}%. ` +
+      `Embedding similarity: ${(embedding * 100).toFixed(0)}% (base ${(baseEmbedding * 100).toFixed(0)}%). ` +
       `Rule score: ${(rules * 100).toFixed(0)}%. ` +
       `Recency score: ${(recency * 100).toFixed(0)}%. ` +
-      `Skill overlap count: ${skillOverlap}.`;
+      `Skill overlap count: ${skillOverlap}.` +
+      requiredReasoning;
   }
 
   tokenize(text) {
@@ -416,6 +456,181 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     return this.cosineSimilarity(resumeEmbedding, jobEmbedding);
   }
 
+  async requiredQualificationsSemanticMatch(resumeText, descriptionText, cacheKey, cfg) {
+    const section = this.extractRequiredQualificationsSection(descriptionText);
+    if (!section) {
+      return {
+        sectionFound: false,
+        score: 0,
+        penalty: 0,
+        bulletCount: 0
+      };
+    }
+
+    const bullets = this.extractSectionBullets(section).slice(0, 12);
+    if (bullets.length === 0) {
+      return {
+        sectionFound: true,
+        score: 0,
+        penalty: 0,
+        bulletCount: 0
+      };
+    }
+
+    const similarities = [];
+    for (let i = 0; i < bullets.length; i++) {
+      const bullet = bullets[i];
+      const score = await this.embeddingScore(
+        resumeText,
+        bullet,
+        `${cacheKey}:required:${i}`
+      );
+      similarities.push(score);
+    }
+
+    const average = similarities.reduce((sum, value) => sum + value, 0) / similarities.length;
+    const weakMatches = similarities.filter(
+      value => value < cfg.requiredQualificationsBulletPenaltyThreshold
+    ).length;
+
+    let penalty = 0;
+    if (average < cfg.requiredQualificationsThreshold) {
+      const deficit = cfg.requiredQualificationsThreshold - average;
+      const threshold = Math.max(0.01, cfg.requiredQualificationsThreshold);
+      penalty += (deficit / threshold) * cfg.requiredQualificationsPenaltyMax * 0.4;
+    }
+    if (weakMatches > 0) {
+      penalty += weakMatches * cfg.requiredQualificationsPenaltyPerBullet;
+    }
+
+    return {
+      sectionFound: true,
+      score: Math.max(0, Math.min(1, average)),
+      penalty: Math.max(0, Math.min(cfg.requiredQualificationsPenaltyMax, penalty)),
+      bulletCount: bullets.length
+    };
+  }
+
+  extractRequiredQualificationsSection(descriptionText) {
+    const sections = this.extractTitledSections(descriptionText);
+    const requiredSection = sections.find(section => this.isRequiredQualificationsHeading(section.heading));
+    return requiredSection ? requiredSection.body : '';
+  }
+
+  extractTitledSections(text) {
+    if (!text) return [];
+
+    const normalized = String(text)
+      .replace(/\r/g, '\n')
+      .replace(/\u2022/g, '- ')
+      .replace(/\t/g, ' ')
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    const sections = [];
+    let currentHeading = '';
+    let currentBody = [];
+
+    for (const line of normalized) {
+      if (this.looksLikeSectionHeading(line)) {
+        if (currentHeading || currentBody.length > 0) {
+          sections.push({ heading: currentHeading, body: currentBody.join('\n').trim() });
+        }
+        currentHeading = line;
+        currentBody = [];
+      } else {
+        currentBody.push(line);
+      }
+    }
+
+    if (currentHeading || currentBody.length > 0) {
+      sections.push({ heading: currentHeading, body: currentBody.join('\n').trim() });
+    }
+
+    return sections;
+  }
+
+  looksLikeSectionHeading(line) {
+    const trimmed = (line || '').trim();
+    if (!trimmed) return false;
+    if (trimmed.length > 80) return false;
+    if (/[:\-]$/.test(trimmed)) return true;
+    return this.isRequiredQualificationsHeading(trimmed) || this.isPreferredQualificationsHeading(trimmed);
+  }
+
+  isRequiredQualificationsHeading(line) {
+    const normalized = this.normalizeHeading(line);
+    return [
+      'minimum qualifications',
+      'minimum qualification',
+      'basic qualifications',
+      'basic qualification',
+      'required qualifications',
+      'required qualification',
+      'requirements',
+      'what youll need',
+      'what you will need',
+      'must have',
+      'must haves',
+      'qualification'
+    ].some(pattern => normalized.includes(pattern)) && !this.isPreferredQualificationsHeading(normalized);
+  }
+
+  isPreferredQualificationsHeading(line) {
+    const normalized = this.normalizeHeading(line);
+    return [
+      'preferred qualifications',
+      'preferred qualification',
+      'nice to have',
+      'nice to haves',
+      'desired qualifications',
+      'desired qualification',
+      'bonus points',
+      'preferred skills',
+      'pluses'
+    ].some(pattern => normalized.includes(pattern));
+  }
+
+  normalizeHeading(line) {
+    return String(line || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  extractSectionBullets(sectionText) {
+    if (!sectionText) return [];
+
+    const lines = sectionText
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    const bullets = [];
+    for (const line of lines) {
+      if (this.looksLikeSectionHeading(line)) {
+        break;
+      }
+      const cleaned = line.replace(/^[-*•]+\s*/, '').trim();
+      if (cleaned.length < 8) {
+        continue;
+      }
+      bullets.push(cleaned);
+    }
+
+    if (bullets.length > 0) {
+      return bullets;
+    }
+
+    return sectionText
+      .split(/(?<=[.;])\s+/)
+      .map(part => part.trim())
+      .filter(part => part.length >= 20)
+      .slice(0, 8);
+  }
+
 
   async getEmbedding(text, cacheKey) {
     if (this.embeddingCache.has(cacheKey)) {
@@ -431,16 +646,40 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
   }
 
   async getEmbeddingModel() {
-    if (ATSScorer.embeddingModel) return ATSScorer.embeddingModel;
-    if (!ATSScorer.embeddingModelPromise) {
-      ATSScorer.embeddingModelPromise = (async () => {
+    const scoringCfg = this.getScoringConfig();
+    const modelId = scoringCfg.embeddingModel;
+
+    if (ATSScorer.embeddingModels?.has(modelId)) {
+      return ATSScorer.embeddingModels.get(modelId);
+    }
+
+    if (!ATSScorer.embeddingModelPromises) {
+      ATSScorer.embeddingModelPromises = new Map();
+    }
+
+    if (!ATSScorer.embeddingModelPromises.has(modelId)) {
+      const embeddingModelPromise = (async () => {
         await this.ensureFetchGlobals();
         const { pipeline } = await import('@xenova/transformers');
-        return pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { quantized: true });
+        try {
+          return await pipeline('feature-extraction', modelId, { quantized: true });
+        } catch (error) {
+          const message = error && error.message ? error.message : String(error);
+          if (!message.includes('model_quantized.onnx')) {
+            throw error;
+          }
+          return pipeline('feature-extraction', modelId, { quantized: false });
+        }
       })();
+      ATSScorer.embeddingModelPromises.set(modelId, embeddingModelPromise);
     }
-    ATSScorer.embeddingModel = await ATSScorer.embeddingModelPromise;
-    return ATSScorer.embeddingModel;
+
+    const model = await ATSScorer.embeddingModelPromises.get(modelId);
+    if (!ATSScorer.embeddingModels) {
+      ATSScorer.embeddingModels = new Map();
+    }
+    ATSScorer.embeddingModels.set(modelId, model);
+    return model;
   }
 
   async ensureFetchGlobals() {
