@@ -3,7 +3,6 @@ name: Job Matcher
 on:
   workflow_dispatch:
   schedule:
-    # Adjust this cron to your preferred daily runtime (UTC).
     - cron: '0 14 * * *'
 
 permissions:
@@ -13,6 +12,9 @@ permissions:
 jobs:
   run-job-matcher:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: job-matcher
     env:
       AWS_REGION: us-east-2
       JOB_MATCHER_S3_BUCKET: job-matcher-dada
@@ -27,6 +29,7 @@ jobs:
         with:
           node-version: '20'
           cache: npm
+          cache-dependency-path: job-matcher/package-lock.json
 
       - name: Install dependencies
         run: npm ci
