@@ -47,19 +47,11 @@ jobs:
           mkdir -p "$(dirname "$JOB_MATCHER_RESUME_PATH")"
           aws s3 cp "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_RESUME_S3_KEY" "$JOB_MATCHER_RESUME_PATH"
 
-      - name: Restore resume from secret
-        if: ${{ !env.JOB_MATCHER_RESUME_S3_KEY && secrets.RESUME_PDF_BASE64 != '' }}
-        env:
-          RESUME_PDF_BASE64: ${{ secrets.RESUME_PDF_BASE64 }}
-        run: |
-          mkdir -p "$(dirname "$JOB_MATCHER_RESUME_PATH")"
-          printf '%s' "$RESUME_PDF_BASE64" | base64 --decode > "$JOB_MATCHER_RESUME_PATH"
-
       - name: Verify resume exists
         run: |
           if [ ! -f "$JOB_MATCHER_RESUME_PATH" ]; then
             echo "Missing resume file at $JOB_MATCHER_RESUME_PATH"
-            echo "Set the repository variable JOB_MATCHER_RESUME_S3_KEY or add the RESUME_PDF_BASE64 GitHub secret."
+            echo "Set the repository variable JOB_MATCHER_RESUME_S3_KEY to the S3 object key for the resume PDF."
             exit 1
           fi
 

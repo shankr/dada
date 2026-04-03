@@ -114,10 +114,7 @@ Remaining setup required outside the repo:
 
 1. Create an AWS IAM role that GitHub Actions can assume via OIDC.
 2. Add the role ARN as a GitHub Actions secret named `AWS_ROLE_ARN`.
-3. Provide the resume file using one of these methods:
-   - recommended: upload the PDF to S3 and set the GitHub repository variable `JOB_MATCHER_RESUME_S3_KEY` to that object key, for example `inputs/resume.pdf`
-   - fallback: commit it to the repo at the configured `resume_path`
-   - fallback: set a GitHub Actions secret named `RESUME_PDF_BASE64` containing the base64-encoded PDF, if the file is small enough for GitHub secret size limits
+3. Upload the resume PDF to S3 and set the GitHub repository variable `JOB_MATCHER_RESUME_S3_KEY` to that object key, for example `inputs/resume.pdf`.
 4. Adjust the cron schedule in `.github/workflows/job-matcher.yml` if `0 14 * * *` UTC is not the desired run time.
 
 If you use the `openrouter` provider, also add the corresponding API key as a GitHub Actions secret and ensure `config/jobs.yaml` references it.
