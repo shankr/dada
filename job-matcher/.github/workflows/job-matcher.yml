@@ -17,7 +17,6 @@ jobs:
       AWS_REGION: us-east-2
       JOB_MATCHER_S3_BUCKET: job-matcher-dada
       JOB_MATCHER_S3_PREFIX: latest
-      JOB_MATCHER_RESUME_S3_KEY: ${{ vars.JOB_MATCHER_RESUME_S3_KEY }}
 
     steps:
       - name: Check out repo
@@ -42,8 +41,13 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Restore resume from S3
-        if: ${{ env.JOB_MATCHER_RESUME_S3_KEY != '' }}
+        env:
+          JOB_MATCHER_RESUME_S3_KEY: ${{ vars.JOB_MATCHER_RESUME_S3_KEY }}
         run: |
+          if [ -z "$JOB_MATCHER_RESUME_S3_KEY" ]; then
+            echo "Missing repository variable JOB_MATCHER_RESUME_S3_KEY"
+            exit 1
+          fi
           mkdir -p "$(dirname "$JOB_MATCHER_RESUME_PATH")"
           aws s3 cp "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_RESUME_S3_KEY" "$JOB_MATCHER_RESUME_PATH"
 
