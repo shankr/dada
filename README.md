@@ -19,39 +19,43 @@ A resume-driven job scraping and ranking pipeline for software roles. It scrapes
   - uploads the latest artifacts back to S3
   - can optionally email the text report via AWS SES
 
-## Architecture
+## Matcher Workflow
 
 ```mermaid
 flowchart TD
-    A[config/jobs.yaml] --> B[ConfigLoader]
-    B --> C[JobScraperApp]
-    D[resume.pdf] --> E[PDFParser]
-    E --> C
+    A[Resume Text] --> B[Matcher]
+    C[Job Description] --> B
+    B --> D[Lexical Score]
+    B --> E[Semantic Score]
+    B --> F[Rules and Penalties]
+    B --> G[Recency Score]
+    D --> H[Weighted Final Score]
+    E --> H
+    F --> H
+    G --> H
+    H --> I[Ranked Jobs Report]
+```
 
-    C --> F[ScraperFactory]
-    F --> G[Workday / Greenhouse / Lever / Custom / Custom API Scrapers]
-    G --> H[Job Listings]
+The matcher combines several signals:
 
-    H --> I[ATSCacheDB sqlite]
-    I -->|known URLs| C
-    H --> J[ATSScorer]
-    D --> J
-    J -->|local-hybrid or OpenRouter| K[Scored Jobs]
-    K --> I
+- lexical overlap
+- semantic similarity from local embeddings
+- deterministic rule-based adjustments
+- recency weighting
+- penalties for weak required qualifications
+- extra penalties when named required technologies are not supported by the resume
 
-    K --> L[ReportGenerator]
-    L --> M[job-matches.txt]
-    L --> N[job-matches.json]
+The final ATS score is a weighted combination of those signals.
 
-    subgraph GitHub Actions
-      O[workflow_dispatch / schedule]
-      P[S3 resume + cache restore]
-      Q[Run matcher]
-      R[S3 artifact upload]
-      S[SES email optional]
-      O --> P --> Q --> R
-      Q --> S
-    end
+## Automation Flow
+
+```mermaid
+flowchart TD
+    A[GitHub Actions schedule or manual run] --> B[Restore resume and ATS cache from S3]
+    B --> C[Run matcher]
+    C --> D[Generate dated reports]
+    D --> E[Upload reports and cache to S3]
+    D --> F[Optional SES email with job-matches.txt]
 ```
 
 ## Processing Flow
