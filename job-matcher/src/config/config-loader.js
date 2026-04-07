@@ -16,6 +16,9 @@ class ConfigLoader {
       
       // Process environment variables in config
       config = this.processEnvVariables(config);
+
+      // Apply runtime overrides from environment
+      config = this.applyEnvOverrides(config);
       
       // Validate required fields
       this.validateConfig(config);
@@ -86,6 +89,18 @@ class ConfigLoader {
         throw new Error('Each job board must have name, type, and url');
       }
     }
+  }
+
+  static applyEnvOverrides(config) {
+    const result = { ...config };
+    result.scoring = { ...(config.scoring || {}) };
+
+    if (process.env.JOB_MATCHER_FORCE_RECOMPUTE !== undefined) {
+      const value = String(process.env.JOB_MATCHER_FORCE_RECOMPUTE).trim().toLowerCase();
+      result.scoring.force_recompute = ['1', 'true', 'yes', 'on'].includes(value);
+    }
+
+    return result;
   }
 }
 

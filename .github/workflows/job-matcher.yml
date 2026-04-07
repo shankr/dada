@@ -2,6 +2,12 @@ name: Job Matcher
 
 on:
   workflow_dispatch:
+    inputs:
+      force_recompute:
+        description: Force ATS rescoring for all cached jobs
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '0 14 * * *'
 
@@ -19,6 +25,7 @@ jobs:
       AWS_REGION: us-east-2
       JOB_MATCHER_S3_BUCKET: job-matcher-dada
       JOB_MATCHER_S3_PREFIX: latest
+      JOB_MATCHER_FORCE_RECOMPUTE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.force_recompute || 'false' }}
 
     steps:
       - name: Check out repo

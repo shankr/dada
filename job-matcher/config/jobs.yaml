@@ -42,6 +42,9 @@ scoring:
   required_qualifications_penalty_max: 0.30
   required_qualifications_bullet_penalty_threshold: 0.35
   required_qualifications_penalty_per_bullet: 0.06
+  named_required_tech_match_threshold: 0.58
+  named_required_tech_penalty_per_term: 0.08
+  named_required_tech_penalty_max: 0.24
   recency_half_life_days: 30
   max_resume_chars: 4000
   max_job_chars: 4000

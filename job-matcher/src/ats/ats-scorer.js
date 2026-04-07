@@ -261,6 +261,9 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       required_qualifications_penalty_max: 0.30,
       required_qualifications_bullet_penalty_threshold: 0.35,
       required_qualifications_penalty_per_bullet: 0.06,
+      named_required_tech_match_threshold: 0.58,
+      named_required_tech_penalty_per_term: 0.08,
+      named_required_tech_penalty_max: 0.24,
       recency_half_life_days: 30,
       force_recompute: false,
       max_resume_chars: 4000,
@@ -287,6 +290,15 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       requiredQualificationsPenaltyPerBullet: Number.isFinite(cfg.required_qualifications_penalty_per_bullet)
         ? cfg.required_qualifications_penalty_per_bullet
         : defaults.required_qualifications_penalty_per_bullet,
+      namedRequiredTechMatchThreshold: Number.isFinite(cfg.named_required_tech_match_threshold)
+        ? cfg.named_required_tech_match_threshold
+        : defaults.named_required_tech_match_threshold,
+      namedRequiredTechPenaltyPerTerm: Number.isFinite(cfg.named_required_tech_penalty_per_term)
+        ? cfg.named_required_tech_penalty_per_term
+        : defaults.named_required_tech_penalty_per_term,
+      namedRequiredTechPenaltyMax: Number.isFinite(cfg.named_required_tech_penalty_max)
+        ? cfg.named_required_tech_penalty_max
+        : defaults.named_required_tech_penalty_max,
       recencyHalfLifeDays: Number.isFinite(cfg.recency_half_life_days) ? cfg.recency_half_life_days : defaults.recency_half_life_days,
       forceRecompute: typeof cfg.force_recompute === 'boolean' ? cfg.force_recompute : defaults.force_recompute,
       maxResumeChars: Number.isFinite(cfg.max_resume_chars) ? cfg.max_resume_chars : defaults.max_resume_chars,
@@ -343,7 +355,7 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
 
   buildLocalReasoning({ lexical, baseEmbedding, embedding, rules, recency, skillOverlap, requiredMatch }) {
     const requiredReasoning = requiredMatch?.sectionFound
-      ? ` Required qualifications match: ${(requiredMatch.score * 100).toFixed(0)}% across ${requiredMatch.bulletCount} bullets; semantic penalty: ${(requiredMatch.penalty * 100).toFixed(0)}%.`
+      ? ` Required qualifications match: ${(requiredMatch.score * 100).toFixed(0)}% across ${requiredMatch.bulletCount} bullets; semantic penalty: ${(requiredMatch.penalty * 100).toFixed(0)}%. Named required tech penalty: ${(requiredMatch.namedTechPenalty * 100).toFixed(0)}% on ${requiredMatch.namedTechMissingCount}/${requiredMatch.namedTechCount} terms.`
       : ' Required qualifications match: n/a.';
     return `Lexical overlap: ${(lexical * 100).toFixed(0)}%. ` +
       `Embedding similarity: ${(embedding * 100).toFixed(0)}% (base ${(baseEmbedding * 100).toFixed(0)}%). ` +
@@ -355,11 +367,27 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
 
   tokenize(text) {
     const stopwords = this.getStopwords();
-    return (text || '')
+    return this.normalizeTechPhrases(text || '')
       .toLowerCase()
       .replace(/[^a-z0-9+.#-]+/g, ' ')
       .split(/\s+/)
+      .map(t => this.normalizeTechAlias(t))
       .filter(t => t.length >= 2 && !stopwords.has(t));
+  }
+
+  normalizeTechPhrases(text) {
+    return String(text || '')
+      .replace(/\bhugging\s+face\b/gi, 'huggingface')
+      .replace(/\bsentence\s+transformers\b/gi, 'sentencetransformers')
+      .replace(/\bmodel\s+context\s+protocol\b/gi, 'modelcontextprotocol')
+      .replace(/\bvector\s+database\b/gi, 'vectordb')
+      .replace(/\bvector\s+db\b/gi, 'vectordb')
+      .replace(/\bmachine\s+learning\b/gi, 'machinelearning');
+  }
+
+  normalizeTechAlias(token) {
+    const aliases = this.getTechAliases();
+    return aliases.get(token) || token;
   }
 
   lexicalScore(resumeTokens, jobTokens) {
@@ -503,12 +531,108 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       penalty += weakMatches * cfg.requiredQualificationsPenaltyPerBullet;
     }
 
+    const namedTechPenaltyResult = await this.computeNamedRequiredTechPenalty(
+      resumeText,
+      bullets,
+      `${cacheKey}:named-tech`,
+      cfg
+    );
+    penalty += namedTechPenaltyResult.penalty;
+
     return {
       sectionFound: true,
       score: Math.max(0, Math.min(1, average)),
       penalty: Math.max(0, Math.min(cfg.requiredQualificationsPenaltyMax, penalty)),
-      bulletCount: bullets.length
+      bulletCount: bullets.length,
+      namedTechPenalty: namedTechPenaltyResult.penalty,
+      namedTechCount: namedTechPenaltyResult.techCount,
+      namedTechMissingCount: namedTechPenaltyResult.missingCount
     };
+  }
+
+  async computeNamedRequiredTechPenalty(resumeText, bullets, cacheKey, cfg) {
+    const requiredTerms = this.extractNamedRequiredTechTerms(bullets);
+    if (requiredTerms.length === 0) {
+      return {
+        penalty: 0,
+        techCount: 0,
+        missingCount: 0
+      };
+    }
+
+    const resumeUnits = this.splitTextIntoSemanticUnits(resumeText).slice(0, 40);
+    if (resumeUnits.length === 0) {
+      return {
+        penalty: Math.min(cfg.namedRequiredTechPenaltyMax, requiredTerms.length * cfg.namedRequiredTechPenaltyPerTerm),
+        techCount: requiredTerms.length,
+        missingCount: requiredTerms.length
+      };
+    }
+
+    let missingCount = 0;
+    for (const term of requiredTerms) {
+      const supported = await this.resumeSemanticallySupportsTerm(
+        resumeUnits,
+        term,
+        `${cacheKey}:${term}`,
+        cfg.namedRequiredTechMatchThreshold
+      );
+      if (!supported) {
+        missingCount++;
+      }
+    }
+
+    return {
+      penalty: Math.min(
+        cfg.namedRequiredTechPenaltyMax,
+        missingCount * cfg.namedRequiredTechPenaltyPerTerm
+      ),
+      techCount: requiredTerms.length,
+      missingCount
+    };
+  }
+
+  async resumeSemanticallySupportsTerm(resumeUnits, term, cacheKey, threshold) {
+    let maxSimilarity = 0;
+    for (let i = 0; i < resumeUnits.length; i++) {
+      const unit = resumeUnits[i];
+      const similarity = await this.embeddingScore(
+        unit,
+        `Hands-on experience with ${term}`,
+        `${cacheKey}:${i}`
+      );
+      if (similarity > maxSimilarity) {
+        maxSimilarity = similarity;
+      }
+      if (maxSimilarity >= threshold) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  splitTextIntoSemanticUnits(text) {
+    if (!text) return [];
+    return String(text)
+      .replace(/\r/g, '\n')
+      .split(/\n+/)
+      .flatMap(line => line.split(/(?<=[.;])\s+/))
+      .map(part => part.trim())
+      .filter(part => part.length >= 20);
+  }
+
+  extractNamedRequiredTechTerms(bullets) {
+    const techKeywords = this.getTechKeywords();
+    const foundTerms = new Set();
+    for (const bullet of bullets) {
+      const tokens = this.tokenize(bullet);
+      for (const token of tokens) {
+        if (techKeywords.has(token)) {
+          foundTerms.add(token);
+        }
+      }
+    }
+    return Array.from(foundTerms);
   }
 
   extractRequiredQualificationsSection(descriptionText) {
@@ -730,13 +854,68 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
   getTechKeywords() {
     if (ATSScorer.techKeywords) return ATSScorer.techKeywords;
     ATSScorer.techKeywords = new Set([
-      'java','python','javascript','typescript','golang','go','rust','c','c++','c#','kotlin','swift','scala','ruby','php',
-      'react','angular','vue','node','nodejs','express','spring','django','flask','rails','laravel','.net','dotnet',
-      'aws','gcp','azure','kubernetes','docker','terraform','ansible','linux','sql','postgres','mysql','mongodb','redis',
-      'spark','hadoop','kafka','grpc','rest','graphql','api','microservices','ml','ai','nlp','cv','llm','pytorch','tensorflow',
-      'ci','cd','git','github','gitlab','bitbucket','jenkins','circleci','datadog','prometheus','grafana','elasticsearch'
+      'java','python','javascript','typescript','golang','go','rust','c','c++','c#','kotlin','swift','scala','ruby','php','bash',
+      'react','reactjs','angular','vue','node','nodejs','express','spring','springboot','django','flask','rails','laravel','.net','dotnet',
+      'html','css','sass','less','tailwind','bootstrap',
+      'aws','gcp','azure','kubernetes','docker','terraform','ansible','linux','unix','helm','istio','argo','airflow',
+      'sql','postgres','postgresql','mysql','mongodb','redis','cassandra','dynamodb','snowflake','bigquery','redshift','elasticsearch','opensearch',
+      'spark','hadoop','kafka','flink','hive','presto','trino','databricks','dbt',
+      'grpc','rest','graphql','api','microservices','eventdriven','soa',
+      'ml','ai','nlp','cv','llm','rag','pytorch','tensorflow','keras','scikitlearn','xgboost',
+      'transformers','huggingface','sentencetransformers','langchain','langgraph','llamaindex','autogen','crewai','mcp','modelcontextprotocol',
+      'vectorsearch','vectordb','embedding','embeddings','finetuning','inference','promptengineering','agents','agentic',
+      'ci','cd','git','github','gitlab','bitbucket','jenkins','circleci','githubactions','travisci',
+      'datadog','prometheus','grafana','splunk','newrelic',
+      'selenium','playwright','pytest','jest','cypress','junit',
+      'rabbitmq','sqs','sns','pubsub',
+      'openai','openrouter'
     ]);
     return ATSScorer.techKeywords;
+  }
+
+  getTechAliases() {
+    if (ATSScorer.techAliases) return ATSScorer.techAliases;
+    ATSScorer.techAliases = new Map([
+      ['js', 'javascript'],
+      ['ts', 'typescript'],
+      ['py', 'python'],
+      ['golang', 'go'],
+      ['react.js', 'react'],
+      ['reactjs', 'react'],
+      ['node.js', 'node'],
+      ['nodejs', 'node'],
+      ['spring-boot', 'springboot'],
+      ['k8s', 'kubernetes'],
+      ['postgresql', 'postgres'],
+      ['postgres', 'postgres'],
+      ['mongo', 'mongodb'],
+      ['mongodb', 'mongodb'],
+      ['elastic', 'elasticsearch'],
+      ['github-actions', 'githubactions'],
+      ['githubactions', 'githubactions'],
+      ['ci/cd', 'ci'],
+      ['machinelearning', 'ml'],
+      ['machine-learning', 'ml'],
+      ['genai', 'ai'],
+      ['llms', 'llm'],
+      ['llmops', 'llm'],
+      ['scikit-learn', 'scikitlearn'],
+      ['sklearn', 'scikitlearn'],
+      ['tf', 'tensorflow'],
+      ['tensor-flow', 'tensorflow'],
+      ['hugging-face', 'huggingface'],
+      ['sentence-transformers', 'sentencetransformers'],
+      ['lang-chain', 'langchain'],
+      ['lang-graph', 'langgraph'],
+      ['llama-index', 'llamaindex'],
+      ['model-context-protocol', 'modelcontextprotocol'],
+      ['mcp', 'mcp'],
+      ['vector-db', 'vectordb'],
+      ['vector-database', 'vectordb'],
+      ['vectorstore', 'vectordb'],
+      ['openaiapis', 'openai']
+    ]);
+    return ATSScorer.techAliases;
   }
 }
 
