@@ -1,227 +1,299 @@
-# Job Scraper with ATS Matching
+# Job Matcher
 
-An automated job scraping application that searches multiple job boards, extracts job listings, and uses AI-powered ATS (Applicant Tracking System) scoring to rank jobs based on how well they match your resume.
+A resume-driven job scraping and ranking pipeline for software roles. It scrapes multiple career sites, skips previously seen job URLs, scores only new postings by default, and publishes dated reports for local runs and GitHub Actions.
 
-## Features
+## What It Does
 
-- 🤖 **Browser Automation**: Uses Puppeteer to scrape job listings from multiple sources
-- 📄 **PDF Resume Parsing**: Extracts text from your resume PDF
-- 🎯 **ATS Scoring**: AI-powered matching using LLMs (Groq, Gemini, OpenRouter, or Ollama)
-- 📊 **Ranked Results**: Jobs sorted by match score with detailed analysis
-- 🔄 **Pagination Support**: Automatically navigates through multiple pages of results
-- 📱 **Multiple Job Boards**: Supports Workday, Greenhouse, Lever, and custom job boards
+- Scrapes multiple job board types: `workday`, `greenhouse`, `lever`, `custom`, and `custom-api`
+- Parses a PDF resume
+- Scores jobs against the resume using either:
+  - `local-hybrid`: local embeddings + lexical overlap + deterministic rules + recency
+  - `openrouter`: remote LLM scoring
+- Stores results in SQLite so repeated runs avoid re-scraping and re-scoring known URLs
+- Generates:
+  - `job-matches.txt`
+  - `job-matches.json`
+- In GitHub Actions:
+  - restores the resume and ATS cache from S3
+  - writes output into a timestamped folder
+  - uploads the latest artifacts back to S3
+  - can optionally email the text report via AWS SES
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A[config/jobs.yaml] --> B[ConfigLoader]
+    B --> C[JobScraperApp]
+    D[resume.pdf] --> E[PDFParser]
+    E --> C
+
+    C --> F[ScraperFactory]
+    F --> G[Workday / Greenhouse / Lever / Custom / Custom API Scrapers]
+    G --> H[Job Listings]
+
+    H --> I[ATSCacheDB sqlite]
+    I -->|known URLs| C
+    H --> J[ATSScorer]
+    D --> J
+    J -->|local-hybrid or OpenRouter| K[Scored Jobs]
+    K --> I
+
+    K --> L[ReportGenerator]
+    L --> M[job-matches.txt]
+    L --> N[job-matches.json]
+
+    subgraph GitHub Actions
+      O[workflow_dispatch / schedule]
+      P[S3 resume + cache restore]
+      Q[Run matcher]
+      R[S3 artifact upload]
+      S[SES email optional]
+      O --> P --> Q --> R
+      Q --> S
+    end
+```
+
+## Processing Flow
+
+1. Load config and apply environment overrides.
+2. Open the SQLite cache DB and load known job URLs.
+3. Parse the resume PDF.
+4. Scrape configured job boards.
+5. Skip URLs already known in the DB unless recompute logic requires a fresh scrape path.
+6. Score jobs.
+7. Persist results back to SQLite.
+8. Generate text and JSON reports.
+
+## Repository Layout
+
+```text
+job-matcher/
+├── config/jobs.yaml
+├── scripts/
+│   ├── job-artifact-paths.js
+│   └── build-report-email.js
+├── src/
+│   ├── ats/ats-scorer.js
+│   ├── config/config-loader.js
+│   ├── output/report-generator.js
+│   ├── parsers/pdf-parser.js
+│   ├── scrapers/
+│   └── storage/ats-cache-db.js
+├── output/
+└── package.json
+```
 
 ## Supported Job Boards
 
-- **Workday**: Common enterprise job board (e.g., `company.wd101.myworkdayjobs.com`)
-- **Greenhouse**: Popular startup/SaaS job board (e.g., `boards.greenhouse.io`)
-- **Lever**: Another popular startup job board (e.g., `jobs.lever.co`)
-- **Custom**: Configure for any job site with custom selectors
+- `workday`
+- `greenhouse`
+- `lever`
+- `custom`
+- `custom-api`
 
-## LLM Providers (Free Options)
+Examples currently configured include Apple, Disney, Redfin, and GEICO.
 
-1. **Groq** (Recommended - Free Tier)
-   - Sign up: https://console.groq.com
-   - Free tier: 14,400 tokens/min, 1,440 requests/day
-   - Models: llama-3.1-8b-instant, llama-3.1-70b-versatile, mixtral-8x7b-32768
+## Scoring Modes
 
-2. **Gemini** (Free Tier)
-   - Sign up: https://ai.google.dev
-   - Free tier: 1,500 requests/day
-   - Model: gemini-pro
+### `local-hybrid`
+Default mode. No LLM API call is required.
 
-3. **OpenRouter** (Free Tier)
-   - Sign up: https://openrouter.ai
-   - Access to multiple free models
-   - Model: mistralai/mistral-7b-instruct:free
+Inputs used in scoring:
+- lexical overlap
+- local embedding similarity
+- rules-based penalties
+- recency decay
+- required qualifications semantic penalties
+- named required technology penalties
 
-4. **Ollama** (Completely Free - Local)
-   - Install: https://ollama.ai
-   - Runs locally, no API key needed
-   - Models: llama2, mistral, codellama, etc.
+Characteristics:
+- deterministic enough to tune
+- cheaper than LLM scoring
+- cached per job URL
 
-## Installation
+### `openrouter`
+Uses OpenRouter for score + reasoning generation.
 
-```bash
-# Clone or navigate to the project
-cd job-scraper
+Use this when you want model-generated ATS analysis and are willing to spend API credits.
 
-# Install dependencies
-npm install
+## Current Scoring Design
 
-# Copy environment template
-cp .env.example .env
+The local scorer combines:
+- lexical score
+- embedding score
+- rules score
+- recency score
 
-# Edit .env with your API keys
-```
+It also applies extra semantic penalties when:
+- required qualifications are weakly matched
+- required bullets mention concrete technologies not semantically supported by the resume
+
+The built-in technology lexicon is intentionally local and editable. It now includes broader software, data, ML, transformer, and agentic terms plus aliases.
+
+## Caching Behavior
+
+SQLite cache path:
+- `job-matcher/output/ats-cache.sqlite`
+
+Cache behavior:
+- known job URL: skip re-scoring by default
+- new job URL: scrape, score, and store
+- `force_recompute: true`: rescore all jobs
+
+"New jobs since last run" in reports means:
+- the URL was not already present in the DB when the run started
 
 ## Configuration
 
-Edit `config/jobs.yaml` to set up your job search:
+Primary config file:
+- [config/jobs.yaml](/Users/shankr/src/dada/job-matcher/config/jobs.yaml)
+
+Key fields:
 
 ```yaml
-# Path to your resume
 resume_path: "./resume.pdf"
-
-# Where to save results
 output_path: "./output/job-matches.txt"
+ats_cache_db_path: "./output/ats-cache.sqlite"
 
-# Maximum jobs per board (0 = unlimited)
-max_jobs_per_board: 50
-
-# LLM Configuration
 llm:
-  provider: "groq"  # groq, gemini, openrouter, or ollama
-  api_key: "${GROQ_API_KEY}"  # From .env file
-  model: "llama-3.1-8b-instant"
+  provider: "local-hybrid"  # or openrouter
+  api_key: "${OPENROUTER_KEY}"
+  model: "deepseek/deepseek-v3.2"
 
-# Job boards to search
-job_boards:
-  - name: "Example Company"
-    type: "greenhouse"
-    url: "https://boards.greenhouse.io/company/jobs?query=software+engineer"
-    selectors:
-      job_list_container: ".main"
-      job_card: ".opening"
-      title: "a"
-      location: ".location"
-      description: ".description"
-      next_button: ".next"
-      job_url_attribute: "href"
+scoring:
+  force_recompute: false
+  embedding_model: "BAAI/bge-small-en-v1.5"
 ```
 
-## Usage
+### Environment Overrides
+
+The app supports runtime overrides via environment variables:
+- `JOB_MATCHER_FORCE_RECOMPUTE`
+- `JOB_MATCHER_OUTPUT_PATH`
+
+These are used by the GitHub Actions workflow so you do not need to commit YAML changes for one-off runs.
+
+## Local Usage
+
+From `job-matcher/`:
 
 ```bash
-# Run the scraper
-npm start
-
-# Or directly
+npm install
 node src/index.js
 ```
 
-## GitHub Actions + S3
+Or:
 
-This repo includes a GitHub Actions workflow at `.github/workflows/job-matcher.yml` that:
+```bash
+npm start
+```
 
-- runs on a daily schedule plus manual dispatch
-- authenticates to AWS using OIDC
-- downloads the latest `ats-cache.sqlite` from `s3://job-matcher-dada/latest/`
-- runs the scraper
-- uploads `job-matches.txt`, `job-matches.json`, and `ats-cache.sqlite` back to the same S3 prefix
+If you use `openrouter`, provide the key in the environment or `.env`:
 
-Remaining setup required outside the repo:
-
-1. Create an AWS IAM role that GitHub Actions can assume via OIDC.
-2. Add the role ARN as a GitHub Actions secret named `AWS_ROLE_ARN`.
-3. Upload the resume PDF to S3 and set the GitHub repository variable `JOB_MATCHER_RESUME_S3_KEY` to that object key, for example `inputs/resume.pdf`.
-4. Adjust the cron schedule in `.github/workflows/job-matcher.yml` if `0 14 * * *` UTC is not the desired run time.
-
-If you use the `openrouter` provider, also add the corresponding API key as a GitHub Actions secret and ensure `config/jobs.yaml` references it.
+```bash
+OPENROUTER_KEY=your_key_here
+```
 
 ## Output
 
-The application generates two files:
+Local default output path in config:
+- `job-matcher/output/job-matches.txt`
 
-1. **Text Report** (`job-matches.txt`): Human-readable ranked list with:
-   - ATS scores (0-100)
-   - Match analysis and reasoning
-   - Job details and URLs
-   - Visual score indicators
+In GitHub Actions, this is overridden to a dated folder like:
+- `job-matcher/output/2026-04-07-1433/job-matches.txt`
+- `job-matcher/output/2026-04-07-1433/job-matches.json`
 
-2. **JSON Data** (`job-matches.json`): Machine-readable data for further processing
+The text report includes:
+- summary counts
+- new jobs since last run
+- ranked listings
+- ATS reasoning
+- posted date and first-seen timestamps when available
 
-## Finding Job Board URLs
+## GitHub Actions
 
-### Greenhouse
-Format: `https://boards.greenhouse.io/{company}/jobs?query={search}`
+Workflow:
+- [job-matcher.yml](/Users/shankr/src/dada/.github/workflows/job-matcher.yml)
 
-Examples:
-- `https://boards.greenhouse.io/stripe/jobs?query=software+engineer`
-- `https://boards.greenhouse.io/airbnb/jobs?query=product+manager`
+It supports:
+- scheduled daily runs
+- manual runs via `workflow_dispatch`
+- manual `force_recompute` input
 
-### Workday
-Format: `https://{company}.wd101.myworkdayjobs.com/en-US/{site}?q={search}`
+### Action Inputs
 
-Examples:
-- `https://amazon.wd1.myworkdayjobs.com/en-US/amazon_external?q=software+engineer`
-- `https://salesforce.wd1.myworkdayjobs.com/en-US/External_Career_Site?q=data+scientist`
+Manual dispatch input:
+- `force_recompute` (boolean, default `false`)
 
-### Lever
-Format: `https://jobs.lever.co/{company}?search={search}`
+### AWS / GitHub Setup
 
-Examples:
-- `https://jobs.lever.co/figma?search=software%20engineer`
-- `https://jobs.lever.co/notion?search=designer`
+Required GitHub secret:
+- `AWS_ROLE_ARN`
 
-## Custom Selectors Guide
+Required GitHub variable:
+- `JOB_MATCHER_RESUME_S3_KEY`
 
-When adding custom job boards, you need to identify CSS selectors:
+Optional GitHub variables for email delivery:
+- `JOB_MATCHER_EMAIL_TO`
+- `JOB_MATCHER_EMAIL_FROM`
 
-1. Open the job board in Chrome/Firefox
-2. Right-click on a job listing and select "Inspect"
-3. Look for:
-   - Container that holds the job list
-   - Individual job cards/items
-   - Job title element
-   - Location element
-   - Description element
-   - Next page button
+### S3 Behavior
 
-Example for a hypothetical custom site:
-```yaml
-- name: "Custom Company"
-  type: "custom"
-  url: "https://company.com/careers"
-  selectors:
-    job_list_container: ".jobs-container"
-    job_card: ".job-item"
-    title: ".job-title h3"
-    location: ".job-location"
-    description: ".job-details"
-    next_button: ".pagination .next"
-    job_url_attribute: "href"
-```
+The workflow:
+- downloads resume PDF from S3
+- restores `ats-cache.sqlite` from S3 if present
+- runs the matcher
+- uploads latest text report, JSON report, and cache DB back to S3
+
+## Email Delivery
+
+The workflow can email `job-matches.txt` through AWS SES.
+
+Requirements:
+- set `JOB_MATCHER_EMAIL_TO`
+- set `JOB_MATCHER_EMAIL_FROM`
+- verify the sender in SES
+- if SES is still in sandbox, verify the recipient too
+
+For a Gmail address, verification is done by clicking the SES verification email. No DNS change is required for a plain email-address identity.
+
+## Custom Board Notes
+
+### `custom`
+Use for HTML pages scraped through Puppeteer selectors.
+
+### `custom-api`
+Use for JSON-backed career endpoints.
+
+This is useful when a site renders listings from an API and the browser UI is not the real data source.
 
 ## Troubleshooting
 
-### Puppeteer Issues
-```bash
-# If Puppeteer fails to launch, install Chrome dependencies:
-npx puppeteer browsers install chrome
-```
+### Jobs not found
+- selector is stale
+- page needs a "show more" interaction
+- site is using an API rather than static HTML
+- Workday DOM variant differs from your existing selectors
 
-### Rate Limiting
-If you hit rate limits:
-- Increase `request_delay_ms` in config (default: 2000ms)
-- Reduce `max_jobs_per_board`
-- Use multiple API keys and rotate them
+### Scores look too generous
+- increase semantic penalties for required qualifications
+- expand the tech keyword list when a concrete stack term is being missed
+- run with `force_recompute` after changing scoring config
 
-### Selector Issues
-If jobs aren't being found:
-1. Open the job board in a browser
-2. Check if the site uses JavaScript frameworks (React, Vue, etc.)
-3. Try increasing wait times in the scraper
-4. Verify selectors match the current site structure
+### Local embedding issues
+- the first run downloads the embedding model
+- different models may or may not support quantized ONNX artifacts
+- the scorer falls back to non-quantized loading when needed
 
-## Tips for Best Results
+### GitHub Actions recompute
+Use the manual action input instead of editing YAML:
+- trigger workflow manually
+- set `force_recompute=true`
 
-1. **Resume Optimization**: Ensure your PDF resume is text-based (not scanned images)
-2. **Specific Searches**: Use specific job titles in URLs for better matches
-3. **Rate Limits**: Be respectful - don't scrape too aggressively
-4. **Multiple Boards**: Configure several job boards to cast a wider net
-5. **Review Results**: Always review job descriptions personally before applying
+## Recommended Next Documentation Updates
 
-## Environment Variables
-
-Create a `.env` file:
-
-```bash
-GROQ_API_KEY=your_groq_key_here
-GEMINI_API_KEY=your_gemini_key_here
-OPENROUTER_API_KEY=your_openrouter_key_here
-```
-
-## License
-
-MIT
+If this project keeps growing, the next useful split would be:
+1. move workflow deployment details into `docs/deployment.md`
+2. move custom-board recipes into `docs/boards.md`
+3. keep this README as the top-level operational overview
