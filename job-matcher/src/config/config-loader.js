@@ -100,6 +100,10 @@ class ConfigLoader {
       result.scoring.force_recompute = ['1', 'true', 'yes', 'on'].includes(value);
     }
 
+    if (process.env.JOB_MATCHER_OUTPUT_PATH) {
+      result.output_path = process.env.JOB_MATCHER_OUTPUT_PATH;
+    }
+
     return result;
   }
 }

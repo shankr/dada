@@ -26,6 +26,7 @@ jobs:
       JOB_MATCHER_S3_BUCKET: job-matcher-dada
       JOB_MATCHER_S3_PREFIX: latest
       JOB_MATCHER_FORCE_RECOMPUTE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.force_recompute || 'false' }}
+      JOB_MATCHER_TIMEZONE: America/Los_Angeles
 
     steps:
       - name: Check out repo
@@ -75,6 +76,8 @@ jobs:
           aws s3 cp "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_S3_PREFIX/ats-cache.sqlite" "$JOB_MATCHER_CACHE_DB" || true
 
       - name: Run job matcher
+        env:
+          JOB_MATCHER_OUTPUT_PATH: ${{ env.JOB_MATCHER_OUTPUT_TXT }}
         run: npm start
 
       - name: Upload latest artifacts to S3
@@ -91,3 +94,18 @@ jobs:
           if [ -f "$JOB_MATCHER_CACHE_DB" ]; then
             aws s3 cp "$JOB_MATCHER_CACHE_DB" "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_S3_PREFIX/ats-cache.sqlite"
           fi
+
+      - name: Email job report
+        if: ${{ always() && vars.JOB_MATCHER_EMAIL_TO != '' && vars.JOB_MATCHER_EMAIL_FROM != '' }}
+        env:
+          JOB_MATCHER_EMAIL_TO: ${{ vars.JOB_MATCHER_EMAIL_TO }}
+          JOB_MATCHER_EMAIL_FROM: ${{ vars.JOB_MATCHER_EMAIL_FROM }}
+          JOB_MATCHER_EMAIL_SUBJECT: Job Matcher Report ${{ env.JOB_MATCHER_RUN_LABEL }}
+        run: |
+          if [ ! -f "$JOB_MATCHER_OUTPUT_TXT" ]; then
+            echo "Skipping email because report file is missing"
+            exit 0
+          fi
+          RAW_EMAIL_PATH="$RUNNER_TEMP/job-matcher-email.eml"
+          node scripts/build-report-email.js "$JOB_MATCHER_OUTPUT_TXT" "$RAW_EMAIL_PATH"
+          aws ses send-raw-email --raw-message "Data=fileb://$RAW_EMAIL_PATH"
