@@ -85,10 +85,12 @@ jobs:
         run: |
           if [ -f "$JOB_MATCHER_OUTPUT_TXT" ]; then
             aws s3 cp "$JOB_MATCHER_OUTPUT_TXT" "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_S3_PREFIX/job-matches.txt"
+            aws s3 cp "$JOB_MATCHER_OUTPUT_TXT" "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_RUN_LABEL/job-matches.txt"
           fi
 
           if [ -f "$JOB_MATCHER_OUTPUT_JSON" ]; then
             aws s3 cp "$JOB_MATCHER_OUTPUT_JSON" "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_S3_PREFIX/job-matches.json"
+            aws s3 cp "$JOB_MATCHER_OUTPUT_JSON" "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_RUN_LABEL/job-matches.json"
           fi
 
           if [ -f "$JOB_MATCHER_CACHE_DB" ]; then
