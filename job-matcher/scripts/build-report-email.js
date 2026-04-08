@@ -23,11 +23,13 @@ if (!to || !from) {
 const attachmentName = path.basename(reportPath);
 const attachmentContent = fs.readFileSync(reportPath);
 const boundary = `job-matcher-${Date.now()}`;
+const CRLF = '\r\n';
 
 const lines = [
   `From: ${from}`,
   `To: ${to}`,
   `Subject: ${subject}`,
+  `Date: ${new Date().toUTCString()}`,
   'MIME-Version: 1.0',
   `Content-Type: multipart/mixed; boundary="${boundary}"`,
   '',
@@ -48,4 +50,5 @@ const lines = [
   ''
 ];
 
-fs.writeFileSync(outputPath, lines.join('\n'));
+const message = lines.join('\n').replace(/\n/g, CRLF);
+fs.writeFileSync(outputPath, message, 'utf8');
