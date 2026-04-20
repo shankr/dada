@@ -110,4 +110,7 @@ jobs:
           fi
           RAW_EMAIL_PATH="$RUNNER_TEMP/job-matcher-email.eml"
           node scripts/build-report-email.js "$JOB_MATCHER_OUTPUT_TXT" "$RAW_EMAIL_PATH"
-          aws ses send-raw-email --raw-message "Data=fileb://$RAW_EMAIL_PATH"
+          aws ses send-raw-email \
+            --source "$JOB_MATCHER_EMAIL_FROM" \
+            --destinations "$JOB_MATCHER_EMAIL_TO" \
+            --raw-message "Data=fileb://$RAW_EMAIL_PATH"
