@@ -51,4 +51,7 @@ const lines = [
 ];
 
 const message = lines.join('\n').replace(/\n/g, CRLF);
-fs.writeFileSync(outputPath, message, 'utf8');
+const payload = {
+  Data: message
+};
+fs.writeFileSync(outputPath, JSON.stringify(payload), 'utf8');
