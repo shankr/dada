@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const path = require('path');
 
 const reportPath = process.argv[2];
 const outputPath = process.argv[3];
@@ -20,38 +19,41 @@ if (!to || !from) {
   process.exit(1);
 }
 
-const attachmentName = path.basename(reportPath);
-const attachmentContent = fs.readFileSync(reportPath);
-const boundary = `job-matcher-${Date.now()}`;
-const CRLF = '\r\n';
+const reportText = fs.readFileSync(reportPath, 'utf8');
 
-const lines = [
-  `From: ${from}`,
-  `To: ${to}`,
-  `Subject: ${subject}`,
-  `Date: ${new Date().toUTCString()}`,
-  'MIME-Version: 1.0',
-  `Content-Type: multipart/mixed; boundary="${boundary}"`,
-  '',
-  `--${boundary}`,
-  'Content-Type: text/plain; charset="UTF-8"',
-  'Content-Transfer-Encoding: 7bit',
-  '',
-  'Attached is the latest job matcher report.',
-  '',
-  `--${boundary}`,
-  `Content-Type: text/plain; name="${attachmentName}"`,
-  `Content-Disposition: attachment; filename="${attachmentName}"`,
-  'Content-Transfer-Encoding: base64',
-  '',
-  attachmentContent.toString('base64').replace(/(.{76})/g, '$1\n'),
-  '',
-  `--${boundary}--`,
-  ''
-];
+function wrapLongLines(text, width = 900) {
+  return text
+    .split(/\r?\n/)
+    .flatMap(line => {
+      if (line.length <= width) return [line];
+      const chunks = [];
+      for (let i = 0; i < line.length; i += width) {
+        chunks.push(line.slice(i, i + width));
+      }
+      return chunks;
+    })
+    .join('\n');
+}
 
-const message = lines.join('\n').replace(/\n/g, CRLF);
 const payload = {
-  Data: message
+  FromEmailAddress: from,
+  Destination: {
+    ToAddresses: [to]
+  },
+  Content: {
+    Simple: {
+      Subject: {
+        Data: subject,
+        Charset: 'UTF-8'
+      },
+      Body: {
+        Text: {
+          Data: wrapLongLines(reportText),
+          Charset: 'UTF-8'
+        }
+      }
+    }
+  }
 };
+
 fs.writeFileSync(outputPath, JSON.stringify(payload), 'utf8');

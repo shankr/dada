@@ -108,10 +108,6 @@ jobs:
             echo "Skipping email because report file is missing"
             exit 0
           fi
-          RAW_EMAIL_PATH="$RUNNER_TEMP/job-matcher-email.json"
-          node scripts/build-report-email.js "$JOB_MATCHER_OUTPUT_TXT" "$RAW_EMAIL_PATH"
-          aws ses send-raw-email \
-            --cli-binary-format raw-in-base64-out \
-            --source "$JOB_MATCHER_EMAIL_FROM" \
-            --destinations "$JOB_MATCHER_EMAIL_TO" \
-            --raw-message "file://$RAW_EMAIL_PATH"
+          EMAIL_PAYLOAD_PATH="$RUNNER_TEMP/job-matcher-email.json"
+          node scripts/build-report-email.js "$JOB_MATCHER_OUTPUT_TXT" "$EMAIL_PAYLOAD_PATH"
+          aws sesv2 send-email --cli-input-json "file://$EMAIL_PAYLOAD_PATH"
