@@ -3,9 +3,9 @@
 A resume-driven job scraping and ranking pipeline for software roles. It scrapes multiple career sites, skips previously seen job URLs, scores only new postings by default, and publishes dated reports for local runs and GitHub Actions.
 
 ## Why another Resume Job Matcher?
-Yes, there are a bunch of resume to job matchers in Github. Some I have seen are built with the employer as the user. I am yet to find one which has a set of job urls with filters that I want that can be configured so that the tool can scrape those.
+There are a bunch of resume to job matchers in Github, but I am yet to find one which has a set of job urls with filters that I want that can be configured so that the tool can scrape those.
 
-### Why not just use Indeed/Ziprecruiter or the scores of job search engine?
+### But why not just use Indeed/Ziprecruiter or the scores of job search engine?
  - I find stale jobs from these sites occassionally. The career page of each company is perhaps the closest to the truth compared to these job search engine. This tool scrapes from all the career pages that you want to specify.
  - I want to find specifc search terms or absence of those. For example - one may want to find jobs that do not say "US citizen or GC holders only" or "visa sponsorship is not available". Or another one may only want to look at jobs that have such restrictions (perhaps to improve their chances).
  - Semantic searches with one's resume is still poor among many of these job search engines. Some parts of a job description are important to have a good match vs others (like Minimal qualifications vs Preferred qualifications). And parts of a job description perhaps are better for a lexical match rather than semantic.

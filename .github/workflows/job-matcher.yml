@@ -103,7 +103,7 @@ jobs:
           JOB_MATCHER_EMAIL_TO: ${{ vars.JOB_MATCHER_EMAIL_TO }}
           JOB_MATCHER_EMAIL_FROM: ${{ vars.JOB_MATCHER_EMAIL_FROM }}
           JOB_MATCHER_EMAIL_SUBJECT: Job Matcher Report ${{ env.JOB_MATCHER_RUN_LABEL }}
-          JOB_MATCHER_SMTP_USERNAME: ${{ secrets.JOB_MATCHER_SMTP_USERNAME }}
+          JOB_MATCHER_SMTP_USERNAME: ${{ vars.JOB_MATCHER_SMTP_USERNAME }}
           JOB_MATCHER_SMTP_PASSWORD: ${{ secrets.JOB_MATCHER_SMTP_PASSWORD }}
         run: |
           if [ ! -f "$JOB_MATCHER_OUTPUT_TXT" ]; then
