@@ -103,11 +103,11 @@ jobs:
           JOB_MATCHER_EMAIL_TO: ${{ vars.JOB_MATCHER_EMAIL_TO }}
           JOB_MATCHER_EMAIL_FROM: ${{ vars.JOB_MATCHER_EMAIL_FROM }}
           JOB_MATCHER_EMAIL_SUBJECT: Job Matcher Report ${{ env.JOB_MATCHER_RUN_LABEL }}
+          JOB_MATCHER_SMTP_USERNAME: ${{ secrets.JOB_MATCHER_SMTP_USERNAME }}
+          JOB_MATCHER_SMTP_PASSWORD: ${{ secrets.JOB_MATCHER_SMTP_PASSWORD }}
         run: |
           if [ ! -f "$JOB_MATCHER_OUTPUT_TXT" ]; then
             echo "Skipping email because report file is missing"
             exit 0
           fi
-          EMAIL_PAYLOAD_PATH="$RUNNER_TEMP/job-matcher-email.json"
-          node scripts/build-report-email.js "$JOB_MATCHER_OUTPUT_TXT" "$EMAIL_PAYLOAD_PATH"
-          aws sesv2 send-email --cli-input-json "file://$EMAIL_PAYLOAD_PATH"
+          python3 scripts/send_report_email.py "$JOB_MATCHER_OUTPUT_TXT"

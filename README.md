@@ -25,7 +25,7 @@ Yes, there are a bunch of resume to job matchers in Github. Some I have seen are
   - restores the resume and ATS cache from S3
   - writes output into a timestamped folder
   - uploads the latest artifacts back to S3
-  - can optionally email the text report via AWS SES
+  - can optionally email the text report via Gmail SMTP
 
 ## Matcher Workflow
 
@@ -63,7 +63,7 @@ flowchart TD
     B --> C[Run matcher]
     C --> D[Generate dated reports]
     D --> E[Upload reports and cache to S3]
-    D --> F[Optional SES email with job-matches.txt]
+    D --> F[Optional Gmail SMTP email with job-matches.txt]
 ```
 
 ## Processing Flow
@@ -84,7 +84,7 @@ job-matcher/
 ├── config/jobs.yaml
 ├── scripts/
 │   ├── job-artifact-paths.js
-│   └── build-report-email.js
+│   └── send_report_email.py
 ├── src/
 │   ├── ats/ats-scorer.js
 │   ├── config/config-loader.js
@@ -248,6 +248,10 @@ Optional GitHub variables for email delivery:
 - `JOB_MATCHER_EMAIL_TO`
 - `JOB_MATCHER_EMAIL_FROM`
 
+Required GitHub secrets for Gmail SMTP:
+- `JOB_MATCHER_SMTP_USERNAME`
+- `JOB_MATCHER_SMTP_PASSWORD`
+
 ### S3 Behavior
 
 The workflow:
@@ -258,15 +262,15 @@ The workflow:
 
 ## Email Delivery
 
-The workflow can email `job-matches.txt` through AWS SES.
+The workflow can email `job-matches.txt` through Gmail SMTP.
 
 Requirements:
 - set `JOB_MATCHER_EMAIL_TO`
 - set `JOB_MATCHER_EMAIL_FROM`
-- verify the sender in SES
-- if SES is still in sandbox, verify the recipient too
-
-For a Gmail address, verification is done by clicking the SES verification email. No DNS change is required for a plain email-address identity.
+- set `JOB_MATCHER_SMTP_USERNAME`
+- set `JOB_MATCHER_SMTP_PASSWORD`
+- use a Gmail app password, not the normal Gmail account password
+- enable 2-step verification on the Gmail account first
 
 ## Custom Board Notes
 
