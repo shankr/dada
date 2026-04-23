@@ -5,6 +5,7 @@ class WorkdayScraper extends BaseScraper {
     const jobs = [];
     const selectors = this.boardConfig.selectors;
     const maxJobs = this.globalConfig.max_jobs_per_board || 50;
+    const seenJobUrls = new Set();
     
     try {
       console.log(`\nScraping Workday board: ${this.boardConfig.name}`);
@@ -30,10 +31,15 @@ class WorkdayScraper extends BaseScraper {
             const locationEl = card.querySelector(sel.location);
             
             if (titleEl) {
+              const href =
+                titleEl.getAttribute('href') ||
+                titleEl.closest('a')?.getAttribute('href') ||
+                '';
               extracted.push({
                 title: titleEl.textContent.trim(),
                 location: locationEl ? locationEl.textContent.trim() : 'Not specified',
                 jobId: card.getAttribute(sel.job_url_attribute) || '',
+                url: href ? new URL(href, window.location.href).toString() : '',
                 source: 'Workday'
               });
             }
@@ -45,11 +51,30 @@ class WorkdayScraper extends BaseScraper {
         // Get job details for each job
         for (const job of pageJobs) {
           if (maxJobs > 0 && jobs.length >= maxJobs) break;
+
+          const normalizedUrl = (job.url || '').trim().toLowerCase();
+          if (normalizedUrl && seenJobUrls.has(normalizedUrl)) {
+            continue;
+          }
+
+          const forceRecompute = this.globalConfig.scoring?.force_recompute === true;
+          if (!forceRecompute && normalizedUrl && this.globalConfig.known_job_urls?.has(normalizedUrl)) {
+            const cachedJob = this.globalConfig.results_db?.getJobByUrl(job.url);
+            if (cachedJob) {
+              jobs.push(cachedJob);
+              seenJobUrls.add(normalizedUrl);
+              console.log(`    ↺ Cached ${cachedJob.title}`);
+              continue;
+            }
+          }
           
           try {
             const jobDetail = await this.getJobDetails(job);
             if (jobDetail) {
               jobs.push(jobDetail);
+              if (normalizedUrl) {
+                seenJobUrls.add(normalizedUrl);
+              }
               console.log(`    ✓ ${job.title}`);
             }
           } catch (e) {
@@ -76,42 +101,37 @@ class WorkdayScraper extends BaseScraper {
   }
   
   async getJobDetails(job) {
-    // Click on job to get full description
     const selectors = this.boardConfig.selectors;
     
     try {
-      // Find and click the job card
-      const jobCards = await this.page.$$(selectors.job_card);
-      
-      for (const card of jobCards) {
-        const titleEl = await card.$(selectors.title);
-        if (titleEl) {
-          const text = await titleEl.evaluate(el => el.textContent.trim());
-          if (text === job.title) {
-            await card.click();
-            await this.delay(2000);
-            break;
-          }
-        }
+      if (!job.url) {
+        return { ...job, description: '', url: this.boardConfig.url, company: this.boardConfig.name };
       }
-      
-      // Get full description
-      const description = await this.page.evaluate((sel) => {
+
+      const detailPage = await this.browser.newPage();
+      await detailPage.setViewport({ width: 1920, height: 1080 });
+      await detailPage.setUserAgent(
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      );
+      await detailPage.goto(job.url, { waitUntil: 'networkidle2' });
+      await detailPage.waitForSelector('body', { timeout: 10000 });
+      await this.delay(1500);
+
+      const description = await detailPage.evaluate((sel) => {
         const descEl = document.querySelector(sel.description);
         return descEl ? descEl.textContent.trim() : '';
       }, selectors);
-      
-      // Get current URL
-      const url = this.page.url();
-      
+
+      await detailPage.close();
+
       return {
         ...job,
-        description: description.substring(0, 3000), // Limit description length
-        url: url,
+        description: description.substring(0, 3000),
+        url: job.url,
         company: this.boardConfig.name
       };
     } catch (e) {
-      return { ...job, description: '', url: this.boardConfig.url };
+      return { ...job, description: '', url: job.url || this.boardConfig.url, company: this.boardConfig.name };
     }
   }
   
