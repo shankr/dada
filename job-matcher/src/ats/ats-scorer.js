@@ -593,22 +593,111 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
   }
 
   async resumeSemanticallySupportsTerm(resumeUnits, term, cacheKey, threshold) {
+    const profile = this.getNamedTechSemanticProfile(term);
+    const supportPhrases = profile.supportPhrases;
+    const effectiveThreshold = Math.max(threshold, profile.threshold || 0);
     let maxSimilarity = 0;
     for (let i = 0; i < resumeUnits.length; i++) {
       const unit = resumeUnits[i];
-      const similarity = await this.embeddingScore(
-        unit,
-        `Hands-on experience with ${term}`,
-        `${cacheKey}:${i}`
-      );
-      if (similarity > maxSimilarity) {
-        maxSimilarity = similarity;
+      for (let j = 0; j < supportPhrases.length; j++) {
+        const phrase = supportPhrases[j];
+        const similarity = await this.embeddingScore(
+          unit,
+          phrase,
+          `${cacheKey}:${j}:${i}`
+        );
+        if (similarity > maxSimilarity) {
+          maxSimilarity = similarity;
+        }
       }
-      if (maxSimilarity >= threshold) {
+      if (maxSimilarity >= effectiveThreshold) {
         return true;
       }
     }
     return false;
+  }
+
+  getNamedTechSemanticProfile(term) {
+    const normalized = this.normalizeTechAlias(String(term || '').toLowerCase());
+    const defaultProfile = {
+      threshold: 0,
+      supportPhrases: [
+        `Hands-on production experience with ${normalized}`,
+        `Deep practical experience with ${normalized}`
+      ]
+    };
+
+    const profiles = {
+      llm: {
+        threshold: 0.7,
+        supportPhrases: [
+          'Hands-on production experience with large language models (LLMs)',
+          'Designing and deploying LLM-powered systems in production',
+          'Building applications with large language models (LLMs)'
+        ]
+      },
+      rag: {
+        threshold: 0.72,
+        supportPhrases: [
+          'Hands-on experience building retrieval augmented generation (RAG) systems',
+          'Implementing retrieval augmented generation pipelines for production AI systems',
+          'Designing document retrieval and generation workflows for LLM applications'
+        ]
+      },
+      agentic: {
+        threshold: 0.72,
+        supportPhrases: [
+          'Hands-on experience building agentic workflows and AI agents',
+          'Designing autonomous or multi-step AI agent systems in production',
+          'Building orchestration and decision flows for agentic AI systems'
+        ]
+      },
+      agents: {
+        threshold: 0.72,
+        supportPhrases: [
+          'Hands-on experience building AI agents and agent orchestration systems',
+          'Designing autonomous AI agent workflows in production',
+          'Building multi-agent systems for real-world applications'
+        ]
+      },
+      transformers: {
+        threshold: 0.68,
+        supportPhrases: [
+          'Hands-on experience with transformer models and transformer-based NLP systems',
+          'Building applications using transformer architectures in production'
+        ]
+      },
+      langchain: {
+        threshold: 0.72,
+        supportPhrases: [
+          'Hands-on experience building LLM applications with LangChain',
+          'Production use of LangChain for retrieval or agent workflows'
+        ]
+      },
+      langgraph: {
+        threshold: 0.72,
+        supportPhrases: [
+          'Hands-on experience building stateful agent workflows with LangGraph',
+          'Production use of LangGraph for AI orchestration'
+        ]
+      },
+      mcp: {
+        threshold: 0.72,
+        supportPhrases: [
+          'Hands-on experience with Model Context Protocol (MCP)',
+          'Building tools or agents that integrate using Model Context Protocol'
+        ]
+      },
+      modelcontextprotocol: {
+        threshold: 0.72,
+        supportPhrases: [
+          'Hands-on experience with Model Context Protocol (MCP)',
+          'Building tools or agents that integrate using Model Context Protocol'
+        ]
+      }
+    };
+
+    return profiles[normalized] || defaultProfile;
   }
 
   splitTextIntoSemanticUnits(text) {
