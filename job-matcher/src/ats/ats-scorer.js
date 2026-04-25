@@ -354,15 +354,39 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
   }
 
   buildLocalReasoning({ lexical, baseEmbedding, embedding, rules, recency, skillOverlap, requiredMatch }) {
-    const requiredReasoning = requiredMatch?.sectionFound
-      ? ` Required qualifications match: ${(requiredMatch.score * 100).toFixed(0)}% across ${requiredMatch.bulletCount} bullets; semantic penalty: ${(requiredMatch.penalty * 100).toFixed(0)}%. Named required tech penalty: ${(requiredMatch.namedTechPenalty * 100).toFixed(0)}% on ${requiredMatch.namedTechMissingCount}/${requiredMatch.namedTechCount} terms.`
-      : ' Required qualifications match: n/a.';
-    return `Lexical overlap: ${(lexical * 100).toFixed(0)}%. ` +
-      `Embedding similarity: ${(embedding * 100).toFixed(0)}% (base ${(baseEmbedding * 100).toFixed(0)}%). ` +
-      `Rule score: ${(rules * 100).toFixed(0)}%. ` +
-      `Recency score: ${(recency * 100).toFixed(0)}%. ` +
-      `Skill overlap count: ${skillOverlap}.` +
-      requiredReasoning;
+    const lines = [
+      `Lexical overlap: ${(lexical * 100).toFixed(0)}%.`,
+      `Embedding similarity: ${(embedding * 100).toFixed(0)}% (base ${(baseEmbedding * 100).toFixed(0)}%, total penalty ${((requiredMatch?.penalty || 0) * 100).toFixed(0)}%).`,
+      `Rule score: ${(rules * 100).toFixed(0)}%.`,
+      `Recency score: ${(recency * 100).toFixed(0)}%.`,
+      `Skill overlap count: ${skillOverlap}.`
+    ];
+
+    if (!requiredMatch?.sectionFound) {
+      lines.push('Required qualifications match: n/a.');
+      return lines.join('\n');
+    }
+
+    lines.push(
+      `Required qualifications match: ${(requiredMatch.score * 100).toFixed(0)}% across ${requiredMatch.bulletCount} bullets.`,
+      `Penalty breakdown: total ${(requiredMatch.penalty * 100).toFixed(0)}% = threshold ${(requiredMatch.thresholdPenalty * 100).toFixed(0)}% + weak bullets ${(requiredMatch.weakBulletPenalty * 100).toFixed(0)}% + named required tech ${(requiredMatch.namedTechPenalty * 100).toFixed(0)}%.`
+    );
+
+    if (requiredMatch.topMatches?.length) {
+      lines.push(`Best semantic matches: ${requiredMatch.topMatches.map(match => `${(match.score * 100).toFixed(0)}%: ${match.bullet}`).join(' | ')}`);
+    }
+
+    if (requiredMatch.weakMatches?.length) {
+      lines.push(`Weak required matches: ${requiredMatch.weakMatches.map(match => `${(match.score * 100).toFixed(0)}%: ${match.bullet}`).join(' | ')}`);
+    }
+
+    if (requiredMatch.namedTechMissingTerms?.length) {
+      lines.push(`Unsupported named required tech: ${requiredMatch.namedTechMissingTerms.join(', ')}.`);
+    } else if (requiredMatch.namedTechCount > 0) {
+      lines.push(`Unsupported named required tech: none (${requiredMatch.namedTechCount} checked).`);
+    }
+
+    return lines.join('\n');
   }
 
   tokenize(text) {
@@ -505,7 +529,7 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       };
     }
 
-    const similarities = [];
+    const bulletScores = [];
     for (let i = 0; i < bullets.length; i++) {
       const bullet = bullets[i];
       const score = await this.embeddingScore(
@@ -513,22 +537,27 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
         bullet,
         `${cacheKey}:required:${i}`
       );
-      similarities.push(score);
+      bulletScores.push({ bullet, score });
     }
 
+    const similarities = bulletScores.map(item => item.score);
     const average = similarities.reduce((sum, value) => sum + value, 0) / similarities.length;
-    const weakMatches = similarities.filter(
-      value => value < cfg.requiredQualificationsBulletPenaltyThreshold
-    ).length;
+    const weakMatches = bulletScores.filter(
+      item => item.score < cfg.requiredQualificationsBulletPenaltyThreshold
+    );
 
     let penalty = 0;
+    let thresholdPenalty = 0;
+    let weakBulletPenalty = 0;
     if (average < cfg.requiredQualificationsThreshold) {
       const deficit = cfg.requiredQualificationsThreshold - average;
       const threshold = Math.max(0.01, cfg.requiredQualificationsThreshold);
-      penalty += (deficit / threshold) * cfg.requiredQualificationsPenaltyMax * 0.4;
+      thresholdPenalty = (deficit / threshold) * cfg.requiredQualificationsPenaltyMax * 0.4;
+      penalty += thresholdPenalty;
     }
-    if (weakMatches > 0) {
-      penalty += weakMatches * cfg.requiredQualificationsPenaltyPerBullet;
+    if (weakMatches.length > 0) {
+      weakBulletPenalty = weakMatches.length * cfg.requiredQualificationsPenaltyPerBullet;
+      penalty += weakBulletPenalty;
     }
 
     const namedTechPenaltyResult = await this.computeNamedRequiredTechPenalty(
@@ -539,14 +568,26 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     );
     penalty += namedTechPenaltyResult.penalty;
 
+    const totalPenalty = Math.max(0, Math.min(cfg.requiredQualificationsPenaltyMax, penalty));
+    const appliedThresholdPenalty = Math.min(totalPenalty, thresholdPenalty);
+    const remainingAfterThreshold = Math.max(0, totalPenalty - appliedThresholdPenalty);
+    const appliedWeakBulletPenalty = Math.min(remainingAfterThreshold, weakBulletPenalty);
+    const remainingAfterWeak = Math.max(0, remainingAfterThreshold - appliedWeakBulletPenalty);
+    const appliedNamedTechPenalty = Math.min(remainingAfterWeak, namedTechPenaltyResult.penalty);
     return {
       sectionFound: true,
       score: Math.max(0, Math.min(1, average)),
-      penalty: Math.max(0, Math.min(cfg.requiredQualificationsPenaltyMax, penalty)),
+      penalty: totalPenalty,
+      thresholdPenalty: appliedThresholdPenalty,
+      weakBulletPenalty: appliedWeakBulletPenalty,
       bulletCount: bullets.length,
-      namedTechPenalty: namedTechPenaltyResult.penalty,
+      namedTechPenalty: appliedNamedTechPenalty,
       namedTechCount: namedTechPenaltyResult.techCount,
-      namedTechMissingCount: namedTechPenaltyResult.missingCount
+      namedTechMissingCount: namedTechPenaltyResult.missingCount,
+      namedTechMissingTerms: namedTechPenaltyResult.missingTerms,
+      namedTechSupportedTerms: namedTechPenaltyResult.supportedTerms,
+      topMatches: bulletScores.slice().sort((a, b) => b.score - a.score).slice(0, 3),
+      weakMatches: weakMatches.slice().sort((a, b) => a.score - b.score).slice(0, 3)
     };
   }
 
@@ -556,7 +597,9 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       return {
         penalty: 0,
         techCount: 0,
-        missingCount: 0
+        missingCount: 0,
+        missingTerms: [],
+        supportedTerms: []
       };
     }
 
@@ -565,11 +608,15 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       return {
         penalty: Math.min(cfg.namedRequiredTechPenaltyMax, requiredTerms.length * cfg.namedRequiredTechPenaltyPerTerm),
         techCount: requiredTerms.length,
-        missingCount: requiredTerms.length
+        missingCount: requiredTerms.length,
+        missingTerms: requiredTerms.slice(),
+        supportedTerms: []
       };
     }
 
     let missingCount = 0;
+    const missingTerms = [];
+    const supportedTerms = [];
     for (const term of requiredTerms) {
       const supported = await this.resumeSemanticallySupportsTerm(
         resumeUnits,
@@ -579,6 +626,9 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       );
       if (!supported) {
         missingCount++;
+        missingTerms.push(term);
+      } else {
+        supportedTerms.push(term);
       }
     }
 
@@ -588,7 +638,9 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
         missingCount * cfg.namedRequiredTechPenaltyPerTerm
       ),
       techCount: requiredTerms.length,
-      missingCount
+      missingCount,
+      missingTerms,
+      supportedTerms
     };
   }
 
