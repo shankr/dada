@@ -261,9 +261,19 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       required_qualifications_penalty_max: 0.30,
       required_qualifications_bullet_penalty_threshold: 0.35,
       required_qualifications_penalty_per_bullet: 0.06,
+      preferred_qualifications_threshold: 0.38,
+      preferred_qualifications_penalty_max: 0.12,
+      preferred_qualifications_bullet_penalty_threshold: 0.30,
+      preferred_qualifications_penalty_per_bullet: 0.03,
+      preferred_named_tech_penalty_per_term: 0.03,
+      preferred_named_tech_penalty_max: 0.12,
       named_required_tech_match_threshold: 0.58,
       named_required_tech_penalty_per_term: 0.08,
       named_required_tech_penalty_max: 0.24,
+      direct_tech_support_floor: 0.85,
+      direct_education_support_floor: 0.90,
+      direct_management_support_floor: 0.85,
+      management_requirement_penalty: 0.30,
       recency_half_life_days: 30,
       force_recompute: false,
       max_resume_chars: 4000,
@@ -290,6 +300,24 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       requiredQualificationsPenaltyPerBullet: Number.isFinite(cfg.required_qualifications_penalty_per_bullet)
         ? cfg.required_qualifications_penalty_per_bullet
         : defaults.required_qualifications_penalty_per_bullet,
+      preferredQualificationsThreshold: Number.isFinite(cfg.preferred_qualifications_threshold)
+        ? cfg.preferred_qualifications_threshold
+        : defaults.preferred_qualifications_threshold,
+      preferredQualificationsPenaltyMax: Number.isFinite(cfg.preferred_qualifications_penalty_max)
+        ? cfg.preferred_qualifications_penalty_max
+        : defaults.preferred_qualifications_penalty_max,
+      preferredQualificationsBulletPenaltyThreshold: Number.isFinite(cfg.preferred_qualifications_bullet_penalty_threshold)
+        ? cfg.preferred_qualifications_bullet_penalty_threshold
+        : defaults.preferred_qualifications_bullet_penalty_threshold,
+      preferredQualificationsPenaltyPerBullet: Number.isFinite(cfg.preferred_qualifications_penalty_per_bullet)
+        ? cfg.preferred_qualifications_penalty_per_bullet
+        : defaults.preferred_qualifications_penalty_per_bullet,
+      preferredNamedTechPenaltyPerTerm: Number.isFinite(cfg.preferred_named_tech_penalty_per_term)
+        ? cfg.preferred_named_tech_penalty_per_term
+        : defaults.preferred_named_tech_penalty_per_term,
+      preferredNamedTechPenaltyMax: Number.isFinite(cfg.preferred_named_tech_penalty_max)
+        ? cfg.preferred_named_tech_penalty_max
+        : defaults.preferred_named_tech_penalty_max,
       namedRequiredTechMatchThreshold: Number.isFinite(cfg.named_required_tech_match_threshold)
         ? cfg.named_required_tech_match_threshold
         : defaults.named_required_tech_match_threshold,
@@ -299,6 +327,18 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       namedRequiredTechPenaltyMax: Number.isFinite(cfg.named_required_tech_penalty_max)
         ? cfg.named_required_tech_penalty_max
         : defaults.named_required_tech_penalty_max,
+      directTechSupportFloor: Number.isFinite(cfg.direct_tech_support_floor)
+        ? cfg.direct_tech_support_floor
+        : defaults.direct_tech_support_floor,
+      directEducationSupportFloor: Number.isFinite(cfg.direct_education_support_floor)
+        ? cfg.direct_education_support_floor
+        : defaults.direct_education_support_floor,
+      directManagementSupportFloor: Number.isFinite(cfg.direct_management_support_floor)
+        ? cfg.direct_management_support_floor
+        : defaults.direct_management_support_floor,
+      managementRequirementPenalty: Number.isFinite(cfg.management_requirement_penalty)
+        ? cfg.management_requirement_penalty
+        : defaults.management_requirement_penalty,
       recencyHalfLifeDays: Number.isFinite(cfg.recency_half_life_days) ? cfg.recency_half_life_days : defaults.recency_half_life_days,
       forceRecompute: typeof cfg.force_recompute === 'boolean' ? cfg.force_recompute : defaults.force_recompute,
       maxResumeChars: Number.isFinite(cfg.max_resume_chars) ? cfg.max_resume_chars : defaults.max_resume_chars,
@@ -322,8 +362,24 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       job.url || job.title || '',
       cfg
     );
-    const embedding = Math.max(0, baseEmbedding - requiredMatch.penalty);
-    const rules = this.rulesScore(resume, job.title || '', resumeTokens, jobTokens, cfg.minSkillOverlap);
+    const preferredMatch = await this.preferredQualificationsSemanticMatch(
+      resume,
+      job.description || '',
+      job.url || job.title || '',
+      cfg
+    );
+    const embedding = Math.max(0, baseEmbedding - requiredMatch.penalty - preferredMatch.penalty);
+    const rules = this.rulesScore(
+      resume,
+      job.title || '',
+      resumeTokens,
+      jobTokens,
+      cfg.minSkillOverlap,
+      job.description || '',
+      requiredMatch,
+      preferredMatch,
+      cfg
+    );
     const extractedDate = this.extractPostedDateFromText(job.description || '');
     if (extractedDate && job.postedDate !== extractedDate) {
       job.postedDate = extractedDate;
@@ -347,13 +403,14 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       rules,
       recency,
       skillOverlap: this.skillOverlapCount(resumeTokens, jobTokens),
-      requiredMatch
+      requiredMatch,
+      preferredMatch
     });
 
     return { score, reasoning };
   }
 
-  buildLocalReasoning({ lexical, baseEmbedding, embedding, rules, recency, skillOverlap, requiredMatch }) {
+  buildLocalReasoning({ lexical, baseEmbedding, embedding, rules, recency, skillOverlap, requiredMatch, preferredMatch }) {
     const lines = [
       `Lexical overlap: ${(lexical * 100).toFixed(0)}%.`,
       `Embedding similarity: ${(embedding * 100).toFixed(0)}% (base ${(baseEmbedding * 100).toFixed(0)}%, total penalty ${((requiredMatch?.penalty || 0) * 100).toFixed(0)}%).`,
@@ -376,14 +433,43 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       lines.push(`Best semantic matches: ${requiredMatch.topMatches.map(match => `${(match.score * 100).toFixed(0)}%: ${match.bullet}`).join(' | ')}`);
     }
 
+    if (requiredMatch.weakestMatches?.length) {
+      lines.push(`Weakest required matches: ${requiredMatch.weakestMatches.map(match => `${(match.score * 100).toFixed(0)}%: ${match.bullet}`).join(' | ')}`);
+    }
+
     if (requiredMatch.weakMatches?.length) {
-      lines.push(`Weak required matches: ${requiredMatch.weakMatches.map(match => `${(match.score * 100).toFixed(0)}%: ${match.bullet}`).join(' | ')}`);
+      lines.push(`Penalty-triggering weak matches: ${requiredMatch.weakMatches.map(match => `${(match.score * 100).toFixed(0)}%: ${match.bullet}`).join(' | ')}`);
     }
 
     if (requiredMatch.namedTechMissingTerms?.length) {
       lines.push(`Unsupported named required tech: ${requiredMatch.namedTechMissingTerms.join(', ')}.`);
     } else if (requiredMatch.namedTechCount > 0) {
       lines.push(`Unsupported named required tech: none (${requiredMatch.namedTechCount} checked).`);
+    }
+
+    if (preferredMatch?.sectionFound) {
+      lines.push(
+        `Preferred qualifications match: ${(preferredMatch.score * 100).toFixed(0)}% across ${preferredMatch.bulletCount} bullets.`,
+        `Preferred penalty breakdown: total ${(preferredMatch.penalty * 100).toFixed(0)}% = threshold ${(preferredMatch.thresholdPenalty * 100).toFixed(0)}% + weak bullets ${(preferredMatch.weakBulletPenalty * 100).toFixed(0)}% + named preferred tech ${(preferredMatch.namedTechPenalty * 100).toFixed(0)}%.`
+      );
+
+      if (preferredMatch.topMatches?.length) {
+        lines.push(`Best preferred matches: ${preferredMatch.topMatches.map(match => `${(match.score * 100).toFixed(0)}%: ${match.bullet}`).join(' | ')}`);
+      }
+
+      if (preferredMatch.weakestMatches?.length) {
+        lines.push(`Weakest preferred matches: ${preferredMatch.weakestMatches.map(match => `${(match.score * 100).toFixed(0)}%: ${match.bullet}`).join(' | ')}`);
+      }
+
+      if (preferredMatch.weakMatches?.length) {
+        lines.push(`Penalty-triggering preferred gaps: ${preferredMatch.weakMatches.map(match => `${(match.score * 100).toFixed(0)}%: ${match.bullet}`).join(' | ')}`);
+      }
+
+      if (preferredMatch.namedTechMissingTerms?.length) {
+        lines.push(`Unsupported named preferred tech: ${preferredMatch.namedTechMissingTerms.join(', ')}.`);
+      } else if (preferredMatch.namedTechCount > 0) {
+        lines.push(`Unsupported named preferred tech: none (${preferredMatch.namedTechCount} checked).`);
+      }
     }
 
     return lines.join('\n');
@@ -406,6 +492,7 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       .replace(/\bmodel\s+context\s+protocol\b/gi, 'modelcontextprotocol')
       .replace(/\bvector\s+database\b/gi, 'vectordb')
       .replace(/\bvector\s+db\b/gi, 'vectordb')
+      .replace(/\bcloud\s+init\b/gi, 'cloudinit')
       .replace(/\bmachine\s+learning\b/gi, 'machinelearning');
   }
 
@@ -435,7 +522,7 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     return overlap;
   }
 
-  rulesScore(resumeText, jobTitle, resumeTokens, jobTokens, minSkillOverlap) {
+  rulesScore(resumeText, jobTitle, resumeTokens, jobTokens, minSkillOverlap, descriptionText, requiredMatch, preferredMatch, cfg) {
     let score = 1.0;
 
     const overlap = this.skillOverlapCount(resumeTokens, jobTokens);
@@ -453,12 +540,34 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       score -= 0.1;
     }
 
+    if (this.jobRequiresManagementExperience(jobTitle, descriptionText, requiredMatch, preferredMatch) && !this.detectManagementExperience(resumeText)) {
+      score -= cfg.managementRequirementPenalty;
+    }
+
     return Math.max(0, Math.min(1, score));
   }
 
   detectSeniority(text) {
     const t = (text || '').toLowerCase();
     return /(principal|staff|lead|senior|sr\\b|manager|director|intern|entry)/.test(t);
+  }
+
+  detectManagementExperience(text) {
+    const t = (text || '').toLowerCase();
+    return /engineering manager|engineering management|people management|people manager|manager of engineers|managed engineers|managed teams|managed a team|line management|hiring|performance review|direct reports/.test(t);
+  }
+
+  jobRequiresManagementExperience(jobTitle, descriptionText, requiredMatch, preferredMatch) {
+    const combined = [
+      jobTitle || '',
+      descriptionText || '',
+      ...(requiredMatch?.topMatches || []).map(match => match.bullet),
+      ...(requiredMatch?.weakestMatches || []).map(match => match.bullet),
+      ...(preferredMatch?.topMatches || []).map(match => match.bullet),
+      ...(preferredMatch?.weakestMatches || []).map(match => match.bullet)
+    ].join('\n').toLowerCase();
+
+    return /engineering manager|software engineering manager|people management|engineering management|years in engineering management|manager experience|direct reports/.test(combined);
   }
 
   recencyScore(postedDate, halfLifeDays) {
@@ -509,7 +618,44 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
   }
 
   async requiredQualificationsSemanticMatch(resumeText, descriptionText, cacheKey, cfg) {
-    const section = this.extractRequiredQualificationsSection(descriptionText);
+    return this.qualificationsSemanticMatch(
+      resumeText,
+      this.extractRequiredQualificationsSection(descriptionText),
+      cacheKey,
+      cfg,
+      {
+        sectionType: 'required',
+        threshold: cfg.requiredQualificationsThreshold,
+        penaltyMax: cfg.requiredQualificationsPenaltyMax,
+        bulletPenaltyThreshold: cfg.requiredQualificationsBulletPenaltyThreshold,
+        penaltyPerBullet: cfg.requiredQualificationsPenaltyPerBullet,
+        namedTechPenaltyPerTerm: cfg.namedRequiredTechPenaltyPerTerm,
+        namedTechPenaltyMax: cfg.namedRequiredTechPenaltyMax
+      }
+    );
+  }
+
+  async preferredQualificationsSemanticMatch(resumeText, descriptionText, cacheKey, cfg) {
+    return this.qualificationsSemanticMatch(
+      resumeText,
+      this.extractPreferredQualificationsSection(descriptionText),
+      cacheKey,
+      cfg,
+      {
+        sectionType: 'preferred',
+        threshold: cfg.preferredQualificationsThreshold,
+        penaltyMax: cfg.preferredQualificationsPenaltyMax,
+        bulletPenaltyThreshold: cfg.preferredQualificationsBulletPenaltyThreshold,
+        penaltyPerBullet: cfg.preferredQualificationsPenaltyPerBullet,
+        namedTechPenaltyPerTerm: cfg.preferredNamedTechPenaltyPerTerm,
+        namedTechPenaltyMax: cfg.preferredNamedTechPenaltyMax
+      }
+    );
+  }
+
+  async qualificationsSemanticMatch(resumeText, sectionText, cacheKey, cfg, options) {
+    const section = sectionText;
+    const resumeTokens = new Set(this.tokenize(resumeText));
     if (!section) {
       return {
         sectionFound: false,
@@ -525,17 +671,29 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
         sectionFound: true,
         score: 0,
         penalty: 0,
-        bulletCount: 0
+        bulletCount: 0,
+        thresholdPenalty: 0,
+        weakBulletPenalty: 0,
+        namedTechPenalty: 0,
+        namedTechCount: 0,
+        namedTechMissingCount: 0,
+        namedTechMissingTerms: [],
+        namedTechSupportedTerms: [],
+        topMatches: [],
+        weakestMatches: [],
+        weakMatches: []
       };
     }
 
     const bulletScores = [];
     for (let i = 0; i < bullets.length; i++) {
       const bullet = bullets[i];
-      const score = await this.embeddingScore(
+      const score = await this.scoreQualificationBullet(
         resumeText,
+        resumeTokens,
         bullet,
-        `${cacheKey}:required:${i}`
+        `${cacheKey}:${options.sectionType}:${i}`,
+        cfg
       );
       bulletScores.push({ bullet, score });
     }
@@ -543,32 +701,36 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     const similarities = bulletScores.map(item => item.score);
     const average = similarities.reduce((sum, value) => sum + value, 0) / similarities.length;
     const weakMatches = bulletScores.filter(
-      item => item.score < cfg.requiredQualificationsBulletPenaltyThreshold
+      item => item.score < options.bulletPenaltyThreshold
     );
 
     let penalty = 0;
     let thresholdPenalty = 0;
     let weakBulletPenalty = 0;
-    if (average < cfg.requiredQualificationsThreshold) {
-      const deficit = cfg.requiredQualificationsThreshold - average;
-      const threshold = Math.max(0.01, cfg.requiredQualificationsThreshold);
-      thresholdPenalty = (deficit / threshold) * cfg.requiredQualificationsPenaltyMax * 0.4;
+    if (average < options.threshold) {
+      const deficit = options.threshold - average;
+      const threshold = Math.max(0.01, options.threshold);
+      thresholdPenalty = (deficit / threshold) * options.penaltyMax * 0.4;
       penalty += thresholdPenalty;
     }
     if (weakMatches.length > 0) {
-      weakBulletPenalty = weakMatches.length * cfg.requiredQualificationsPenaltyPerBullet;
+      weakBulletPenalty = weakMatches.length * options.penaltyPerBullet;
       penalty += weakBulletPenalty;
     }
 
     const namedTechPenaltyResult = await this.computeNamedRequiredTechPenalty(
       resumeText,
       bullets,
-      `${cacheKey}:named-tech`,
-      cfg
+      `${cacheKey}:${options.sectionType}:named-tech`,
+      cfg,
+      {
+        penaltyPerTerm: options.namedTechPenaltyPerTerm,
+        penaltyMax: options.namedTechPenaltyMax
+      }
     );
     penalty += namedTechPenaltyResult.penalty;
 
-    const totalPenalty = Math.max(0, Math.min(cfg.requiredQualificationsPenaltyMax, penalty));
+    const totalPenalty = Math.max(0, Math.min(options.penaltyMax, penalty));
     const appliedThresholdPenalty = Math.min(totalPenalty, thresholdPenalty);
     const remainingAfterThreshold = Math.max(0, totalPenalty - appliedThresholdPenalty);
     const appliedWeakBulletPenalty = Math.min(remainingAfterThreshold, weakBulletPenalty);
@@ -587,12 +749,63 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       namedTechMissingTerms: namedTechPenaltyResult.missingTerms,
       namedTechSupportedTerms: namedTechPenaltyResult.supportedTerms,
       topMatches: bulletScores.slice().sort((a, b) => b.score - a.score).slice(0, 3),
+      weakestMatches: bulletScores.slice().sort((a, b) => a.score - b.score).slice(0, 3),
       weakMatches: weakMatches.slice().sort((a, b) => a.score - b.score).slice(0, 3)
     };
   }
 
-  async computeNamedRequiredTechPenalty(resumeText, bullets, cacheKey, cfg) {
+  async scoreQualificationBullet(resumeText, resumeTokens, bullet, cacheKey, cfg) {
+    let score = await this.embeddingScore(
+      resumeText,
+      bullet,
+      cacheKey
+    );
+
+    const namedTerms = this.extractNamedRequiredTechTerms([bullet]);
+    if (namedTerms.length > 0) {
+      let matchedCount = 0;
+      for (const term of namedTerms) {
+        if (this.resumeDirectlySupportsTerm(resumeTokens, term)) {
+          matchedCount++;
+        }
+      }
+
+      if (matchedCount > 0) {
+        const fraction = matchedCount / namedTerms.length;
+        score = Math.max(score, 0.55 + (cfg.directTechSupportFloor - 0.55) * fraction);
+      }
+    }
+
+    if (this.isEducationQualificationBullet(bullet) && this.resumeHasRelevantDegree(resumeText)) {
+      score = Math.max(score, cfg.directEducationSupportFloor);
+    }
+
+    if (this.isManagementQualificationBullet(bullet) && this.detectManagementExperience(resumeText)) {
+      score = Math.max(score, cfg.directManagementSupportFloor);
+    }
+
+    return Math.max(0, Math.min(1, score));
+  }
+
+  isEducationQualificationBullet(bullet) {
+    const text = String(bullet || '').toLowerCase();
+    return /bachelor|masters|phd|computer science|software engineering|degree|equivalent experience/.test(text);
+  }
+
+  resumeHasRelevantDegree(text) {
+    const normalized = String(text || '').toLowerCase();
+    return /bachelor|bachelor's|bs\b|b\.s\.|be\b|b\.e\.|btech|b\.tech|computer science|software engineering|engineering degree|equivalent experience/.test(normalized);
+  }
+
+  isManagementQualificationBullet(bullet) {
+    const text = String(bullet || '').toLowerCase();
+    return /engineering management|engineering manager|people management|people manager|manager experience|direct reports/.test(text);
+  }
+
+  async computeNamedRequiredTechPenalty(resumeText, bullets, cacheKey, cfg, penaltyConfig = null) {
     const requiredTerms = this.extractNamedRequiredTechTerms(bullets);
+    const effectivePenaltyPerTerm = penaltyConfig?.penaltyPerTerm ?? cfg.namedRequiredTechPenaltyPerTerm;
+    const effectivePenaltyMax = penaltyConfig?.penaltyMax ?? cfg.namedRequiredTechPenaltyMax;
     if (requiredTerms.length === 0) {
       return {
         penalty: 0,
@@ -606,7 +819,7 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     const resumeUnits = this.splitTextIntoSemanticUnits(resumeText).slice(0, 40);
     if (resumeUnits.length === 0) {
       return {
-        penalty: Math.min(cfg.namedRequiredTechPenaltyMax, requiredTerms.length * cfg.namedRequiredTechPenaltyPerTerm),
+        penalty: Math.min(effectivePenaltyMax, requiredTerms.length * effectivePenaltyPerTerm),
         techCount: requiredTerms.length,
         missingCount: requiredTerms.length,
         missingTerms: requiredTerms.slice(),
@@ -617,8 +830,9 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     let missingCount = 0;
     const missingTerms = [];
     const supportedTerms = [];
+    const resumeTokens = new Set(this.tokenize(resumeText));
     for (const term of requiredTerms) {
-      const supported = await this.resumeSemanticallySupportsTerm(
+      const supported = this.resumeDirectlySupportsTerm(resumeTokens, term) || await this.resumeSemanticallySupportsTerm(
         resumeUnits,
         term,
         `${cacheKey}:${term}`,
@@ -634,14 +848,52 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
 
     return {
       penalty: Math.min(
-        cfg.namedRequiredTechPenaltyMax,
-        missingCount * cfg.namedRequiredTechPenaltyPerTerm
+        effectivePenaltyMax,
+        missingCount * effectivePenaltyPerTerm
       ),
       techCount: requiredTerms.length,
       missingCount,
       missingTerms,
       supportedTerms
     };
+  }
+
+  resumeDirectlySupportsTerm(resumeTokens, term) {
+    if (!resumeTokens || resumeTokens.size === 0) return false;
+
+    const normalized = this.normalizeTechAlias(String(term || '').toLowerCase());
+    if (resumeTokens.has(normalized)) {
+      return true;
+    }
+
+    for (const alias of this.getEquivalentTechTerms(normalized)) {
+      if (resumeTokens.has(alias)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  getEquivalentTechTerms(term) {
+    const normalized = this.normalizeTechAlias(String(term || '').toLowerCase());
+    const equivalents = new Set([normalized]);
+    const aliasMap = this.getTechAliases();
+
+    for (const [alias, canonical] of aliasMap.entries()) {
+      if (canonical === normalized) {
+        equivalents.add(alias);
+      }
+    }
+
+    if (normalized === 'modelcontextprotocol') {
+      equivalents.add('mcp');
+    }
+    if (normalized === 'mcp') {
+      equivalents.add('modelcontextprotocol');
+    }
+
+    return equivalents;
   }
 
   async resumeSemanticallySupportsTerm(resumeUnits, term, cacheKey, threshold) {
@@ -779,7 +1031,128 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
   extractRequiredQualificationsSection(descriptionText) {
     const sections = this.extractTitledSections(descriptionText);
     const requiredSection = sections.find(section => this.isRequiredQualificationsHeading(section.heading));
-    return requiredSection ? requiredSection.body : '';
+    if (requiredSection?.body) {
+      return requiredSection.body;
+    }
+
+    return this.extractInlineRequiredQualificationsSection(descriptionText);
+  }
+
+  extractPreferredQualificationsSection(descriptionText) {
+    const sections = this.extractTitledSections(descriptionText);
+    const preferredSection = sections.find(section => this.isPreferredQualificationsHeading(section.heading));
+    if (preferredSection?.body) {
+      return preferredSection.body;
+    }
+
+    return this.extractInlinePreferredQualificationsSection(descriptionText);
+  }
+
+  extractInlineRequiredQualificationsSection(text) {
+    if (!text) return '';
+
+    const compact = String(text)
+      .replace(/\r/g, '\n')
+      .replace(/\u2022/g, '\n- ')
+      .replace(/\t/g, ' ')
+      .replace(/\n+/g, '\n');
+
+    const headingPatterns = [
+      /minimum qualifications?/i,
+      /basic qualifications?/i,
+      /required qualifications?/i,
+      /qualifications/i,
+      /requirements/i,
+      /what you'll need/i,
+      /what you will need/i,
+      /must haves?/i
+    ];
+
+    const stopPatterns = [
+      /preferred qualifications?/i,
+      /desired qualifications?/i,
+      /nice to haves?/i,
+      /bonus points/i,
+      /education(?:\s+&\s+experience)?/i,
+      /key qualifications?/i,
+      /description/i,
+      /summary/i,
+      /pay(?:\s*&\s+benefits)?/i,
+      /benefits/i
+    ];
+
+    let startIndex = -1;
+    for (const pattern of headingPatterns) {
+      const match = compact.match(pattern);
+      if (match && (startIndex === -1 || match.index < startIndex)) {
+        startIndex = match.index;
+      }
+    }
+
+    if (startIndex === -1) {
+      return '';
+    }
+
+    let section = compact.slice(startIndex);
+    let endIndex = section.length;
+    for (const pattern of stopPatterns) {
+      const match = section.slice(1).match(pattern);
+      if (match) {
+        endIndex = Math.min(endIndex, match.index + 1);
+      }
+    }
+
+    section = section.slice(0, endIndex).trim();
+    return section;
+  }
+
+  extractInlinePreferredQualificationsSection(text) {
+    if (!text) return '';
+
+    const compact = String(text)
+      .replace(/\r/g, '\n')
+      .replace(/\u2022/g, '\n- ')
+      .replace(/\t/g, ' ')
+      .replace(/\n+/g, '\n');
+
+    const headingPatterns = [
+      /preferred qualifications?/i,
+      /desired qualifications?/i,
+      /nice to haves?/i,
+      /bonus points/i,
+      /preferred skills?/i
+    ];
+
+    const stopPatterns = [
+      /education(?:\s+&\s+experience)?/i,
+      /pay(?:\s*&\s+benefits)?/i,
+      /benefits/i,
+      /additional requirements?/i
+    ];
+
+    let startIndex = -1;
+    for (const pattern of headingPatterns) {
+      const match = compact.match(pattern);
+      if (match && (startIndex === -1 || match.index < startIndex)) {
+        startIndex = match.index;
+      }
+    }
+
+    if (startIndex === -1) {
+      return '';
+    }
+
+    let section = compact.slice(startIndex);
+    let endIndex = section.length;
+    for (const pattern of stopPatterns) {
+      const match = section.slice(1).match(pattern);
+      if (match) {
+        endIndex = Math.min(endIndex, match.index + 1);
+      }
+    }
+
+    section = section.slice(0, endIndex).trim();
+    return section;
   }
 
   extractTitledSections(text) {
@@ -821,30 +1194,57 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     if (!trimmed) return false;
     if (trimmed.length > 80) return false;
     if (/[:\-]$/.test(trimmed)) return true;
-    return this.isRequiredQualificationsHeading(trimmed) || this.isPreferredQualificationsHeading(trimmed);
+    return this.isRequiredQualificationsHeading(trimmed) ||
+      this.isPreferredQualificationsHeading(trimmed) ||
+      this.isStopSectionHeading(trimmed);
   }
 
   isRequiredQualificationsHeading(line) {
     const normalized = this.normalizeHeading(line);
-    return [
+    if (this.isPreferredQualificationsHeading(normalized)) {
+      return false;
+    }
+
+    const exactPatterns = new Set([
       'minimum qualifications',
       'minimum qualification',
       'basic qualifications',
       'basic qualification',
       'required qualifications',
       'required qualification',
+      'qualifications',
       'requirements',
       'what youll need',
       'what you will need',
       'must have',
       'must haves',
       'qualification'
-    ].some(pattern => normalized.includes(pattern)) && !this.isPreferredQualificationsHeading(normalized);
+    ]);
+
+    if (exactPatterns.has(normalized)) {
+      return true;
+    }
+
+    return [
+      'minimum qualifications ',
+      'minimum qualification ',
+      'basic qualifications ',
+      'basic qualification ',
+      'required qualifications ',
+      'required qualification ',
+      'qualifications ',
+      'requirements ',
+      'what youll need ',
+      'what you will need ',
+      'must have ',
+      'must haves ',
+      'qualification '
+    ].some(pattern => normalized.startsWith(pattern));
   }
 
   isPreferredQualificationsHeading(line) {
     const normalized = this.normalizeHeading(line);
-    return [
+    const exactPatterns = new Set([
       'preferred qualifications',
       'preferred qualification',
       'nice to have',
@@ -854,7 +1254,51 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       'bonus points',
       'preferred skills',
       'pluses'
-    ].some(pattern => normalized.includes(pattern));
+    ]);
+
+    if (exactPatterns.has(normalized)) {
+      return true;
+    }
+
+    return [
+      'preferred qualifications ',
+      'preferred qualification ',
+      'nice to have ',
+      'nice to haves ',
+      'desired qualifications ',
+      'desired qualification ',
+      'bonus points ',
+      'preferred skills ',
+      'pluses '
+    ].some(pattern => normalized.startsWith(pattern));
+  }
+
+  isStopSectionHeading(line) {
+    const normalized = this.normalizeHeading(line);
+    const exactPatterns = new Set([
+      'pay benefits',
+      'pay and benefits',
+      'benefits',
+      'compensation',
+      'note',
+      'additional requirements',
+      'additional information',
+      'privacy notice'
+    ]);
+
+    if (exactPatterns.has(normalized)) {
+      return true;
+    }
+
+    return [
+      'pay benefits ',
+      'pay and benefits ',
+      'benefits ',
+      'compensation ',
+      'additional requirements ',
+      'additional information ',
+      'privacy notice '
+    ].some(pattern => normalized.startsWith(pattern));
   }
 
   normalizeHeading(line) {
@@ -879,7 +1323,7 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
         break;
       }
       const cleaned = line.replace(/^[-*•]+\s*/, '').trim();
-      if (cleaned.length < 8) {
+      if (cleaned.length < 8 || this.shouldIgnoreQualificationBullet(cleaned)) {
         continue;
       }
       bullets.push(cleaned);
@@ -890,10 +1334,16 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     }
 
     return sectionText
+      .replace(/^(minimum qualifications?|basic qualifications?|required qualifications?|requirements|what you'll need|what you will need|must haves?)[:\-\s]*/i, '')
       .split(/(?<=[.;])\s+/)
       .map(part => part.trim())
-      .filter(part => part.length >= 20)
+      .filter(part => part.length >= 20 && !this.shouldIgnoreQualificationBullet(part))
       .slice(0, 8);
+  }
+
+  shouldIgnoreQualificationBullet(text) {
+    const normalized = String(text || '').toLowerCase();
+    return /employee stock|stock purchase plan|restricted stock unit|equity award|equity grants|compensation package|total compensation|base pay range|salary range|pay range|bonus(?:es)?|commission payments?|relocation|medical and dental|medical coverage|dental coverage|retirement benefits|discounted products|free services|tuition reimbursement|educational expenses|learn more about .* benefits|benefit programs? are subject to eligibility|eligibility requirements and other terms/.test(normalized);
   }
 
 
@@ -996,9 +1446,10 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
     if (ATSScorer.techKeywords) return ATSScorer.techKeywords;
     ATSScorer.techKeywords = new Set([
       'java','python','javascript','typescript','golang','go','rust','c','c++','c#','kotlin','swift','scala','ruby','php','bash',
-      'react','reactjs','angular','vue','node','nodejs','express','spring','springboot','django','flask','rails','laravel','.net','dotnet',
+      'react','reactjs','angular','vue','vuejs','node','nodejs','express','spring','springboot','django','flask','rails','laravel','.net','dotnet',
       'html','css','sass','less','tailwind','bootstrap',
-      'aws','gcp','azure','kubernetes','docker','terraform','ansible','linux','unix','helm','istio','argo','airflow',
+      'aws','gcp','azure','kubernetes','docker','terraform','ansible','linux','unix','helm','istio','argo','argocd','airflow',
+      'crossplane','kubevirt','pulumi','cloudinit','podman','rancher','cilium','kubebuilder','knative','openstack',
       'sql','postgres','postgresql','mysql','mongodb','redis','cassandra','dynamodb','snowflake','bigquery','redshift','elasticsearch','opensearch',
       'spark','hadoop','kafka','flink','hive','presto','trino','databricks','dbt',
       'grpc','rest','graphql','api','microservices','eventdriven','soa',
@@ -1023,6 +1474,8 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       ['golang', 'go'],
       ['react.js', 'react'],
       ['reactjs', 'react'],
+      ['vue.js', 'vue'],
+      ['vuejs', 'vue'],
       ['node.js', 'node'],
       ['nodejs', 'node'],
       ['spring-boot', 'springboot'],
@@ -1054,6 +1507,8 @@ REASONING: [brief explanation of 2-3 sentences explaining the key matches and ga
       ['vector-db', 'vectordb'],
       ['vector-database', 'vectordb'],
       ['vectorstore', 'vectordb'],
+      ['cloud-init', 'cloudinit'],
+      ['argo-cd', 'argocd'],
       ['openaiapis', 'openai']
     ]);
     return ATSScorer.techAliases;

@@ -126,7 +126,7 @@ class WorkdayScraper extends BaseScraper {
 
       return {
         ...job,
-        description: description.substring(0, 3000),
+        description: description,
         url: job.url,
         company: this.boardConfig.name
       };

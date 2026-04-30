@@ -121,12 +121,12 @@ class GreenhouseScraper extends BaseScraper {
         }
         
         // Fallback: get all text content
-        return document.body.innerText.substring(0, 3000);
+        return document.body.innerText;
       });
       
       return {
         ...job,
-        description: description.substring(0, 3000),
+        description: description,
         company: this.boardConfig.name
       };
     } catch (e) {

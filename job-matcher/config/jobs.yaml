@@ -30,7 +30,7 @@ llm:
 # Local hybrid scoring configuration (no LLM calls)
 scoring:
   mode: "hybrid_local"
-  force_recompute: false
+  force_recompute: true
   embedding_model: "BAAI/bge-small-en-v1.5"
   weights:
     lexical: 0.20
@@ -42,9 +42,19 @@ scoring:
   required_qualifications_penalty_max: 0.30
   required_qualifications_bullet_penalty_threshold: 0.35
   required_qualifications_penalty_per_bullet: 0.06
+  preferred_qualifications_threshold: 0.38
+  preferred_qualifications_penalty_max: 0.12
+  preferred_qualifications_bullet_penalty_threshold: 0.30
+  preferred_qualifications_penalty_per_bullet: 0.03
+  preferred_named_tech_penalty_per_term: 0.03
+  preferred_named_tech_penalty_max: 0.12
   named_required_tech_match_threshold: 0.58
   named_required_tech_penalty_per_term: 0.08
   named_required_tech_penalty_max: 0.24
+  direct_tech_support_floor: 0.85
+  direct_education_support_floor: 0.90
+  direct_management_support_floor: 0.85
+  management_requirement_penalty: 0.30
   recency_half_life_days: 30
   max_resume_chars: 4000
   max_job_chars: 4000
