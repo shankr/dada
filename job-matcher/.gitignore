@@ -2,7 +2,7 @@
 .env
 
 # Output files
-output/
+/output/
 
 # Resume files (keep private)
 resume.pdf
