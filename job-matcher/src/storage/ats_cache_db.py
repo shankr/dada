@@ -40,6 +40,7 @@ class ATSCacheDB:
         """)
 
         self._migrate_old_tables()
+        self._ensure_columns()
         self._conn.commit()
 
     def _migrate_old_tables(self):

@@ -77,9 +77,6 @@ jobs:
           mkdir -p "$(dirname "$JOB_MATCHER_CACHE_DB")"
           aws s3 cp "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_S3_PREFIX/ats-cache.sqlite" "$JOB_MATCHER_CACHE_DB" || true
 
-      - name: Debug check files
-        run: python3 scripts/debug_import.py
-
       - name: Run job matcher
         env:
           JOB_MATCHER_OUTPUT_PATH: ${{ env.JOB_MATCHER_OUTPUT_TXT }}
