@@ -77,6 +77,32 @@ jobs:
           mkdir -p "$(dirname "$JOB_MATCHER_CACHE_DB")"
           aws s3 cp "s3://$JOB_MATCHER_S3_BUCKET/$JOB_MATCHER_S3_PREFIX/ats-cache.sqlite" "$JOB_MATCHER_CACHE_DB" || true
 
+      - name: Debug check files
+        run: |
+          echo "--- Python version ---"
+          python3 --version
+          echo "--- Working directory ---"
+          pwd
+          echo "--- Files in src/output/ ---"
+          ls -la src/output/
+          echo "--- __init__.py files ---"
+          ls -la src/__init__.py src/*/__init__.py
+          echo "--- sys.path test ---"
+          python3 -c "import sys; print('\\n'.join(sys.path))"
+          echo "--- Import test ---"
+          python3 -c "
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path('src/main.py').parent.parent))
+print('sys.path[0]:', sys.path[0])
+print('resolved:', Path(sys.path[0]).resolve())
+try:
+    from src.output.report_generator import ReportGenerator
+    print('IMPORT OK')
+except Exception as e:
+    print('IMPORT FAILED:', e)
+"
+
       - name: Run job matcher
         env:
           JOB_MATCHER_OUTPUT_PATH: ${{ env.JOB_MATCHER_OUTPUT_TXT }}
