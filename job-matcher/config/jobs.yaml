@@ -27,7 +27,7 @@ llm:
 
 # Scoring configuration (weights and thresholds for the local scoring engine)
 scoring:
-  force_recompute: true
+  force_recompute: false
   embedding_model: "BAAI/bge-small-en-v1.5"
   weights:
     lexical: 0.20
