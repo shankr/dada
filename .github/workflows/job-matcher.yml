@@ -79,6 +79,7 @@ jobs:
 
       - name: Run job matcher
         env:
+          OPENROUTER_KEY: ${{ secrets.OPENROUTER_KEY }}
           JOB_MATCHER_OUTPUT_PATH: ${{ env.JOB_MATCHER_OUTPUT_TXT }}
         run: python3 src/main.py
 
