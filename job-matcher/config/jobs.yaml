@@ -18,24 +18,20 @@ request_delay_ms: 2000
 
 # LLM Configuration for ATS scoring
 llm:
-  # Provider options: openrouter, local-hybrid
-  provider: "local-hybrid"
-  
-  # OpenRouter API key (required only when provider = openrouter)
+  # API provider: currently "openrouter" (extensible for future providers)
+  provider: "openrouter"
+  # API key for the provider
   api_key: "${OPENROUTER_KEY}"
-  
-  # OpenRouter model (used only when provider = openrouter)
+  # Model to use for extraction
   model: "deepseek/deepseek-v3.2"
 
-# Local hybrid scoring configuration (no LLM calls)
+# Scoring configuration (weights and thresholds for the local scoring engine)
 scoring:
-  mode: "hybrid_local"
   force_recompute: true
   embedding_model: "BAAI/bge-small-en-v1.5"
   weights:
     lexical: 0.20
     embedding: 0.45
-    rules: 0.20
     recency: 0.15
   min_skill_overlap: 2
   required_qualifications_threshold: 0.45

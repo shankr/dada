@@ -14,9 +14,8 @@ There are a bunch of resume to job matchers in Github, but I am yet to find one 
 
 - Scrapes multiple job board types: `workday`, `greenhouse`, `lever`, `custom`, and `custom-api`. You most likely are going to use custom or custom-api as this helps you configure for each company's careers website.
 - Parses a PDF resume
-- Scores jobs against the resume using either:
-  - `local-hybrid`: local embeddings + lexical overlap + deterministic rules + recency
-  - `openrouter`: remote LLM scoring
+- Uses an LLM to normalize resumes and job descriptions into structured fields such as required qualifications, preferred qualifications, named technologies, role family, seniority, and management expectations
+- Scores the normalized fields deterministically using lexical overlap, local semantic similarity, qualification-gap penalties, and recency
 - Stores results in SQLite so repeated runs avoid re-scraping and re-scoring known URLs
 - Generates:
   - `job-matches.txt`
@@ -31,29 +30,41 @@ There are a bunch of resume to job matchers in Github, but I am yet to find one 
 
 ```mermaid
 flowchart TD
-    A[Resume Text] --> B[Matcher]
+    A[Resume Text] --> B[LLM Normalizer]
     C[Job Description] --> B
-    B --> D[Lexical Score]
-    B --> E[Semantic Score]
-    B --> F[Rules and Penalties]
-    B --> G[Recency Score]
-    D --> H[Weighted Final Score]
-    E --> H
-    F --> H
-    G --> H
-    H --> I[Ranked Jobs Report]
+    B --> D[Structured Resume Profile]
+    B --> E[Structured Job Profile]
+    D --> F[Deterministic Matcher]
+    E --> F
+    F --> G[Lexical Score]
+    F --> H[Semantic Score]
+    F --> I[Qualification Gap Penalties]
+    F --> J[Recency Score]
+    G --> K[Weighted Final Score]
+    H --> K
+    I --> K
+    J --> K
+    K --> L[Ranked Jobs Report]
 ```
 
-The matcher combines several signals:
+The LLM is used for extraction and normalization, not for the final score itself.
 
-- lexical overlap
+It converts noisy resume/job text into structured fields such as:
+- required qualifications
+- preferred qualifications
+- named technologies
+- role family
+- seniority
+- management expectations
+
+The deterministic matcher then combines:
+- lexical overlap on normalized skills
 - semantic similarity from local embeddings
-- deterministic rule-based adjustments
+- qualification-gap penalties
+- management and seniority alignment
 - recency weighting
-- penalties for weak required qualifications
-- extra penalties when named required technologies are not supported by the resume
 
-The final ATS score is a weighted combination of those signals.
+The final ATS score is a weighted combination of those deterministic signals.
 
 ## Automation Flow
 
@@ -73,27 +84,29 @@ flowchart TD
 3. Parse the resume PDF.
 4. Scrape configured job boards.
 5. Skip URLs already known in the DB unless recompute logic requires a fresh scrape path.
-6. Score jobs.
-7. Persist results back to SQLite.
-8. Generate text and JSON reports.
+6. Normalize the resume and each job description into structured fields.
+7. Score jobs deterministically from those normalized fields.
+8. Persist results back to SQLite.
+9. Generate text and JSON reports.
 
 ## Repository Layout
 
 ```text
 job-matcher/
 ├── config/jobs.yaml
+├── requirements.txt
 ├── scripts/
-│   ├── job-artifact-paths.js
+│   ├── job_artifact_paths.py
 │   └── send_report_email.py
 ├── src/
-│   ├── ats/ats-scorer.js
-│   ├── config/config-loader.js
-│   ├── output/report-generator.js
-│   ├── parsers/pdf-parser.js
+│   ├── main.py
+│   ├── ats/
+│   ├── config/
+│   ├── output/
+│   ├── parsers/
 │   ├── scrapers/
-│   └── storage/ats-cache-db.js
-├── output/
-└── package.json
+│   └── storage/
+└── output/
 ```
 
 ## Supported Job Boards
@@ -104,42 +117,32 @@ job-matcher/
 - `custom`
 - `custom-api`
 
-## Scoring Modes
+## LLM Usage
 
-### `local-hybrid`
-Default mode. No LLM API call is required.
+The LLM is used to identify sections in the resume and job description and normalize them into structured fields.
 
-Inputs used in scoring:
-- lexical overlap
-- local embedding similarity
-- rules-based penalties
-- recency decay
-- required qualifications semantic penalties
-- named required technology penalties
+Typical extracted fields include:
+- required qualifications
+- preferred qualifications
+- required and preferred technologies
+- role family
+- seniority
+- management type
+- people-management requirements
 
-Characteristics:
-- deterministic enough to tune
-- cheaper than LLM scoring
-- cached per job URL
-
-### `openrouter`
-Uses OpenRouter for score + reasoning generation.
-
-Use this when you want model-generated ATS analysis and are willing to spend API credits.
+This is intentionally different from asking the LLM to produce the final ATS score.
 
 ## Current Scoring Design
 
-The local scorer combines:
-- lexical score
-- embedding score
-- rules score
+The scorer then operates on those normalized fields and combines:
+- lexical score from normalized skills
+- semantic score from local embeddings
+- management and seniority alignment
 - recency score
+- penalties for weak or unsupported required qualifications
+- lighter penalties for unsupported preferred qualifications
 
-It also applies extra semantic penalties when:
-- required qualifications are weakly matched
-- required bullets mention concrete technologies not semantically supported by the resume
-
-The built-in technology lexicon is intentionally local and editable. It now includes broader software, data, ML, transformer, and agentic terms plus aliases.
+The built-in technology lexicon remains local and editable so concrete stack terms can be tuned over time.
 
 ## Caching Behavior
 
@@ -167,7 +170,7 @@ output_path: "./output/job-matches.txt"
 ats_cache_db_path: "./output/ats-cache.sqlite"
 
 llm:
-  provider: "local-hybrid"  # or openrouter
+  provider: "openrouter"
   api_key: "${OPENROUTER_KEY}"
   model: "deepseek/deepseek-v3.2"
 
@@ -189,17 +192,14 @@ These are used by the GitHub Actions workflow so you do not need to commit YAML 
 From `job-matcher/`:
 
 ```bash
-npm install
-node src/index.js
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+playwright install chromium
+python3 src/main.py
 ```
 
-Or:
-
-```bash
-npm start
-```
-
-If you use `openrouter`, provide the key in the environment or `.env`:
+If you use OpenRouter for normalization, provide the key in the environment or `.env`:
 
 ```bash
 OPENROUTER_KEY=your_key_here
@@ -291,14 +291,14 @@ This is useful when a site renders listings from an API and the browser UI is no
 - Workday DOM variant differs from your existing selectors
 
 ### Scores look too generous
-- increase semantic penalties for required qualifications
-- expand the tech keyword list when a concrete stack term is being missed
+- inspect the normalized required and preferred qualifications in the report
+- increase qualification penalties when concrete stack gaps are underweighted
+- expand the local tech lexicon when a concrete stack term is being missed
 - run with `force_recompute` after changing scoring config
 
 ### Local embedding issues
 - the first run downloads the embedding model
-- different models may or may not support quantized ONNX artifacts
-- the scorer falls back to non-quantized loading when needed
+- model size affects first-run latency and local scoring speed
 
 ### GitHub Actions recompute
 Use the manual action input instead of editing YAML:
