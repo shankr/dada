@@ -6,7 +6,6 @@ import os
 import sys
 from pathlib import Path
 
-# Ensure the project root is on sys.path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from dotenv import load_dotenv
@@ -40,23 +39,22 @@ def main():
     output_path = config["output_path"]
     cache_db_path = config["ats_cache_db_path"]
 
-    # Parse resume
+    ttl_days = int(config.get("scrape_cache_ttl_days", 28))
+    ttl_seconds = ttl_days * 24 * 3600
+
     log.info("Parsing resume: %s", resume_path)
     parser = PDFParser(resume_path)
     resume_data = parser.extract_resume_data()
     log.info("Resume loaded: %d pages, %d characters",
              resume_data["numPages"], len(resume_data["cleanText"]))
 
-    # Initialize cache
     log.info("Cache DB: %s", cache_db_path)
     cache_db = ATSCacheDB(cache_db_path)
     cache_db.initialize()
 
-    # Snapshot known URLs before scraping
     known_urls_before = set(cache_db.get_all_job_urls())
     log.info("Known job URLs in cache: %d", len(known_urls_before))
 
-    # Scrape all job boards
     all_jobs = []
     scraper_instance = BaseScraper({})
 
@@ -65,20 +63,38 @@ def main():
             for board in config["job_boards"]:
                 board_name = board.get("name", "Unknown")
                 board_type = board.get("type", "custom")
-                log.info("=== Scraping board: %s (%s) ===", board_name, board_type)
+
+                log.info("=== Board: %s (%s) ===", board_name, board_type)
+                board_jobs = []
 
                 try:
+                    scraper = get_scraper(board)
                     if board_type == "custom-api":
-                        scraper = get_scraper(board)
                         async for job in scraper.scrape(scraper_instance):
-                            log.info("  ✓ %s", job["title"])
-                            all_jobs.append(job)
+                            board_jobs.append(job)
                     else:
                         await scraper_instance.ensure_browser()
-                        scraper = get_scraper(board)
                         async for job in scraper.scrape(scraper_instance):
+                            board_jobs.append(job)
+
+                    for job in board_jobs:
+                        cached = cache_db.get_scraped_job(board_name, job.get("url"), ttl_seconds)
+                        if cached:
+                            job["description"] = cached.get("description", "")
+                            if not job.get("postedDate"):
+                                job["postedDate"] = cached.get("postedDate", "")
+                            log.info("  ✓ %s (cached listing)", job.get("title", "?")[:60])
+                        else:
                             log.info("  ✓ %s", job["title"])
-                            all_jobs.append(job)
+
+                        cache_db.set_scraped_job(board_name, job)
+
+                    discovered_urls = {j["url"] for j in board_jobs if j.get("url")}
+                    cache_db.prune_scraped_jobs(board_name, discovered_urls)
+
+                    log.info("Board %s done: %d jobs", board_name, len(board_jobs))
+                    all_jobs.extend(board_jobs)
+
                 except Exception as e:
                     log.error("Error scraping %s: %s. Skipping to next board.", board_name, e)
                     continue
@@ -93,7 +109,6 @@ def main():
         log.warning("No jobs scraped. Exiting.")
         sys.exit(0)
 
-    # Mark new jobs
     for job in all_jobs:
         job["isNewThisRun"] = job.get("url") not in known_urls_before
 
@@ -111,12 +126,10 @@ def main():
 
     scored_jobs = scoring_result.get("jobs", [])
 
-    # Attach resume profile to first job for report
     resume_profile = scoring_result.get("normalizedResumeProfile")
     if resume_profile and scored_jobs:
         scored_jobs[0]["normalizedResumeProfile"] = resume_profile
 
-    # Sort by score descending
     scored_jobs.sort(key=lambda j: j.get("atsScore", 0), reverse=True)
 
     resume_info = {

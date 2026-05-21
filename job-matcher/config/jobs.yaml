@@ -16,6 +16,10 @@ max_jobs_per_board: 50
 # Delay between page requests in milliseconds (be respectful to servers)
 request_delay_ms: 2000
 
+# How long before re-scraping a job listing (days)
+# Jobs not re-discovered in a board listing within this window are pruned
+scrape_cache_ttl_days: 28
+
 # LLM Configuration for ATS scoring
 llm:
   # API provider: currently "openrouter" (extensible for future providers)
@@ -24,6 +28,8 @@ llm:
   api_key: "${OPENROUTER_KEY}"
   # Model to use for extraction
   model: "deepseek/deepseek-v3.2"
+  # Bump this when changing the LLM model/prompt to invalidate old caches
+  extraction_version: 1
 
 # Scoring configuration (weights and thresholds for the local scoring engine)
 scoring:
@@ -92,54 +98,54 @@ job_boards:
       require_link: true
       url_pattern: "/en-us/details/"
 
-  - name: "Redfin"
+  - name: "Rocket"
     type: "custom-api"
-    url: "https://careers.redfin.com/widgets"
-    api:
-      http_method: "POST"
-      headers:
-        Content-Type: "application/json"
-        Origin: "https://careers.redfin.com"
-        Referer: "https://careers.redfin.com/us/en/c/engineering-product-jobs"
-      session_bootstrap:
-        enabled: true
-        url: "https://careers.redfin.com/us/en/c/engineering-product-jobs"
-      payload:
-        sortBy: ""
-        subsearch: ""
-        from: 0
-        jobs: true
-        counts: true
-        all_fields: ["category","country","state","city","type"]
-        pageName: "search-results"
-        size: 10
-        clearAll: false
-        jdsource: "facets"
-        isSliderEnable: false
-        pageId: "page10"
-        siteType: "external"
-        keywords: ""
-        global: true
-        selected_fields:
-          category: ["Engineering & Product"]
-          city: ["Seattle","Remote"]
-        lang: "en_us"
-        deviceType: "desktop"
-        country: "us"
-        refNum: "REFREDUS"
-        ddoKey: "refineSearch"
+    url: "https://careers.rocket.com/widgets"
+    method: "POST"
+    headers:
+      Content-Type: "application/json"
+      Origin: "https://careers.rocket.com"
+      Referer: "https://careers.rocket.com/us/en/search-results"
+    body:
+      ddoKey: "refineSearch"
+      sortBy: ""
+      subsearch: ""
+      jobs: true
+      counts: true
+      all_fields:
+        - "category"
+        - "country"
+        - "state"
+        - "city"
+        - "type"
+      pageName: "search-results"
+      clearAll: false
+      jdsource: "facets"
+      isSliderEnable: false
+      pageId: "page34"
+      siteType: "external"
+      keywords: "software engineer"
+      global: true
+      selected_fields:
+        city: ["Seattle"]
+      lang: "en_us"
+      deviceType: "desktop"
+      country: "us"
+      refNum: "RCARCAUS"
+    pagination:
+      size: 10
+      max_pages: 10
+      offset_field: "from"
+      limit_field: "size"
       results_path: "refineSearch.data.jobs"
       total_path: "refineSearch.totalHits"
-      title_path: "title"
-      location_path: "location"
-      url_path: "applyUrl"
-      description_path: "ml_job_parser.descriptionTeaser_ats"
-      posted_date_path: "postedDate"
-      pagination:
-        offset_field: "from"
-        size_field: "size"
-        offset_start: 0
-        page_size: 10
+    fields:
+      title: "title"
+      location: "location"
+      url: "applyUrl"
+      description: "ml_job_parser.descriptionTeaser_ats"
+      posted_date: "postedDate"
+      company: "companyName"
 
   - name: "GEICO"
     type: "workday"

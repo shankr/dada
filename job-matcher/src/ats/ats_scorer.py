@@ -202,17 +202,33 @@ class ATSScorer:
         llm_cfg = self.config.get("llm", {})
         api_key = llm_cfg.get("api_key") or os.environ.get("OPENROUTER_KEY", "")
         model = llm_cfg.get("model", "openrouter/auto")
+        llm_version = int(llm_cfg.get("extraction_version", 1))
 
         scored = []
         total = len(jobs)
 
-        resume_profile = await self._compute_resume_profile(resume_text, api_key, model)
+        resume_profile = None
+        resume_key = self.cache_db.compute_resume_key(resume_text) if resume_text else None
+        cached_resume = self.cache_db.get_resume_profile(resume_key, llm_version) if resume_key else None
+        if cached_resume is not None:
+            resume_profile = cached_resume
+            log.info("Resume profile loaded from cache (v%s)", llm_version)
+
+        if not force_recompute:
+            uncached = [j for j in jobs if not self.cache_db.get_by_url(j.get("url"), llm_version, resume_key or "")]
+        else:
+            uncached = list(jobs)
+
+        if resume_profile is None and uncached:
+            resume_profile = await self._compute_resume_profile(resume_text, api_key, model)
+            if resume_key:
+                resume_path = self.config.get("resume_path", "")
+                self.cache_db.set_resume_profile(resume_key, llm_version, resume_path, resume_profile)
+        elif not uncached:
+            log.info("All jobs cached, skipping LLM entirely")
 
         for idx, job in enumerate(jobs):
-            if on_progress:
-                on_progress(job, idx, total)
-
-            cached = None if force_recompute else self.cache_db.get_by_url(job.get("url"))
+            cached = None if force_recompute else self.cache_db.get_by_url(job.get("url"), llm_version, resume_key or "")
             if cached:
                 job_data = dict(job)
                 stored_job = self.cache_db.get_job_by_url(job.get("url")) if job.get("url") else None
@@ -227,7 +243,11 @@ class ATSScorer:
                     job_data["firstSeenAt"] = stored_job.get("firstSeenAt", "")
                     job_data["lastSeenAt"] = stored_job.get("lastSeenAt", "")
                 scored.append(job_data)
+                log.info("  ✓ %s (cached, score: %d)", job.get("title", "")[:60], job_data["atsScore"])
                 continue
+
+            if on_progress:
+                on_progress(job, idx, total)
 
             job_profile = await self._normalize_job_profile_with_llm(job, api_key, model)
 
@@ -270,6 +290,8 @@ class ATSScorer:
                 },
                 f"extract:{model}",
                 model,
+                llm_version,
+                resume_key or "",
             )
             stored_job = self.cache_db.get_job_by_url(job_data.get("url")) if job_data.get("url") else None
             if stored_job:
