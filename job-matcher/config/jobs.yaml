@@ -29,7 +29,7 @@ llm:
   # Model to use for extraction
   model: "deepseek/deepseek-v3.2"
   # Bump this when changing the LLM model/prompt to invalidate old caches
-  extraction_version: 1
+  extraction_version: 2
 
 # Scoring configuration (weights and thresholds for the local scoring engine)
 scoring:

@@ -1,6 +1,5 @@
 import json
 import logging
-import math
 import os
 import re
 from datetime import datetime, timezone
@@ -123,6 +122,11 @@ STOPWORDS = {
     "up", "down", "out", "into", "through", "using", "use", "used",
     "uses", "based", "within", "per", "etc",
 }
+
+STRENGTH_WEIGHTS = {"expert": 1.0, "strong": 0.8, "proficient": 0.6, "familiar": 0.4}
+
+
+
 
 SENIORITY_ORDER = {
     "intern": 0, "junior": 1, "mid": 2, "senior": 3,
@@ -261,6 +265,9 @@ class ATSScorer:
                 "preferredSkillsRatio": score_data["preferred_skills_ratio"],
                 "domainMatch": score_data["domain_ratio"],
                 "roleMatch": score_data["role_match"],
+                "roleSimilarity": score_data.get("role_similarity"),
+                "rolePenalty": score_data.get("role_penalty", 0),
+                "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
                 "managementMatch": score_data["management_match"],
                 "seniorityMatch": score_data["seniority_match"],
                 "matchedRequired": score_data["matched_required"],
@@ -348,6 +355,8 @@ class ATSScorer:
         )
         return {
             "role_family": self._normalize_role_family("unknown", text),
+            "secondary_role_families": [],
+            "role_features": [],
             "seniority": self._normalize_seniority("unknown", text),
             "management_type": management_type,
             "people_management_required": people_management_required,
@@ -503,6 +512,17 @@ class ATSScorer:
 
         required_ratio = len(matched_required) / len(required_skills) if required_skills else 1.0
 
+        skills_with_strength = resume_profile.get("skills_with_strength", {})
+        if skills_with_strength and matched_required:
+            weighted_matches = 0.0
+            for skill in matched_required:
+                strength = skills_with_strength.get(skill, "familiar")
+                weight = STRENGTH_WEIGHTS.get(strength, 0.4)
+                weighted_matches += weight
+            skill_strength_factor = weighted_matches / len(matched_required)
+        else:
+            skill_strength_factor = 1.0
+
         preferred_skills = job_profile.get("preferred_skills", [])
         matched_preferred = sorted(set(preferred_skills) & resume_skills)
         preferred_ratio = len(matched_preferred) / len(preferred_skills) if preferred_skills else 1.0
@@ -512,10 +532,25 @@ class ATSScorer:
         matched_domains = sorted(set(req_domains) & domains)
         domain_ratio = len(matched_domains) / len(req_domains) if req_domains else 1.0
 
-        role_match = 1.0 if (
-            job_profile["role_family"] == "unknown"
-            or job_profile["role_family"] in set(resume_profile.get("role_families", []))
-        ) else 0.0
+        resume_features = resume_profile.get("role_features", [])
+        job_features = job_profile.get("role_features", [])
+        if resume_features and job_features:
+            role_sim = self._compute_role_feature_similarity(resume_features, job_features)
+        else:
+            role_sim = 1.0 if (
+                job_profile["role_family"] == "unknown"
+                or job_profile["role_family"] in set(resume_profile.get("role_families", []))
+            ) else 0.0
+
+        role_match = role_sim
+
+        role_penalty = 0.0
+        if role_sim < 0.1 and job_profile["role_family"] != "unknown":
+            role_penalty = 0.25
+        elif role_sim < 0.3:
+            role_penalty = 0.15
+        elif role_sim < 0.5:
+            role_penalty = 0.05
 
         management_match, management_notes = self._compute_management_match(
             resume_profile, job_profile
@@ -529,7 +564,7 @@ class ATSScorer:
         explicit_ratio = self._compute_explicit_match_ratio(resume_text, job)
 
         lexical_score = (
-            required_ratio * 0.35
+            required_ratio * 0.35 * skill_strength_factor
             + explicit_ratio * 0.25
             + preferred_ratio * 0.10
             + role_match * 0.10
@@ -551,7 +586,7 @@ class ATSScorer:
             lexical_score * weights["lexical"]
             + embedding_score * weights["embedding"]
             + recency_score * weights["recency"]
-        ) - penalty
+        ) - penalty - role_penalty
         final_score = max(0.0, min(1.0, final_score))
 
         return {
@@ -565,6 +600,9 @@ class ATSScorer:
             "missing_required": missing_required,
             "missing_preferred": sorted(set(preferred_skills) - resume_skills),
             "role_match": role_match,
+            "role_similarity": role_sim,
+            "role_penalty": role_penalty,
+            "skill_strength_factor": skill_strength_factor,
             "management_match": management_match,
             "seniority_match": seniority_match,
             "management_notes": management_notes,
@@ -597,6 +635,20 @@ class ATSScorer:
         if r + 1 < j:
             return 0.25
         return 1.0
+
+    def _compute_role_feature_similarity(self, resume_features, job_features):
+        if not resume_features or not job_features:
+            return 0.5
+        try:
+            resume_text = " ".join(resume_features)
+            job_text = " ".join(job_features)
+            model = self._get_embedding_model()
+            emb_resume = model.encode(resume_text, normalize_embeddings=True)
+            emb_job = model.encode(job_text, normalize_embeddings=True)
+            return float(emb_resume @ emb_job)
+        except Exception:
+            log.warning("Role feature embedding failed, defaulting")
+            return 0.5
 
     def _compute_embedding_score(self, resume_text, job_description, job_profile):
         if not resume_text or not job_description:
@@ -882,6 +934,18 @@ class ATSScorer:
             f"Normalized role: {job_profile['role_family']} / {job_profile['seniority']} / {job_profile['management_type']}.",
             f"Required skill match: {len(score_data['matched_required'])}/{len(job_profile['required_skills'])}.",
         ]
+
+        role_sim = score_data.get("role_similarity")
+        if role_sim is not None:
+            lines.append(f"Role type similarity: {role_sim:.2f}.")
+
+        skill_factor = score_data.get("skill_strength_factor")
+        if skill_factor is not None and skill_factor != 1.0:
+            lines.append(f"Skill strength adjustment: {skill_factor:.2f}.")
+
+        role_penalty = score_data.get("role_penalty", 0)
+        if role_penalty > 0:
+            lines.append(f"Role mismatch penalty: -{role_penalty:.2f}.")
         if job_profile.get("preferred_skills"):
             lines.append(
                 f"Preferred skill match: {len(score_data['matched_preferred'])}/{len(job_profile['preferred_skills'])}."

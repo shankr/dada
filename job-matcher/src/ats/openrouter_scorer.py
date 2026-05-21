@@ -46,6 +46,9 @@ DOMAIN_ONTOLOGY = [
     "consumer", "enterprise saas", "data platform", "observability"
 ]
 
+STRENGTH_LEVELS = ["expert", "strong", "proficient", "familiar"]
+STRENGTH_WEIGHTS = {"expert": 1.0, "strong": 0.8, "proficient": 0.6, "familiar": 0.4}
+
 ROLE_KEYWORDS = {
     "backend": ["backend", "server", "api", "distributed systems"],
     "frontend": ["frontend", "ui", "web application", "react", "angular", "vue"],
@@ -116,8 +119,11 @@ def build_resume_prompt(resume_text):
     schema = {
         "candidate_seniority": "string",
         "management_type": "string",
+        "primary_role_type": "string",
         "role_families": ["string"],
+        "role_features": ["string"],
         "skills": ["string"],
+        "skills_with_strength": [{"skill": "string", "strength": "string"}],
         "domains": ["string"],
         "leadership_signals": ["string"],
         "location": "string|null",
@@ -127,6 +133,10 @@ def build_resume_prompt(resume_text):
     return (
         "Extract a normalized candidate profile from the resume. "
         "Return JSON only. Do not invent facts. Use `unknown` when unclear. "
+        "Identify the candidate's primary_role_type (e.g. backend, frontend, full-stack, mobile, data, machine-learning, devops). "
+        "Extract role_features: a list of ~3-8 free-form strings describing the candidate's core technical domain (e.g. 'server-side development', 'API design', 'distributed systems'). "
+        "Extract skills_with_strength: rate each skill as 'expert', 'strong', 'proficient', or 'familiar'. "
+        "Skills listed first or mentioned most frequently/deeply in experience should be rated higher. "
         f"Expected schema: {json.dumps(schema)}\n\n"
         f"Resume text:\n{resume_text[:12000]}"
     )
@@ -135,6 +145,8 @@ def build_resume_prompt(resume_text):
 def build_job_prompt(job):
     schema = {
         "role_family": "string",
+        "secondary_role_families": ["string"],
+        "role_features": ["string"],
         "seniority": "string",
         "management_type": "string",
         "people_management_required": "boolean",
@@ -152,6 +164,8 @@ def build_job_prompt(job):
     return (
         "Extract normalized job fields from the posting. "
         "Return JSON only. Do not invent requirements. Use `unknown`, empty arrays, or false when unclear. "
+        "Identify the job's role_family (primary software engineering type) and secondary_role_families if the role spans multiple areas. "
+        "Extract role_features: a list of ~3-8 free-form strings describing the job's core technical domain (e.g. 'mobile development', 'iOS', 'UI implementation'). "
         f"Expected schema: {json.dumps(schema)}\n\n"
         f"Job title: {job.get('title', '')}\n"
         f"Company: {job.get('company', '')}\n"
@@ -270,6 +284,23 @@ def normalize_domain_list(values, source_text):
     return sorted(items)
 
 
+def normalize_skills_with_strength(raw_list):
+    result = {}
+    if not isinstance(raw_list, list):
+        return result
+    for entry in raw_list:
+        if not isinstance(entry, dict):
+            continue
+        skill = normalize_text(str(entry.get("skill", "")))
+        strength = normalize_text(str(entry.get("strength", "familiar"))).lower()
+        if not skill:
+            continue
+        if strength not in STRENGTH_LEVELS:
+            strength = "familiar"
+        result[skill] = strength
+    return result
+
+
 def normalize_resume_profile(raw_profile, resume_text):
     profile = raw_profile if isinstance(raw_profile, dict) else {}
     role_families = listify(profile.get("role_families"))
@@ -277,11 +308,20 @@ def normalize_resume_profile(raw_profile, resume_text):
         inferred = normalize_role_family("", resume_text)
         role_families = [inferred] if inferred != "unknown" else []
 
+    primary = normalize_text(str(profile.get("primary_role_type", ""))).lower()
+    if not primary or primary == "unknown":
+        primary = role_families[0] if role_families else "unknown"
+
+    skills_with_strength = normalize_skills_with_strength(profile.get("skills_with_strength"))
+
     return {
         "candidate_seniority": normalize_seniority(profile.get("candidate_seniority", "unknown"), resume_text),
         "management_type": normalize_management_type(profile.get("management_type", "unclear"), resume_text),
+        "primary_role_type": primary,
         "role_families": sorted(set(role_families)),
+        "role_features": listify(profile.get("role_features")),
         "skills": normalize_skill_list(profile.get("skills"), resume_text),
+        "skills_with_strength": skills_with_strength,
         "domains": normalize_domain_list(profile.get("domains"), resume_text),
         "leadership_signals": listify(profile.get("leadership_signals")),
         "location": normalize_text(profile.get("location") or ""),
@@ -293,8 +333,17 @@ def normalize_resume_profile(raw_profile, resume_text):
 def normalize_job_profile(raw_profile, job):
     text = f"{job.get('title', '')} {(job.get('description') or '')}"
     profile = raw_profile if isinstance(raw_profile, dict) else {}
+
+    secondary = []
+    for rf in listify(profile.get("secondary_role_families")):
+        cleaned = normalize_role_family(rf, text)
+        if cleaned not in ("unknown", profile.get("role_family", "")):
+            secondary.append(cleaned)
+
     return {
         "role_family": normalize_role_family(profile.get("role_family", "unknown"), text),
+        "secondary_role_families": secondary,
+        "role_features": listify(profile.get("role_features")),
         "seniority": normalize_seniority(profile.get("seniority", "unknown"), text),
         "management_type": normalize_management_type(profile.get("management_type", "unclear"), text),
         "people_management_required": bool(profile.get("people_management_required", False)),
@@ -341,9 +390,19 @@ def compute_score(resume_profile, job_profile):
     preferred_ratio, matched_preferred = overlap_ratio(job_profile["preferred_skills"], resume_profile["skills"])
     domain_ratio, matched_domains = overlap_ratio(job_profile["required_domains"], resume_profile["domains"])
 
+    skills_with_strength = resume_profile.get("skills_with_strength", {})
+    if skills_with_strength and matched_required:
+        weighted_matches = sum(
+            STRENGTH_WEIGHTS.get(skills_with_strength.get(skill, "familiar"), 0.4)
+            for skill in matched_required
+        )
+        skill_strength_factor = weighted_matches / len(matched_required)
+    else:
+        skill_strength_factor = 1.0
+
     role_match = 1.0 if (
         job_profile["role_family"] == "unknown"
-        or job_profile["role_family"] in set(resume_profile["role_families"])
+        or job_profile["role_family"] in set(resume_profile.get("role_families", []))
     ) else 0.0
 
     management_match = 1.0
@@ -366,9 +425,9 @@ def compute_score(resume_profile, job_profile):
         seniority_match = 0.25
 
     score = (
-        required_ratio * 0.45 +
+        required_ratio * 0.35 * skill_strength_factor +
         preferred_ratio * 0.10 +
-        role_match * 0.15 +
+        role_match * 0.20 +
         management_match * 0.15 +
         seniority_match * 0.10 +
         domain_ratio * 0.05
@@ -388,6 +447,9 @@ def compute_score(resume_profile, job_profile):
         "missing_required": missing_required,
         "missing_preferred": missing_preferred,
         "role_match": role_match,
+        "role_similarity": role_match,
+        "role_penalty": 0,
+        "skill_strength_factor": skill_strength_factor,
         "management_match": management_match,
         "seniority_match": seniority_match,
         "management_notes": management_notes,
@@ -399,6 +461,18 @@ def build_reasoning(job_profile, score_data):
         f"Normalized role: {job_profile['role_family']} / {job_profile['seniority']} / {job_profile['management_type']}.",
         f"Required skill match: {len(score_data['matched_required'])}/{len(job_profile['required_skills'])}.",
     ]
+
+    role_sim = score_data.get("role_similarity")
+    if role_sim is not None:
+        lines.append(f"Role type similarity: {role_sim:.2f}.")
+
+    skill_factor = score_data.get("skill_strength_factor")
+    if skill_factor is not None and skill_factor != 1.0:
+        lines.append(f"Skill strength adjustment: {skill_factor:.2f}.")
+
+    role_penalty = score_data.get("role_penalty", 0)
+    if role_penalty > 0:
+        lines.append(f"Role mismatch penalty: -{role_penalty:.2f}.")
 
     if job_profile["preferred_skills"]:
         lines.append(
@@ -461,6 +535,9 @@ def openrouter_score_jobs(api_key, model, resume_text, jobs):
                     "preferredSkillsRatio": score_data["preferred_skills_ratio"],
                     "domainMatch": score_data["domain_ratio"],
                     "roleMatch": score_data["role_match"],
+                    "roleSimilarity": score_data.get("role_similarity"),
+                    "rolePenalty": score_data.get("role_penalty", 0),
+                    "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
                     "managementMatch": score_data["management_match"],
                     "seniorityMatch": score_data["seniority_match"],
                     "matchedRequired": score_data["matched_required"],
@@ -524,6 +601,9 @@ def main():
                     "preferredSkillsRatio": score_data["preferred_skills_ratio"],
                     "domainMatch": score_data["domain_ratio"],
                     "roleMatch": score_data["role_match"],
+                    "roleSimilarity": score_data.get("role_similarity"),
+                    "rolePenalty": score_data.get("role_penalty", 0),
+                    "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
                     "managementMatch": score_data["management_match"],
                     "seniorityMatch": score_data["seniority_match"],
                     "matchedRequired": score_data["matched_required"],
