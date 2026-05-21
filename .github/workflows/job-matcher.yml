@@ -52,7 +52,6 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
-          role-duration-seconds: 14400
 
       - name: Restore resume from S3
         env:
@@ -83,6 +82,13 @@ jobs:
           OPENROUTER_KEY: ${{ secrets.OPENROUTER_KEY }}
           JOB_MATCHER_OUTPUT_PATH: ${{ env.JOB_MATCHER_OUTPUT_TXT }}
         run: python3 src/main.py
+
+      - name: Refresh AWS credentials for upload
+        if: ${{ always() }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload latest artifacts to S3
         if: ${{ always() }}
