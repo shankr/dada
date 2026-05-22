@@ -117,12 +117,22 @@ class CustomAPIScraper:
                         continue
                     known_urls.add(job_url)
 
+                    description = self._extract_nested(item, fields.get("description", ""))
+
+                    detail_cfg = cfg.get("detail")
+                    if detail_cfg and not description:
+                        detail_url = self._extract_nested(item, detail_cfg.get("url_field", ""))
+                        if detail_url:
+                            fetched = await self._fetch_detail(detail_url, detail_cfg, name)
+                            if fetched:
+                                description = fetched
+
                     yield {
                         "url": job_url,
                         "title": self._extract_nested(item, fields.get("title", "")),
                         "company": self._extract_nested(item, fields.get("company", name)),
                         "location": self._extract_nested(item, fields.get("location", "")),
-                        "description": self._extract_nested(item, fields.get("description", "")),
+                        "description": description,
                         "source": name,
                         "postedDate": self._extract_nested(item, fields.get("posted_date", "")),
                     }
@@ -146,7 +156,53 @@ class CustomAPIScraper:
             bs_url = bs_cfg.get("url")
             if not bs_url:
                 log.warning("  Bootstrap missing URL for %s", board_name)
-                return result
+        return result
+
+    async def _fetch_detail(self, detail_url, detail_cfg, board_name):
+        method = detail_cfg.get("method", "GET").upper()
+        headers = detail_cfg.get("headers", {})
+        body_template = detail_cfg.get("body")
+
+        try:
+            async with httpx.AsyncClient(headers=headers, timeout=30.0) as client:
+                if method == "POST":
+                    body = dict(body_template) if body_template else {}
+                    resp = await client.post(detail_url, json=body)
+                else:
+                    resp = await client.get(detail_url)
+
+                if resp.status_code != 200:
+                    return None
+
+                html = resp.text
+                ld_json = re.search(r'<script type="application/ld\+json">(.*?)</script>', html, re.DOTALL)
+                if ld_json:
+                    try:
+                        ld_data = json.loads(ld_json.group(1))
+                        desc = ld_data.get("description", "")
+                        if len(desc) > 500:
+                            return desc
+                    except (json.JSONDecodeError, TypeError):
+                        pass
+
+                meta_desc = re.search(r'<meta\s+name="description"\s+content="([^"]*)"', html, re.I)
+                if meta_desc:
+                    desc = meta_desc.group(1)
+                    if len(desc) > 500:
+                        return desc
+
+                body_text = re.search(r'<body[^>]*>(.*?)</body>', html, re.DOTALL)
+                if body_text:
+                    text = re.sub(r'<[^>]+>', ' ', body_text.group(1))
+                    text = re.sub(r'\s+', ' ', text).strip()
+                    if len(text) > 500:
+                        return text[:10000]
+
+                log.info("  Could not extract detail from %s for %s", detail_url[:60], board_name)
+                return None
+        except Exception as exc:
+            log.warning("  Detail fetch failed for %s: %s", detail_url[:60], exc)
+            return None
 
             page = await base_scraper.new_page()
             try:

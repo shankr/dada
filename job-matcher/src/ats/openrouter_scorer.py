@@ -85,7 +85,6 @@ def build_resume_prompt(resume_text):
         "management_type": "string",
         "primary_role_type": "string",
         "role_families": ["string"],
-        "role_features": ["string"],
         "skills": ["string"],
         "skills_with_strength": [{"skill": "string", "strength": "string"}],
         "domains": ["string"],
@@ -95,13 +94,25 @@ def build_resume_prompt(resume_text):
         "evidence": ["string"],
     }
     return (
-        "Extract a normalized candidate profile from the resume. "
-        "Return JSON only. Do not invent facts. Use `unknown` when unclear. "
-        "Identify the candidate's primary_role_type (e.g. backend, frontend, full-stack, mobile, data, machine-learning, devops). "
-        "Extract role_features: a list of ~3-8 free-form strings describing the candidate's core technical domain (e.g. 'server-side development', 'API design', 'distributed systems'). "
-        "Extract skills_with_strength: rate each skill as 'expert', 'strong', 'proficient', or 'familiar'. "
-        "Skills listed first or mentioned most frequently/deeply in experience should be rated higher. "
-        f"Expected schema: {json.dumps(schema)}\n\n"
+        "Extract a normalized candidate profile from the resume. Return JSON only. Do not invent facts. "
+        "Use `unknown` when unclear.\n\n"
+        "1. Extract these fields from the resume:\n"
+        f"   Schema: {json.dumps(schema)}\n\n"
+        "2. Normalize all values:\n"
+        "- Role families, primary_role_type: use ONLY these exact values — "
+        "backend, frontend, full-stack, mobile, ios, android, machine-learning, data, "
+        "data-platform, analytics, security, infrastructure, platform, devops, sre, cloud, qa, "
+        "management, product-engineering. "
+        "Include expanded secondary role_families (backend -> distributed-systems; full-stack -> frontend+backend; "
+        "ML engineer -> data). Use hyphens not underscores or spaces.\n"
+        "- Skills: standard forms (React not react.js, Go not golang, Kubernetes not k8s, "
+        "PostgreSQL not postgresql, TypeScript not ts, etc.)\n"
+        "- Management type: ic, ic_lead, people_manager, executive_manager, unclear. "
+        "lead/tech-lead/team-lead -> ic_lead; manager-of-people/director -> people_manager.\n"
+        "- Seniority: intern, junior, mid, senior, staff, principal, unknown.\n"
+        "- Skills_with_strength: rate each as 'expert', 'strong', 'proficient', or 'familiar'. "
+        "Skills listed first or most frequently/deeply -> higher rating.\n"
+        "- Domains: expand to include related areas.\n\n"
         f"Resume text:\n{resume_text[:12000]}"
     )
 
@@ -110,7 +121,6 @@ def build_job_prompt(job):
     schema = {
         "role_family": "string",
         "secondary_role_families": ["string"],
-        "role_features": ["string"],
         "seniority": "string",
         "management_type": "string",
         "people_management_required": "boolean",
@@ -126,11 +136,21 @@ def build_job_prompt(job):
         "evidence": ["string"],
     }
     return (
-        "Extract normalized job fields from the posting. "
-        "Return JSON only. Do not invent requirements. Use `unknown`, empty arrays, or false when unclear. "
-        "Identify the job's role_family (primary software engineering type) and secondary_role_families if the role spans multiple areas. "
-        "Extract role_features: a list of ~3-8 free-form strings describing the job's core technical domain (e.g. 'mobile development', 'iOS', 'UI implementation'). "
-        f"Expected schema: {json.dumps(schema)}\n\n"
+        "Extract normalized job fields from the posting. Return JSON only. "
+        "Do not invent requirements. Use `unknown`, empty arrays, or false when unclear.\n\n"
+        "1. Extract these fields from the job description:\n"
+        f"   Schema: {json.dumps(schema)}\n\n"
+        "2. Normalize all values:\n"
+        "- Role family, secondary_role_families: use ONLY these exact values — "
+        "backend, frontend, full-stack, mobile, ios, android, machine-learning, data, "
+        "data-platform, analytics, security, infrastructure, platform, devops, sre, cloud, qa, "
+        "management, product-engineering. "
+        "Include ALL secondary families the role spans. Use hyphens not underscores or spaces.\n"
+        "- Skills: standard forms (React not react.js, Go not golang, Kubernetes not k8s, "
+        "PostgreSQL not postgresql, TypeScript not ts, etc.)\n"
+        "- Management type: ic, ic_lead, people_manager, executive_manager, unclear. "
+        "tech-lead/lead -> unclear/ic_lead; manager-of-people -> people_manager.\n"
+        "- Seniority: intern, junior, mid, senior, staff, principal, unknown.\n\n"
         f"Job title: {job.get('title', '')}\n"
         f"Company: {job.get('company', '')}\n"
         f"Location: {job.get('location', '')}\n"

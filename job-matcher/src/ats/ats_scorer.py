@@ -135,7 +135,16 @@ class ATSScorer:
             if on_progress:
                 on_progress(job, idx, total)
 
-            job_profile = await self._normalize_job_profile_with_llm(job, api_key, model)
+            try:
+                job_profile = await self._normalize_job_profile_with_llm(job, api_key, model)
+            except Exception as exc:
+                log.error("LLM extraction failed for %s after retries: %s", job.get("title", ""), exc)
+                job_data = dict(job)
+                job_data["atsScore"] = 0
+                job_data["atsReasoning"] = f"Error: LLM extraction failed: {exc}"
+                job_data["scoredAt"] = datetime.now(timezone.utc).isoformat()
+                scored.append(job_data)
+                continue
 
             score_data = self._compute_score(resume_profile, job_profile, job, resume_text)
             reasoning = self._build_reasoning(job_profile, score_data)
@@ -147,7 +156,6 @@ class ATSScorer:
                 "preferredSkillsRatio": score_data["preferred_skills_ratio"],
                 "domainMatch": score_data["domain_ratio"],
                 "roleMatch": score_data["role_match"],
-                "roleSimilarity": score_data.get("role_similarity"),
                 "rolePenalty": score_data.get("role_penalty", 0),
                 "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
                 "managementMatch": score_data["management_match"],
@@ -158,7 +166,6 @@ class ATSScorer:
                 "missingRequired": score_data["missing_required"],
                 "missingPreferred": score_data["missing_preferred"],
                 "managementNotes": score_data.get("management_notes", []),
-                "explicitMatchRatio": score_data.get("explicit_match_ratio"),
                 "qualificationAnalysis": score_data.get("qualification_analysis"),
             }
             job_data["atsScore"] = score_data["score"]

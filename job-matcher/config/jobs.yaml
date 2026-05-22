@@ -33,7 +33,7 @@ llm:
 
 # Scoring configuration (weights and thresholds for the local scoring engine)
 scoring:
-  force_recompute: false
+  force_recompute: true
   embedding_model: "BAAI/bge-small-en-v1.5"
   weights:
     lexical: 0.20
@@ -143,9 +143,12 @@ job_boards:
       title: "title"
       location: "location"
       url: "applyUrl"
-      description: "ml_job_parser.descriptionTeaser_ats"
+      description: ""
       posted_date: "postedDate"
       company: "companyName"
+    detail:
+      url_field: "applyUrl"
+      method: "GET"
 
   - name: "GEICO"
     type: "workday"
