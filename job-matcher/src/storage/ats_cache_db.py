@@ -283,6 +283,24 @@ class ATSCacheDB:
 
     # ── Scrape cache (key: board_name + job_url) ─────────────────────
 
+    def get_board_urls(self, board_name, ttl_seconds):
+        if not board_name:
+            return set()
+        cursor = self._conn.execute(
+            "SELECT job_url, last_seen_at FROM scrape_cache WHERE board_name=?",
+            (board_name,),
+        )
+        now = datetime.now(timezone.utc)
+        cached = set()
+        for row in cursor.fetchall():
+            try:
+                last_seen = datetime.fromisoformat(row["last_seen_at"])
+                if (now - last_seen).total_seconds() <= ttl_seconds:
+                    cached.add(row["job_url"])
+            except (ValueError, TypeError):
+                pass
+        return cached
+
     def get_scraped_job(self, board_name, job_url, ttl_seconds):
         if not board_name or not job_url:
             return None

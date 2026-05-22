@@ -52,7 +52,7 @@ class CustomAPIScraper:
             return " ".join(parts)
         return ""
 
-    async def scrape(self, base_scraper):
+    async def scrape(self, base_scraper, cached_urls=None):
         cfg = self.board_config
         url = cfg["url"]
         name = cfg.get("name", "CustomAPI")

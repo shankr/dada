@@ -63,7 +63,8 @@ class WorkdayScraper:
                 return m.group(1).strip()
         return ""
 
-    async def scrape(self, base_scraper):
+    async def scrape(self, base_scraper, cached_urls=None):
+        cached_urls = cached_urls or set()
         url = self.board_config["url"]
         max_pages = self.board_config.get("max_pages", 10)
         known_urls = set()
@@ -96,16 +97,19 @@ class WorkdayScraper:
 
                     posted_date = ""
                     job_desc = ""
-                    try:
-                        detail_page = await base_scraper.new_page()
+                    if job_link in cached_urls:
+                        log.info("  ∘ %s (cached detail, skip fetch)", title[:60])
+                    else:
                         try:
-                            await base_scraper.goto_with_retry(detail_page, job_link)
-                            job_desc = await self._get_description(detail_page)
-                            posted_date = await self._get_posted_date(detail_page)
-                        finally:
-                            await detail_page.close()
-                    except Exception:
-                        log.warning("  Could not load detail for %s", title)
+                            detail_page = await base_scraper.new_page()
+                            try:
+                                await base_scraper.goto_with_retry(detail_page, job_link)
+                                job_desc = await self._get_description(detail_page)
+                                posted_date = await self._get_posted_date(detail_page)
+                            finally:
+                                await detail_page.close()
+                        except Exception:
+                            log.warning("  Could not load detail for %s", title)
 
                     yield {
                         "url": job_link,

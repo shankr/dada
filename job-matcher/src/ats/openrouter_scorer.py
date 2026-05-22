@@ -1,71 +1,18 @@
 #!/usr/bin/env python3
 
+import logging
 import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 
+log = logging.getLogger(__name__)
 
-ROLE_FAMILIES = [
-    "backend", "frontend", "full-stack", "mobile", "ios", "android",
-    "machine-learning", "data", "data-platform", "analytics", "security",
-    "infrastructure", "platform", "devops", "sre", "cloud", "qa",
-    "management", "product-engineering"
-]
-
-SENIORITY_LEVELS = [
-    "intern", "junior", "mid", "senior", "staff", "principal",
-    "manager", "senior-manager", "director", "unknown"
-]
-
-MANAGEMENT_TYPES = [
-    "ic", "ic_lead", "people_manager", "executive_manager", "unclear"
-]
-
-SKILL_ONTOLOGY = [
-    "python", "java", "javascript", "typescript", "node.js", "react",
-    "angular", "vue", "go", "golang", "ruby", "rails", "php", "c#",
-    ".net", "scala", "kotlin", "swift", "sql", "postgresql", "mysql",
-    "mongodb", "redis", "elasticsearch", "spark", "hadoop", "airflow",
-    "dbt", "snowflake", "bigquery", "aws", "gcp", "azure", "docker",
-    "kubernetes", "terraform", "pulumi", "ansible", "jenkins", "github actions",
-    "grpc", "rest", "graphql", "microservices", "distributed systems",
-    "system design", "linux", "ci/cd", "observability", "prometheus",
-    "grafana", "machine learning", "llm", "rag", "vector database",
-    "pytorch", "tensorflow", "scikit-learn", "nlp", "computer vision",
-    "security", "oauth", "oidc", "saml", "networking", "leadership",
-    "mentoring", "people management", "architecture", "product sense"
-]
-
-DOMAIN_ONTOLOGY = [
-    "fintech", "e-commerce", "developer tools", "cloud infrastructure",
-    "machine learning", "ml platform", "ads", "security", "healthcare",
-    "consumer", "enterprise saas", "data platform", "observability"
-]
-
-STRENGTH_LEVELS = ["expert", "strong", "proficient", "familiar"]
 STRENGTH_WEIGHTS = {"expert": 1.0, "strong": 0.8, "proficient": 0.6, "familiar": 0.4}
-
-ROLE_KEYWORDS = {
-    "backend": ["backend", "server", "api", "distributed systems"],
-    "frontend": ["frontend", "ui", "web application", "react", "angular", "vue"],
-    "full-stack": ["full stack", "full-stack"],
-    "mobile": ["mobile"],
-    "ios": ["ios", "swift"],
-    "android": ["android", "kotlin"],
-    "machine-learning": ["machine learning", "ml", "llm", "nlp"],
-    "data": ["data engineer", "etl", "warehouse", "analytics"],
-    "data-platform": ["data platform", "platform"],
-    "security": ["security", "identity", "oauth", "oidc"],
-    "infrastructure": ["infrastructure", "terraform", "kubernetes"],
-    "platform": ["platform", "developer productivity"],
-    "devops": ["devops", "ci/cd"],
-    "sre": ["sre", "reliability", "observability"],
-    "management": ["manager", "director", "leadership", "people management"],
-}
 
 
 def utc_now():
@@ -89,30 +36,47 @@ def extract_json_object(text):
     return json.loads(text[start:end + 1])
 
 
-def call_openrouter(api_key, model, system_prompt, user_prompt):
-    req = urllib.request.Request(
-        "https://openrouter.ai/api/v1/chat/completions",
-        data=json.dumps({
-            "model": model,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            "temperature": 0.0,
-            "max_tokens": 1200,
-        }).encode("utf-8"),
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://job-scraper.local",
-            "X-Title": "Job Scraper ATS Python Normalizer",
-        },
-        method="POST",
-    )
+_MAX_RETRIES = 3
+_RETRY_DELAYS = [5, 15, 30]
 
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        payload = json.loads(resp.read().decode("utf-8"))
-    return payload["choices"][0]["message"]["content"]
+
+def call_openrouter(api_key, model, system_prompt, user_prompt):
+    last_exc = None
+    for attempt in range(_MAX_RETRIES):
+        try:
+            req = urllib.request.Request(
+                "https://openrouter.ai/api/v1/chat/completions",
+                data=json.dumps({
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    "temperature": 0.0,
+                    "max_tokens": 1200,
+                }).encode("utf-8"),
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://job-scraper.local",
+                    "X-Title": "Job Scraper ATS Python Normalizer",
+                },
+                method="POST",
+            )
+
+            with urllib.request.urlopen(req, timeout=300) as resp:
+                payload = json.loads(resp.read().decode("utf-8"))
+            return payload["choices"][0]["message"]["content"]
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
+            last_exc = exc
+            if attempt < _MAX_RETRIES - 1:
+                delay = _RETRY_DELAYS[attempt]
+                log.warning("OpenRouter call failed (attempt %d/%d): %s. Retrying in %ds...",
+                            attempt + 1, _MAX_RETRIES, exc, delay)
+                time.sleep(delay)
+            else:
+                log.error("OpenRouter call failed after %d attempts: %s", _MAX_RETRIES, exc)
+    raise last_exc
 
 
 def build_resume_prompt(resume_text):
@@ -183,107 +147,6 @@ def listify(value):
     return [text.lower()] if text else []
 
 
-def normalize_role_family(value, source_text):
-    text = normalize_text(str(value)).lower()
-    if text in ROLE_FAMILIES:
-        return text
-    haystack = f"{source_text} {text}".lower()
-    for family, keywords in ROLE_KEYWORDS.items():
-        if any(keyword in haystack for keyword in keywords):
-            return family
-    return "unknown"
-
-
-def normalize_seniority(value, source_text):
-    text = normalize_text(str(value)).lower().replace(" ", "-")
-    if text in SENIORITY_LEVELS:
-        return text
-
-    haystack = f"{source_text} {text}".lower()
-    checks = [
-        ("director", ["director"]),
-        ("senior-manager", ["senior manager"]),
-        ("manager", ["engineering manager", "manager"]),
-        ("principal", ["principal"]),
-        ("staff", ["staff"]),
-        ("senior", ["senior", "sr."]),
-        ("mid", ["mid", "intermediate"]),
-        ("junior", ["junior", "jr."]),
-        ("intern", ["intern"]),
-    ]
-    for level, words in checks:
-        if any(word in haystack for word in words):
-            return level
-    return "unknown"
-
-
-def normalize_management_type(value, source_text):
-    text = normalize_text(str(value)).lower().replace(" ", "_")
-    alias_map = {
-        "ic": "ic",
-        "individual_contributor": "ic",
-        "tech_lead": "ic_lead",
-        "team_lead": "ic_lead",
-        "lead": "ic_lead",
-        "ic_lead": "ic_lead",
-        "people_manager": "people_manager",
-        "manager_of_people": "people_manager",
-        "executive_manager": "executive_manager",
-        "unclear": "unclear",
-    }
-    if text in alias_map:
-        return alias_map[text]
-
-    haystack = f"{source_text} {text}".lower()
-    if any(term in haystack for term in ["manage engineers", "people manager", "engineering manager", "direct reports"]):
-        return "people_manager"
-    if any(term in haystack for term in ["mentor engineers", "technical lead", "lead cross-functional"]):
-        return "ic_lead"
-    if "manager" in haystack or "director" in haystack:
-        return "people_manager"
-    return "ic"
-
-
-def normalize_skill_list(values, source_text):
-    items = set()
-    haystack = source_text.lower()
-
-    for raw in listify(values):
-        raw_clean = raw.replace("js", "javascript").replace("ts", "typescript")
-        for skill in SKILL_ONTOLOGY:
-            if skill == raw_clean or skill in raw_clean or raw_clean in skill:
-                items.add(skill)
-                break
-        else:
-            if raw_clean:
-                items.add(raw_clean)
-
-    for skill in SKILL_ONTOLOGY:
-        if skill in haystack:
-            items.add(skill)
-
-    return sorted(items)
-
-
-def normalize_domain_list(values, source_text):
-    items = set()
-    haystack = source_text.lower()
-    for raw in listify(values):
-        for domain in DOMAIN_ONTOLOGY:
-            if domain == raw or domain in raw or raw in domain:
-                items.add(domain)
-                break
-        else:
-            if raw:
-                items.add(raw)
-
-    for domain in DOMAIN_ONTOLOGY:
-        if domain in haystack:
-            items.add(domain)
-
-    return sorted(items)
-
-
 def normalize_skills_with_strength(raw_list):
     result = {}
     if not isinstance(raw_list, list):
@@ -295,7 +158,7 @@ def normalize_skills_with_strength(raw_list):
         strength = normalize_text(str(entry.get("strength", "familiar"))).lower()
         if not skill:
             continue
-        if strength not in STRENGTH_LEVELS:
+        if strength not in STRENGTH_WEIGHTS:
             strength = "familiar"
         result[skill] = strength
     return result
@@ -303,10 +166,9 @@ def normalize_skills_with_strength(raw_list):
 
 def normalize_resume_profile(raw_profile, resume_text):
     profile = raw_profile if isinstance(raw_profile, dict) else {}
-    role_families = listify(profile.get("role_families"))
-    if not role_families:
-        inferred = normalize_role_family("", resume_text)
-        role_families = [inferred] if inferred != "unknown" else []
+    role_families = sorted(set(
+        normalize_text(str(f)).lower() for f in listify(profile.get("role_families"))
+    )) or []
 
     primary = normalize_text(str(profile.get("primary_role_type", ""))).lower()
     if not primary or primary == "unknown":
@@ -315,14 +177,17 @@ def normalize_resume_profile(raw_profile, resume_text):
     skills_with_strength = normalize_skills_with_strength(profile.get("skills_with_strength"))
 
     return {
-        "candidate_seniority": normalize_seniority(profile.get("candidate_seniority", "unknown"), resume_text),
-        "management_type": normalize_management_type(profile.get("management_type", "unclear"), resume_text),
+        "candidate_seniority": normalize_text(str(profile.get("candidate_seniority", "unknown"))).lower().replace(" ", "-"),
+        "management_type": normalize_text(str(profile.get("management_type", "unclear"))).lower().replace(" ", "_"),
         "primary_role_type": primary,
-        "role_families": sorted(set(role_families)),
-        "role_features": listify(profile.get("role_features")),
-        "skills": normalize_skill_list(profile.get("skills"), resume_text),
+        "role_families": role_families,
+        "skills": sorted(set(
+            normalize_text(str(s)).lower() for s in listify(profile.get("skills"))
+        )),
         "skills_with_strength": skills_with_strength,
-        "domains": normalize_domain_list(profile.get("domains"), resume_text),
+        "domains": sorted(set(
+            normalize_text(str(d)).lower() for d in listify(profile.get("domains"))
+        )),
         "leadership_signals": listify(profile.get("leadership_signals")),
         "location": normalize_text(profile.get("location") or ""),
         "must_have_constraints": listify(profile.get("must_have_constraints")),
@@ -331,26 +196,33 @@ def normalize_resume_profile(raw_profile, resume_text):
 
 
 def normalize_job_profile(raw_profile, job):
-    text = f"{job.get('title', '')} {(job.get('description') or '')}"
     profile = raw_profile if isinstance(raw_profile, dict) else {}
+    role_family = normalize_text(str(profile.get("role_family", "unknown"))).lower()
 
     secondary = []
     for rf in listify(profile.get("secondary_role_families")):
-        cleaned = normalize_role_family(rf, text)
-        if cleaned not in ("unknown", profile.get("role_family", "")):
+        cleaned = normalize_text(str(rf)).lower()
+        if cleaned not in ("unknown", role_family):
             secondary.append(cleaned)
 
     return {
-        "role_family": normalize_role_family(profile.get("role_family", "unknown"), text),
+        "role_family": role_family,
         "secondary_role_families": secondary,
-        "role_features": listify(profile.get("role_features")),
-        "seniority": normalize_seniority(profile.get("seniority", "unknown"), text),
-        "management_type": normalize_management_type(profile.get("management_type", "unclear"), text),
+        "seniority": normalize_text(str(profile.get("seniority", "unknown"))).lower().replace(" ", "-"),
+        "management_type": normalize_text(str(profile.get("management_type", "unclear"))).lower().replace(" ", "_"),
         "people_management_required": bool(profile.get("people_management_required", False)),
-        "required_skills": normalize_skill_list(profile.get("required_skills"), text),
-        "preferred_skills": normalize_skill_list(profile.get("preferred_skills"), text),
-        "required_domains": normalize_domain_list(profile.get("required_domains"), text),
-        "preferred_domains": normalize_domain_list(profile.get("preferred_domains"), text),
+        "required_skills": sorted(set(
+            normalize_text(str(s)).lower() for s in listify(profile.get("required_skills"))
+        )),
+        "preferred_skills": sorted(set(
+            normalize_text(str(s)).lower() for s in listify(profile.get("preferred_skills"))
+        )),
+        "required_domains": sorted(set(
+            normalize_text(str(d)).lower() for d in listify(profile.get("required_domains"))
+        )),
+        "preferred_domains": sorted(set(
+            normalize_text(str(d)).lower() for d in listify(profile.get("preferred_domains"))
+        )),
         "must_have_qualifications": listify(profile.get("must_have_qualifications")),
         "preferred_qualifications": listify(profile.get("preferred_qualifications")),
         "hard_gates": listify(profile.get("hard_gates")),
@@ -447,7 +319,6 @@ def compute_score(resume_profile, job_profile):
         "missing_required": missing_required,
         "missing_preferred": missing_preferred,
         "role_match": role_match,
-        "role_similarity": role_match,
         "role_penalty": 0,
         "skill_strength_factor": skill_strength_factor,
         "management_match": management_match,
@@ -461,14 +332,6 @@ def build_reasoning(job_profile, score_data):
         f"Normalized role: {job_profile['role_family']} / {job_profile['seniority']} / {job_profile['management_type']}.",
         f"Required skill match: {len(score_data['matched_required'])}/{len(job_profile['required_skills'])}.",
     ]
-
-    role_sim = score_data.get("role_similarity")
-    if role_sim is not None:
-        lines.append(f"Role type similarity: {role_sim:.2f}.")
-
-    skill_factor = score_data.get("skill_strength_factor")
-    if skill_factor is not None and skill_factor != 1.0:
-        lines.append(f"Skill strength adjustment: {skill_factor:.2f}.")
 
     role_penalty = score_data.get("role_penalty", 0)
     if role_penalty > 0:
@@ -535,7 +398,6 @@ def openrouter_score_jobs(api_key, model, resume_text, jobs):
                     "preferredSkillsRatio": score_data["preferred_skills_ratio"],
                     "domainMatch": score_data["domain_ratio"],
                     "roleMatch": score_data["role_match"],
-                    "roleSimilarity": score_data.get("role_similarity"),
                     "rolePenalty": score_data.get("role_penalty", 0),
                     "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
                     "managementMatch": score_data["management_match"],
@@ -601,7 +463,6 @@ def main():
                     "preferredSkillsRatio": score_data["preferred_skills_ratio"],
                     "domainMatch": score_data["domain_ratio"],
                     "roleMatch": score_data["role_match"],
-                    "roleSimilarity": score_data.get("role_similarity"),
                     "rolePenalty": score_data.get("role_penalty", 0),
                     "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
                     "managementMatch": score_data["management_match"],

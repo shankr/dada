@@ -14,7 +14,8 @@ class CustomScraper:
         sel = self.board_config.get("selectors", {})
         return sel.get(key, default)
 
-    async def scrape(self, base_scraper):
+    async def scrape(self, base_scraper, cached_urls=None):
+        cached_urls = cached_urls or set()
         url = self.board_config["url"]
         max_pages = self.board_config.get("max_pages", 10)
         known_urls = set()
@@ -47,7 +48,11 @@ class CustomScraper:
                         continue
                     known_urls.add(job_data["url"])
 
-                    job_data["description"] = await self._fetch_description(base_scraper, job_data["url"])
+                    if job_data["url"] in cached_urls:
+                        job_data["description"] = ""
+                        log.info("  ∘ %s (cached detail, skip fetch)", job_data["title"][:60])
+                    else:
+                        job_data["description"] = await self._fetch_description(base_scraper, job_data["url"])
 
                     yield job_data
 

@@ -10,7 +10,8 @@ class LeverScraper:
     def __init__(self, board_config):
         self.board_config = board_config
 
-    async def scrape(self, base_scraper):
+    async def scrape(self, base_scraper, cached_urls=None):
+        cached_urls = cached_urls or set()
         url = self.board_config["url"]
         known_urls = set()
 
@@ -45,24 +46,27 @@ class LeverScraper:
 
                 job_desc = ""
                 posted_date = ""
-                try:
-                    detail_page = await base_scraper.new_page()
+                if job_url in cached_urls:
+                    log.info("  ∘ %s (cached detail, skip fetch)", title[:60])
+                else:
                     try:
-                        await base_scraper.goto_with_retry(detail_page, job_url)
-                        desc_el = await detail_page.query_selector(
-                            ".content, .posting-description, .description"
-                        )
-                        if desc_el:
-                            job_desc = (await desc_el.inner_text()).strip()
+                        detail_page = await base_scraper.new_page()
+                        try:
+                            await base_scraper.goto_with_retry(detail_page, job_url)
+                            desc_el = await detail_page.query_selector(
+                                ".content, .posting-description, .description"
+                            )
+                            if desc_el:
+                                job_desc = (await desc_el.inner_text()).strip()
 
-                        body_text = await detail_page.inner_text("body")
-                        m = re.search(r"Posted\s+(?:on\s+)?(\w+ \d+,?\s*\d{4})", body_text, re.IGNORECASE)
-                        if m:
-                            posted_date = m.group(1)
-                    finally:
-                        await detail_page.close()
-                except Exception:
-                    log.warning("  Could not load detail for %s", title)
+                            body_text = await detail_page.inner_text("body")
+                            m = re.search(r"Posted\s+(?:on\s+)?(\w+ \d+,?\s*\d{4})", body_text, re.IGNORECASE)
+                            if m:
+                                posted_date = m.group(1)
+                        finally:
+                            await detail_page.close()
+                    except Exception:
+                        log.warning("  Could not load detail for %s", title)
 
                 yield {
                     "url": job_url,

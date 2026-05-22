@@ -8,125 +8,7 @@ from sentence_transformers import SentenceTransformer
 
 log = logging.getLogger(__name__)
 
-ROLE_FAMILIES = [
-    "backend", "frontend", "full-stack", "mobile", "ios", "android",
-    "machine-learning", "data", "data-platform", "analytics", "security",
-    "infrastructure", "platform", "devops", "sre", "cloud", "qa",
-    "management", "product-engineering",
-]
-
-SENIORITY_LEVELS = [
-    "intern", "junior", "mid", "senior", "staff", "principal",
-    "manager", "senior-manager", "director", "unknown",
-]
-
-MANAGEMENT_TYPES = ["ic", "ic_lead", "people_manager", "executive_manager", "unclear"]
-
-SKILL_ONTOLOGY = [
-    "python", "java", "javascript", "typescript", "node.js", "react",
-    "angular", "vue", "go", "golang", "ruby", "rails", "php", "c#",
-    ".net", "scala", "kotlin", "swift", "sql", "postgresql", "mysql",
-    "mongodb", "redis", "elasticsearch", "spark", "hadoop", "airflow",
-    "dbt", "snowflake", "bigquery", "aws", "gcp", "azure", "docker",
-    "kubernetes", "terraform", "pulumi", "ansible", "jenkins", "github actions",
-    "grpc", "rest", "graphql", "microservices", "distributed systems",
-    "system design", "linux", "ci/cd", "observability", "prometheus",
-    "grafana", "machine learning", "llm", "rag", "vector database",
-    "pytorch", "tensorflow", "scikit-learn", "nlp", "computer vision",
-    "security", "oauth", "oidc", "saml", "networking", "leadership",
-    "mentoring", "people management", "architecture", "product sense",
-    "html", "css", "tailwind", "bootstrap", "springboot",
-    "helm", "istio", "argo", "argocd", "crossplane", "kubevirt",
-    "pulumi", "cloudinit", "podman", "rancher", "cilium", "kubebuilder",
-    "knative", "openstack", "cassandra", "dynamodb", "redshift",
-    "opensearch", "hive", "presto", "trino", "databricks", "kafka",
-    "flink", "flume", "sqs", "sns", "pubsub", "rabbitmq",
-    "keras", "scikitlearn", "xgboost", "transformers", "huggingface",
-    "sentencetransformers", "langchain", "langgraph", "llamaindex",
-    "autogen", "crewai", "mcp", "modelcontextprotocol",
-    "vectorsearch", "vectordb", "embedding", "embeddings",
-    "finetuning", "inference", "promptengineering", "agents", "agentic",
-    "datadog", "splunk", "newrelic", "opentelemetry",
-    "playwright", "pytest", "jest", "cypress", "junit", "selenium",
-    "openai", "openrouter", "anthropic", "claude", "gemini",
-    "mlflow", "kubeflow", "vertex ai", "sagemaker",
-    "django", "flask", "fastapi", "express", "spring", "nextjs", "nuxt",
-    "tailwindcss", "shadcn", "radix", "prisma", "drizzle", "typeorm",
-    "postgres", "mysql", "mariadb", "sqlite", "cockroachdb", "tidb",
-    "couchbase", "neo4j", "arangodb", "influxdb", "timescaledb",
-    "nats", "pulsar", "rocketmq", "zeromq", "millvus", "pinecone",
-    "weaviate", "qdrant", "chromadb", "redisearch",
-    "istio", "linkerd", "consul", "vault", "boundary",
-    "sops", "age", "gpg", "tink", "keycloak", "auth0", "fusedav",
-]
-
-TECH_ALIASES = {
-    "js": "javascript",
-    "ts": "typescript",
-    "py": "python",
-    "golang": "go",
-    "react.js": "react",
-    "reactjs": "react",
-    "vue.js": "vue",
-    "vuejs": "vue",
-    "node.js": "node",
-    "nodejs": "node",
-    "spring-boot": "springboot",
-    "k8s": "kubernetes",
-    "postgresql": "postgres",
-    "mongo": "mongodb",
-    "elastic": "elasticsearch",
-    "github-actions": "github actions",
-    "ci/cd": "ci",
-    "machinelearning": "machine learning",
-    "machine-learning": "machine learning",
-    "genai": "ai",
-    "llms": "llm",
-    "llmops": "llm",
-    "scikit-learn": "scikitlearn",
-    "sklearn": "scikitlearn",
-    "tf": "tensorflow",
-    "tensor-flow": "tensorflow",
-    "hugging-face": "huggingface",
-    "sentence-transformers": "sentencetransformers",
-    "lang-chain": "langchain",
-    "lang-graph": "langgraph",
-    "llama-index": "llamaindex",
-    "model-context-protocol": "modelcontextprotocol",
-    "vector-db": "vectordb",
-    "vector-database": "vectordb",
-    "vectorstore": "vectordb",
-    "cloud-init": "cloudinit",
-    "argo-cd": "argocd",
-}
-
-PHRASE_NORMALIZATIONS = [
-    (r"\bHugging Face\b", "huggingface"),
-    (r"\bsentence transformers\b", "sentencetransformers"),
-    (r"\bmodel context protocol\b", "modelcontextprotocol"),
-    (r"\bvector database\b", "vectordb"),
-    (r"\bvector db\b", "vectordb"),
-    (r"\bmachine learning\b", "machinelearning"),
-    (r"\bopen ai\b", "openai"),
-    (r"\bartificial intelligence\b", "ai"),
-]
-
-STOPWORDS = {
-    "a", "an", "and", "are", "as", "at", "be", "by", "for", "from",
-    "has", "he", "in", "is", "it", "its", "of", "on", "that", "the",
-    "to", "was", "were", "will", "with", "you", "your", "we", "our",
-    "they", "their", "i", "me", "my", "this", "these", "those", "or",
-    "but", "if", "then", "than", "also", "not", "no", "yes", "so",
-    "such", "about", "across", "after", "before", "between", "both",
-    "during", "each", "few", "more", "most", "other", "over", "under",
-    "up", "down", "out", "into", "through", "using", "use", "used",
-    "uses", "based", "within", "per", "etc",
-}
-
 STRENGTH_WEIGHTS = {"expert": 1.0, "strong": 0.8, "proficient": 0.6, "familiar": 0.4}
-
-
-
 
 SENIORITY_ORDER = {
     "intern": 0, "junior": 1, "mid": 2, "senior": 3,
@@ -331,176 +213,13 @@ class ATSScorer:
     async def _normalize_job_profile_with_llm(self, job, api_key, model):
         from .openrouter_scorer import build_job_prompt, extract_json_object, normalize_job_profile, call_openrouter
 
-        if api_key:
-            try:
-                raw = call_openrouter(api_key, model,
-                    "You extract structured hiring information from resumes and job descriptions. Return only valid JSON. Never add facts not grounded in the text.",
-                    build_job_prompt(job))
-                raw_profile = extract_json_object(raw)
-                return normalize_job_profile(raw_profile, job)
-            except Exception:
-                log.warning("LLM job extraction failed for %s, using rule-based", job.get("title", ""))
+        raw = call_openrouter(api_key, model,
+            "You extract structured hiring information from resumes and job descriptions. Return only valid JSON. Never add facts not grounded in the text.",
+            build_job_prompt(job))
+        raw_profile = extract_json_object(raw)
+        return normalize_job_profile(raw_profile, job)
 
-        return self._normalize_job_profile(job)
 
-    def _normalize_job_profile(self, job):
-        text = f"{job.get('title', '')} {job.get('description', '')}"
-        description = job.get("description", "")
-        required_section = self._extract_required_qual_sections(description)
-        preferred_section = self._extract_preferred_qual_sections(description)
-        management_type = self._normalize_management_type("unclear", text)
-        people_management_required = (
-            management_type in ("people_manager", "executive_manager")
-            or any(term in text.lower() for term in ("people management", "engineering manager", "direct reports"))
-        )
-        return {
-            "role_family": self._normalize_role_family("unknown", text),
-            "secondary_role_families": [],
-            "role_features": [],
-            "seniority": self._normalize_seniority("unknown", text),
-            "management_type": management_type,
-            "people_management_required": people_management_required,
-            "required_skills": self._normalize_skill_list(required_section or description),
-            "preferred_skills": self._normalize_skill_list(preferred_section),
-            "required_domains": [],
-            "preferred_domains": [],
-            "must_have_qualifications": self._split_into_bullets(required_section),
-            "preferred_qualifications": self._split_into_bullets(preferred_section),
-            "hard_gates": [],
-            "work_mode": "unknown",
-            "location_constraints": [],
-            "evidence": [],
-        }
-
-    def _normalize_role_family(self, value, source_text):
-        text = str(value).lower().strip()
-        if text in ROLE_FAMILIES:
-            return text
-        haystack = f"{source_text} {text}".lower()
-        role_keywords = {
-            "backend": ["backend", "server", "api", "distributed systems"],
-            "frontend": ["frontend", "ui", "web application", "react", "angular", "vue"],
-            "full-stack": ["full stack", "full-stack"],
-            "mobile": ["mobile"],
-            "ios": ["ios", "swift"],
-            "android": ["android", "kotlin"],
-            "machine-learning": ["machine learning", "ml", "llm", "nlp"],
-            "data": ["data engineer", "etl", "warehouse", "analytics"],
-            "data-platform": ["data platform", "platform"],
-            "security": ["security", "identity", "oauth", "oidc"],
-            "infrastructure": ["infrastructure", "terraform", "kubernetes"],
-            "platform": ["platform", "developer productivity"],
-            "devops": ["devops", "ci/cd"],
-            "sre": ["sre", "reliability", "observability"],
-            "management": ["manager", "director", "leadership", "people management"],
-        }
-        for family, keywords in role_keywords.items():
-            if any(kw in haystack for kw in keywords):
-                return family
-        return "unknown"
-
-    def _normalize_seniority(self, value, source_text):
-        text = str(value).lower().strip().replace(" ", "-")
-        if text in SENIORITY_LEVELS:
-            return text
-        haystack = f"{source_text} {text}".lower()
-        checks = [
-            ("director", ["director"]),
-            ("senior-manager", ["senior manager"]),
-            ("manager", ["engineering manager", "manager"]),
-            ("principal", ["principal"]),
-            ("staff", ["staff"]),
-            ("senior", ["senior", "sr."]),
-            ("mid", ["mid", "intermediate"]),
-            ("junior", ["junior", "jr."]),
-            ("intern", ["intern"]),
-        ]
-        for level, words in checks:
-            if any(w in haystack for w in words):
-                return level
-        return "unknown"
-
-    def _normalize_management_type(self, value, source_text):
-        text = str(value).lower().strip().replace(" ", "_")
-        alias_map = {
-            "ic": "ic", "individual_contributor": "ic",
-            "tech_lead": "ic_lead", "team_lead": "ic_lead",
-            "lead": "ic_lead", "ic_lead": "ic_lead",
-            "people_manager": "people_manager",
-            "manager_of_people": "people_manager",
-            "executive_manager": "executive_manager",
-            "unclear": "unclear",
-        }
-        if text in alias_map:
-            return alias_map[text]
-        haystack = f"{source_text} {text}".lower()
-        if any(t in haystack for t in ["manage engineers", "people manager", "engineering manager", "direct reports"]):
-            return "people_manager"
-        if any(t in haystack for t in ["mentor engineers", "technical lead", "lead cross-functional"]):
-            return "ic_lead"
-        if "manager" in haystack or "director" in haystack:
-            return "people_manager"
-        return "ic"
-
-    def _normalize_skill_list(self, source_text):
-        items = set()
-        haystack = source_text.lower()
-
-        text = haystack
-        for pat, repl in PHRASE_NORMALIZATIONS:
-            text = re.sub(pat, repl, text)
-        haystack = text
-
-        for skill in SKILL_ONTOLOGY:
-            normalized_skill = skill.lower()
-            alias = TECH_ALIASES.get(normalized_skill, normalized_skill)
-            if alias in haystack:
-                items.add(skill)
-            elif normalized_skill in haystack:
-                items.add(skill)
-
-        return sorted(items)
-
-    def _normalize_text_for_matching(self, text):
-        normalized = (text or "").lower()
-        for pat, repl in PHRASE_NORMALIZATIONS:
-            normalized = re.sub(pat, repl, normalized)
-        return normalized
-
-    def _compute_explicit_match_ratio(self, resume_text, job):
-        text_lower = resume_text.lower()
-        description = (job.get("description") or "").lower()
-        title = (job.get("title") or "").lower()
-        haystack = f"{text_lower}"
-
-        for pat, repl in PHRASE_NORMALIZATIONS:
-            description = re.sub(pat, repl, description)
-
-        words = re.findall(r"[a-z0-9+#_.-]+", description)
-        raw_skills = set()
-        for w in words:
-            alias = TECH_ALIASES.get(w, w)
-            for skill in SKILL_ONTOLOGY:
-                if skill.lower() == alias or alias == skill.lower():
-                    raw_skills.add(skill)
-                    break
-            else:
-                if w in SKILL_ONTOLOGY:
-                    raw_skills.add(w)
-
-        if not raw_skills:
-            return 1.0
-
-        matched = 0
-        for skill in raw_skills:
-            if skill.lower() in haystack:
-                matched += 1
-            else:
-                alias = TECH_ALIASES.get(skill.lower())
-                if alias and alias in haystack:
-                    matched += 1
-
-        return matched / len(raw_skills)
 
     def _compute_score(self, resume_profile, job_profile, job, resume_text):
         weights = self.get_scoring_config()["weights"]
@@ -532,45 +251,38 @@ class ATSScorer:
         matched_domains = sorted(set(req_domains) & domains)
         domain_ratio = len(matched_domains) / len(req_domains) if req_domains else 1.0
 
-        resume_features = resume_profile.get("role_features", [])
-        job_features = job_profile.get("role_features", [])
-        if resume_features and job_features:
-            role_sim = self._compute_role_feature_similarity(resume_features, job_features)
+        role_family = self._normalize_role_key(job_profile["role_family"])
+        job_families = {self._normalize_role_key(f) for f in [role_family] + job_profile.get("secondary_role_families", [])}
+        candidate_families = {self._normalize_role_key(f) for f in resume_profile.get("role_families", [])}
+        if any(f in candidate_families for f in job_families if f != "unknown"):
+            role_match = 1.0
+        elif role_family == "unknown":
+            role_match = 0.5
         else:
-            role_sim = 1.0 if (
-                job_profile["role_family"] == "unknown"
-                or job_profile["role_family"] in set(resume_profile.get("role_families", []))
-            ) else 0.0
-
-        role_match = role_sim
-
-        role_penalty = 0.0
-        if role_sim < 0.1 and job_profile["role_family"] != "unknown":
-            role_penalty = 0.25
-        elif role_sim < 0.3:
-            role_penalty = 0.15
-        elif role_sim < 0.5:
-            role_penalty = 0.05
+            role_match = 0.0
 
         management_match, management_notes = self._compute_management_match(
             resume_profile, job_profile
         )
+
+        role_penalty = 0.0
+        if role_match == 0.0:
+            role_penalty = 0.15
+        if management_match <= 0.2:
+            role_penalty += 0.15
 
         seniority_match = self._compute_seniority_match(
             resume_profile.get("candidate_seniority", "unknown"),
             job_profile["seniority"],
         )
 
-        explicit_ratio = self._compute_explicit_match_ratio(resume_text, job)
-
         lexical_score = (
-            required_ratio * 0.35 * skill_strength_factor
-            + explicit_ratio * 0.25
-            + preferred_ratio * 0.10
+            required_ratio * 0.50 * skill_strength_factor
+            + preferred_ratio * 0.15
             + role_match * 0.10
             + management_match * 0.10
             + seniority_match * 0.05
-            + domain_ratio * 0.05
+            + domain_ratio * 0.10
         )
 
         embedding_score = self._compute_embedding_score(
@@ -600,7 +312,6 @@ class ATSScorer:
             "missing_required": missing_required,
             "missing_preferred": sorted(set(preferred_skills) - resume_skills),
             "role_match": role_match,
-            "role_similarity": role_sim,
             "role_penalty": role_penalty,
             "skill_strength_factor": skill_strength_factor,
             "management_match": management_match,
@@ -609,9 +320,16 @@ class ATSScorer:
             "penalty": penalty,
             "embedding_score": embedding_score,
             "lexical_score": lexical_score,
-            "explicit_match_ratio": explicit_ratio,
             "qualification_analysis": qualification_analysis,
         }
+
+    @staticmethod
+    def _normalize_role_key(value):
+        result = value.lower().strip().replace("_", "-").replace(" ", "-")
+        for suffix in ("-engineering", "-engineer", "-developer", "-development"):
+            if result.endswith(suffix):
+                result = result[:-len(suffix)]
+        return result
 
     def _compute_management_match(self, resume, job):
         notes = []
@@ -635,20 +353,6 @@ class ATSScorer:
         if r + 1 < j:
             return 0.25
         return 1.0
-
-    def _compute_role_feature_similarity(self, resume_features, job_features):
-        if not resume_features or not job_features:
-            return 0.5
-        try:
-            resume_text = " ".join(resume_features)
-            job_text = " ".join(job_features)
-            model = self._get_embedding_model()
-            emb_resume = model.encode(resume_text, normalize_embeddings=True)
-            emb_job = model.encode(job_text, normalize_embeddings=True)
-            return float(emb_resume @ emb_job)
-        except Exception:
-            log.warning("Role feature embedding failed, defaulting")
-            return 0.5
 
     def _compute_embedding_score(self, resume_text, job_description, job_profile):
         if not resume_text or not job_description:
@@ -716,6 +420,22 @@ class ATSScorer:
 
     def _analyze_qualifications(self, job_profile, job, resume_text):
         cfg = self.get_scoring_config()
+        resume_lower = resume_text.lower()
+
+        required_skills = job_profile.get("required_skills", [])
+        preferred_skills = job_profile.get("preferred_skills", [])
+        unsupported_required = [s for s in required_skills if s.lower() not in resume_lower]
+        unsupported_preferred = [s for s in preferred_skills if s.lower() not in resume_lower]
+
+        required_named_penalty = min(
+            len(unsupported_required) * cfg["named_required_tech_penalty_per_term"],
+            cfg["named_required_tech_penalty_max"],
+        )
+        preferred_named_penalty = min(
+            len(unsupported_preferred) * cfg["named_preferred_tech_penalty_per_term"],
+            cfg["named_preferred_tech_penalty_max"],
+        )
+
         description = job.get("description", "")
         required_bullets = job_profile.get("must_have_qualifications") or self._split_into_bullets(
             self._extract_required_qual_sections(description)
@@ -737,43 +457,28 @@ class ATSScorer:
             cfg["preferred_qualifications_penalty_max"],
         )
 
-        required_named = self._compute_named_tech_penalty(
-            required_bullets,
-            resume_text,
-            cfg["named_required_tech_match_threshold"],
-            cfg["named_required_tech_penalty_per_term"],
-            cfg["named_required_tech_penalty_max"],
-        )
-        preferred_named = self._compute_named_tech_penalty(
-            preferred_bullets,
-            resume_text,
-            cfg["named_required_tech_match_threshold"],
-            cfg["named_preferred_tech_penalty_per_term"],
-            cfg["named_preferred_tech_penalty_max"],
-        )
-
         required_penalty = min(
             cfg["required_qualifications_penalty_max"],
-            required_analysis["weak_penalty"] + required_named["penalty"],
+            required_analysis["weak_penalty"] + required_named_penalty,
         )
         preferred_penalty = min(
             cfg["preferred_qualifications_penalty_max"],
-            preferred_analysis["weak_penalty"] + preferred_named["penalty"],
+            preferred_analysis["weak_penalty"] + preferred_named_penalty,
         )
 
         return {
             "required": {
                 **required_analysis,
-                "unsupported_named_tech": required_named["unsupported_terms"],
-                "named_tech_checked": required_named["checked_terms"],
-                "named_tech_penalty": required_named["penalty"],
+                "unsupported_named_tech": unsupported_required,
+                "named_tech_checked": required_skills,
+                "named_tech_penalty": required_named_penalty,
                 "applied_penalty": required_penalty,
             },
             "preferred": {
                 **preferred_analysis,
-                "unsupported_named_tech": preferred_named["unsupported_terms"],
-                "named_tech_checked": preferred_named["checked_terms"],
-                "named_tech_penalty": preferred_named["penalty"],
+                "unsupported_named_tech": unsupported_preferred,
+                "named_tech_checked": preferred_skills,
+                "named_tech_penalty": preferred_named_penalty,
                 "applied_penalty": preferred_penalty,
             },
             "total_penalty": min(0.45, required_penalty + preferred_penalty),
@@ -822,68 +527,6 @@ class ATSScorer:
             return max(0.0, min(1.0, float(emb_a @ emb_b)))
         except Exception:
             return 0.5
-
-    def _compute_named_tech_penalty(self, bullets, resume_text, threshold, per_term, max_penalty):
-        tech_terms = self._extract_named_tech_terms("\n".join(bullets))
-        if not tech_terms:
-            return {"penalty": 0.0, "unsupported_terms": [], "checked_terms": []}
-
-        unsupported_terms = []
-        for term in tech_terms:
-            if not self._resume_semantically_supports_term(resume_text, term, threshold):
-                unsupported_terms.append(term)
-
-        return {
-            "penalty": min(len(unsupported_terms) * per_term, max_penalty),
-            "unsupported_terms": unsupported_terms,
-            "checked_terms": tech_terms,
-        }
-
-    def _extract_named_tech_terms(self, text):
-        text_lower = text.lower()
-        for pat, repl in PHRASE_NORMALIZATIONS:
-            text_lower = re.sub(pat, repl, text_lower)
-        words = re.findall(r"[a-z0-9+#_.-]+", text_lower)
-        found = []
-        for w in words:
-            alias = TECH_ALIASES.get(w, w)
-            for skill in SKILL_ONTOLOGY:
-                if skill.lower() == alias or alias == skill.lower():
-                    found.append(skill)
-                    break
-            else:
-                if w in SKILL_ONTOLOGY:
-                    found.append(w)
-        return sorted(set(found))
-
-    def _resume_semantically_supports_term(self, resume_text, term, threshold):
-        if not resume_text or not term:
-            return False
-
-        normalized_resume = self._normalize_text_for_matching(resume_text)
-        normalized_term = self._normalize_text_for_matching(term)
-        aliases = {normalized_term}
-        if normalized_term in TECH_ALIASES:
-            aliases.add(TECH_ALIASES[normalized_term])
-        for alias_key, alias_value in TECH_ALIASES.items():
-            if alias_value == normalized_term:
-                aliases.add(alias_key)
-        for alias in aliases:
-            if alias and alias in normalized_resume:
-                return True
-
-        resume_units = self._split_resume_into_semantic_units(resume_text)
-        supported = False
-        for unit in resume_units:
-            sim = self._compute_semantic_similarity(unit, term)
-            if sim >= threshold:
-                supported = True
-                break
-        return supported
-
-    def _split_resume_into_semantic_units(self, resume_text):
-        units = re.split(r'\n\s*\n', resume_text)
-        return [u.strip() for u in units if len(u.strip()) > 20]
 
     def _score_bullets(self, resume_text, bullets, per_bullet_penalty, max_penalty):
         if not bullets:
@@ -935,14 +578,6 @@ class ATSScorer:
             f"Required skill match: {len(score_data['matched_required'])}/{len(job_profile['required_skills'])}.",
         ]
 
-        role_sim = score_data.get("role_similarity")
-        if role_sim is not None:
-            lines.append(f"Role type similarity: {role_sim:.2f}.")
-
-        skill_factor = score_data.get("skill_strength_factor")
-        if skill_factor is not None and skill_factor != 1.0:
-            lines.append(f"Skill strength adjustment: {skill_factor:.2f}.")
-
         role_penalty = score_data.get("role_penalty", 0)
         if role_penalty > 0:
             lines.append(f"Role mismatch penalty: -{role_penalty:.2f}.")
@@ -963,7 +598,7 @@ class ATSScorer:
             lines.append(
                 f"Required qualification coverage: {required['coverage_ratio']:.0%}. "
                 f"Penalty: {required.get('applied_penalty', 0):.2f} "
-                f"(weak bullets {required.get('weak_penalty', 0):.2f}, named tech {required.get('named_tech_penalty', 0):.2f})."
+                f"(weak bullets {required.get('weak_penalty', 0):.2f}, skill gaps {required.get('named_tech_penalty', 0):.2f})."
             )
             best = required.get("best_matches", [])
             if best:
@@ -972,59 +607,25 @@ class ATSScorer:
                         f"{item['score']:.0%}: {item['bullet'][:120]}" for item in best
                     ) + "."
                 )
-            weakest = required.get("weakest_matches", [])
-            if weakest:
-                lines.append(
-                    "Weakest required matches: " + " | ".join(
-                        f"{item['score']:.0%}: {item['bullet'][:120]}" for item in weakest
-                    ) + "."
-                )
-            penalty_hits = required.get("penalty_triggering_matches", [])
-            if penalty_hits:
-                lines.append(
-                    "Penalty-triggering required gaps: " + " | ".join(
-                        f"{item['score']:.0%}: {item['bullet'][:120]}" for item in penalty_hits
-                    ) + "."
-                )
             unsupported_required = required.get("unsupported_named_tech", [])
-            lines.append(
-                "Unsupported named required tech: "
-                + (", ".join(unsupported_required) if unsupported_required else "none")
-                + f" ({len(required.get('named_tech_checked', []))} checked)."
-            )
+            if unsupported_required:
+                lines.append(
+                    "Missing required skills: "
+                    + ", ".join(unsupported_required)
+                    + f" ({len(required.get('named_tech_checked', []))} checked)."
+                )
         if preferred.get("coverage_ratio") is not None:
             lines.append(
                 f"Preferred qualification coverage: {preferred['coverage_ratio']:.0%}. "
                 f"Penalty: {preferred.get('applied_penalty', 0):.2f} "
-                f"(weak bullets {preferred.get('weak_penalty', 0):.2f}, named tech {preferred.get('named_tech_penalty', 0):.2f})."
+                f"(weak bullets {preferred.get('weak_penalty', 0):.2f}, skill gaps {preferred.get('named_tech_penalty', 0):.2f})."
             )
-            best_pref = preferred.get("best_matches", [])
-            if best_pref:
-                lines.append(
-                    "Best preferred matches: " + " | ".join(
-                        f"{item['score']:.0%}: {item['bullet'][:120]}" for item in best_pref
-                    ) + "."
-                )
-            weak_pref = preferred.get("weakest_matches", [])
-            if weak_pref:
-                lines.append(
-                    "Weakest preferred matches: " + " | ".join(
-                        f"{item['score']:.0%}: {item['bullet'][:120]}" for item in weak_pref
-                    ) + "."
-                )
-            penalty_pref = preferred.get("penalty_triggering_matches", [])
-            if penalty_pref:
-                lines.append(
-                    "Penalty-triggering preferred gaps: " + " | ".join(
-                        f"{item['score']:.0%}: {item['bullet'][:120]}" for item in penalty_pref
-                    ) + "."
-                )
             unsupported_preferred = preferred.get("unsupported_named_tech", [])
-            lines.append(
-                "Unsupported named preferred tech: "
-                + (", ".join(unsupported_preferred) if unsupported_preferred else "none")
-                + f" ({len(preferred.get('named_tech_checked', []))} checked)."
-            )
-        lines.append(f"Explicit term match: {score_data.get('explicit_match_ratio', 0):.0%}.")
+            if unsupported_preferred:
+                lines.append(
+                    "Missing preferred skills: "
+                    + ", ".join(unsupported_preferred)
+                    + f" ({len(preferred.get('named_tech_checked', []))} checked)."
+                )
         lines.append(f"Lexical: {score_data.get('lexical_score', 0):.2f}, Embedding: {score_data.get('embedding_score', 0):.2f}, Penalty: {score_data.get('penalty', 0):.2f}")
         return "\n".join(lines)

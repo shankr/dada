@@ -68,19 +68,24 @@ def main():
                 board_jobs = []
 
                 try:
+                    cached_board_urls = cache_db.get_board_urls(board_name, ttl_seconds)
+                    log.info("  Cached detail pages for %s: %d", board_name, len(cached_board_urls))
+
                     scraper = get_scraper(board)
                     if board_type == "custom-api":
-                        async for job in scraper.scrape(scraper_instance):
+                        async for job in scraper.scrape(scraper_instance, cached_board_urls):
                             board_jobs.append(job)
                     else:
                         await scraper_instance.ensure_browser()
-                        async for job in scraper.scrape(scraper_instance):
+                        async for job in scraper.scrape(scraper_instance, cached_board_urls):
                             board_jobs.append(job)
 
                     for job in board_jobs:
                         cached = cache_db.get_scraped_job(board_name, job.get("url"), ttl_seconds)
                         if cached:
-                            job["description"] = cached.get("description", "")
+                            cached_desc = cached.get("description", "")
+                            if len(cached_desc) > len(job.get("description", "")):
+                                job["description"] = cached_desc
                             if not job.get("postedDate"):
                                 job["postedDate"] = cached.get("postedDate", "")
                             log.info("  ✓ %s (cached listing)", job.get("title", "?")[:60])
