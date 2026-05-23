@@ -52,6 +52,10 @@ def main():
     cache_db = ATSCacheDB(cache_db_path)
     cache_db.initialize()
 
+    if config.get("delete_scrape_cache", False):
+        log.info("delete_scrape_cache is set — clearing scrape cache")
+        cache_db.delete_scrape_cache()
+
     known_urls_before = set(cache_db.get_all_job_urls())
     log.info("Known job URLs in cache: %d", len(known_urls_before))
 
@@ -80,6 +84,8 @@ def main():
                         async for job in scraper.scrape(scraper_instance, cached_board_urls):
                             board_jobs.append(job)
 
+                    max_job_chars = int(config.get("scoring", {}).get("max_job_chars", 4000))
+
                     for job in board_jobs:
                         cached = cache_db.get_scraped_job(board_name, job.get("url"), ttl_seconds)
                         if cached:
@@ -91,6 +97,10 @@ def main():
                             log.info("  ✓ %s (cached listing)", job.get("title", "?")[:60])
                         else:
                             log.info("  ✓ %s", job["title"])
+
+                        desc = job.get("description", "")
+                        if len(desc) > max_job_chars:
+                            job["description"] = desc[:max_job_chars]
 
                         cache_db.set_scraped_job(board_name, job)
 

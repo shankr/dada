@@ -20,6 +20,9 @@ request_delay_ms: 2000
 # Jobs not re-discovered in a board listing within this window are pruned
 scrape_cache_ttl_days: 28
 
+# Set to true to clear the scrape cache before running (forces fresh scrape)
+delete_scrape_cache: false
+
 # LLM Configuration for ATS scoring
 llm:
   # API provider: currently "openrouter" (extensible for future providers)
@@ -59,7 +62,7 @@ scoring:
   management_requirement_penalty: 0.30
   recency_half_life_days: 30
   max_resume_chars: 4000
-  max_job_chars: 4000
+  max_job_chars: 10000
 
 # Job boards to scrape
 # Supported types: workday, greenhouse, lever, smartrecruiters, custom, custom-api

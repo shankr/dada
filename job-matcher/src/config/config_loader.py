@@ -79,6 +79,10 @@ class ConfigLoader:
         if force:
             result["scoring"]["force_recompute"] = force in ("1", "true", "yes", "on")
 
+        delete_cache = os.environ.get("JOB_MATCHER_DELETE_SCRAPE_CACHE", "").strip().lower()
+        if delete_cache:
+            result["delete_scrape_cache"] = delete_cache in ("1", "true", "yes", "on")
+
         if os.environ.get("JOB_MATCHER_OUTPUT_PATH"):
             result["output_path"] = os.environ["JOB_MATCHER_OUTPUT_PATH"]
 

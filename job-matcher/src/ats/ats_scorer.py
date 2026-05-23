@@ -23,6 +23,7 @@ class ATSScorer:
         self.cache_db = cache_db
         self._embedding_model = None
         self._scoring_cfg = None
+        self._role_sim_cache = {}
 
     def get_scoring_config(self):
         if self._scoring_cfg:
@@ -232,11 +233,18 @@ class ATSScorer:
         weights = self.get_scoring_config()["weights"]
 
         required_skills = job_profile["required_skills"]
+        preferred_skills = job_profile.get("preferred_skills", [])
         resume_skills = set(resume_profile.get("skills", []))
         matched_required = sorted(set(required_skills) & resume_skills) if isinstance(required_skills, list) else []
         missing_required = sorted(set(required_skills) - resume_skills) if isinstance(required_skills, list) else []
+        matched_preferred = sorted(set(preferred_skills) & resume_skills)
 
-        required_ratio = len(matched_required) / len(required_skills) if required_skills else 1.0
+        if required_skills:
+            required_ratio = len(matched_required) / len(required_skills)
+        elif preferred_skills:
+            required_ratio = len(matched_preferred) / len(preferred_skills)
+        else:
+            required_ratio = 0.0
 
         skills_with_strength = resume_profile.get("skills_with_strength", {})
         if skills_with_strength and matched_required:
@@ -249,9 +257,7 @@ class ATSScorer:
         else:
             skill_strength_factor = 1.0
 
-        preferred_skills = job_profile.get("preferred_skills", [])
-        matched_preferred = sorted(set(preferred_skills) & resume_skills)
-        preferred_ratio = len(matched_preferred) / len(preferred_skills) if preferred_skills else 1.0
+        preferred_ratio = len(matched_preferred) / len(preferred_skills) if preferred_skills else 0.0
 
         domains = set(resume_profile.get("domains", []))
         req_domains = job_profile.get("required_domains", [])
@@ -260,13 +266,14 @@ class ATSScorer:
 
         role_family = self._normalize_role_key(job_profile["role_family"])
         job_families = {self._normalize_role_key(f) for f in [role_family] + job_profile.get("secondary_role_families", [])}
-        candidate_families = {self._normalize_role_key(f) for f in resume_profile.get("role_families", [])}
+        candidate_families_list = [self._normalize_role_key(f) for f in resume_profile.get("role_families", [])]
+        candidate_families = set(candidate_families_list)
         if any(f in candidate_families for f in job_families if f != "unknown"):
             role_match = 1.0
         elif role_family == "unknown":
-            role_match = 0.5
-        else:
             role_match = 0.0
+        else:
+            role_match = self._compute_role_similarity(role_family, candidate_families_list)
 
         management_match, management_notes = self._compute_management_match(
             resume_profile, job_profile
@@ -305,7 +312,7 @@ class ATSScorer:
             lexical_score * weights["lexical"]
             + embedding_score * weights["embedding"]
             + recency_score * weights["recency"]
-        ) - penalty - role_penalty
+        ) * seniority_match - penalty - role_penalty
         final_score = max(0.0, min(1.0, final_score))
 
         return {
@@ -338,6 +345,22 @@ class ATSScorer:
                 result = result[:-len(suffix)]
         return result
 
+    def _compute_role_similarity(self, job_family, candidate_families):
+        if not candidate_families:
+            return 0.0
+        model = self._get_embedding_model()
+        if job_family not in self._role_sim_cache:
+            self._role_sim_cache[job_family] = model.encode(job_family, normalize_embeddings=True)
+        job_emb = self._role_sim_cache[job_family]
+        best = 0.0
+        for cf in candidate_families:
+            if cf not in self._role_sim_cache:
+                self._role_sim_cache[cf] = model.encode(cf, normalize_embeddings=True)
+            sim = float(self._role_sim_cache[cf] @ job_emb)
+            if sim > best:
+                best = sim
+        return max(0.0, min(1.0, best))
+
     def _compute_management_match(self, resume, job):
         notes = []
         resume_mgmt = resume.get("management_type", "unclear")
@@ -359,6 +382,8 @@ class ATSScorer:
         j = SENIORITY_ORDER.get(job_level, 2)
         if r + 1 < j:
             return 0.25
+        if j < r:
+            return max(0.25, 1.0 - (r - j) * 0.30)
         return 1.0
 
     def _compute_embedding_score(self, resume_text, job_description, job_profile):

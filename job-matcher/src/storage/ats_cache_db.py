@@ -343,6 +343,14 @@ class ATSCacheDB:
         )
         self._conn.commit()
 
+    def delete_scrape_cache(self):
+        self._conn.execute("DELETE FROM scrape_cache")
+        self._conn.commit()
+
+    def delete_job_results(self):
+        self._conn.execute("DELETE FROM job_results")
+        self._conn.commit()
+
     def prune_scraped_jobs(self, board_name, keep_urls):
         if not board_name or not keep_urls:
             return

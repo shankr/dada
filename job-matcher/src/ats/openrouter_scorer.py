@@ -174,7 +174,7 @@ def normalize_skills_with_strength(raw_list):
     for entry in raw_list:
         if not isinstance(entry, dict):
             continue
-        skill = normalize_text(str(entry.get("skill", "")))
+        skill = normalize_text(str(entry.get("skill", ""))).lower()
         strength = normalize_text(str(entry.get("strength", "familiar"))).lower()
         if not skill:
             continue

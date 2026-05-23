@@ -8,6 +8,11 @@ on:
         required: false
         default: false
         type: boolean
+      delete_scrape_cache:
+        description: Clear the scrape cache before running (forces fresh scrape)
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '0 14 * * *'
 
@@ -26,6 +31,7 @@ jobs:
       JOB_MATCHER_S3_BUCKET: job-matcher-dada
       JOB_MATCHER_S3_PREFIX: latest
       JOB_MATCHER_FORCE_RECOMPUTE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.force_recompute || 'false' }}
+      JOB_MATCHER_DELETE_SCRAPE_CACHE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.delete_scrape_cache || 'false' }}
       JOB_MATCHER_TIMEZONE: America/Los_Angeles
 
     steps:
