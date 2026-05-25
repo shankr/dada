@@ -261,7 +261,13 @@ class ReportGenerator:
             lines.append(f"Management Type: {profile['management_type']}")
         families = profile.get("role_families", [])
         if families:
-            lines.append(f"Role Families: {', '.join(families)}")
+            def fmt_role(f):
+                if isinstance(f, dict):
+                    r = f.get("role", "")
+                    w = f.get("weight", 1.0)
+                    return f"{r} ({w:.1f})" if w != 1.0 else r
+                return str(f)
+            lines.append(f"Role Families: {', '.join(fmt_role(f) for f in families)}")
         skills = profile.get("skills", [])
         if skills:
             lines.append(f"Skills: {', '.join(skills[:20])}")

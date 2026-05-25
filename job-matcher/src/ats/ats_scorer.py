@@ -24,6 +24,8 @@ class ATSScorer:
         self._embedding_model = None
         self._scoring_cfg = None
         self._role_sim_cache = {}
+        self._cached_resume_embedding = None
+        self._cached_resume_text = None
 
     def get_scoring_config(self):
         if self._scoring_cfg:
@@ -265,15 +267,13 @@ class ATSScorer:
         domain_ratio = len(matched_domains) / len(req_domains) if req_domains else 1.0
 
         role_family = self._normalize_role_key(job_profile["role_family"])
-        job_families = {self._normalize_role_key(f) for f in [role_family] + job_profile.get("secondary_role_families", [])}
-        candidate_families_list = [self._normalize_role_key(f) for f in resume_profile.get("role_families", [])]
-        candidate_families = set(candidate_families_list)
-        if any(f in candidate_families for f in job_families if f != "unknown"):
-            role_match = 1.0
-        elif role_family == "unknown":
-            role_match = 0.0
-        else:
-            role_match = self._compute_role_similarity(role_family, candidate_families_list)
+        candidate_roles, candidate_weights = self._parse_weighted_role_families(resume_profile.get("role_families", []))
+        role_match = 0.0
+        for i, cr in enumerate(candidate_roles):
+            if cr == role_family:
+                role_match = max(role_match, candidate_weights[i])
+        if role_match == 0.0 and role_family != "unknown":
+            role_match = self._compute_role_similarity(role_family, candidate_roles, candidate_weights)
 
         management_match, management_notes = self._compute_management_match(
             resume_profile, job_profile
@@ -281,7 +281,13 @@ class ATSScorer:
 
         role_penalty = 0.0
         if role_match == 0.0:
-            role_penalty = 0.15
+            role_penalty = 0.25
+        elif role_match < 0.3:
+            role_penalty = 0.25
+        elif role_match < 0.6:
+            role_penalty = 0.18
+        elif role_match < 0.8:
+            role_penalty = 0.10
         if management_match <= 0.2:
             role_penalty += 0.15
 
@@ -292,10 +298,8 @@ class ATSScorer:
 
         lexical_score = (
             required_ratio * 0.50 * skill_strength_factor
-            + preferred_ratio * 0.15
-            + role_match * 0.10
-            + management_match * 0.10
-            + seniority_match * 0.05
+            + preferred_ratio * 0.25
+            + management_match * 0.15
             + domain_ratio * 0.10
         )
 
@@ -310,6 +314,7 @@ class ATSScorer:
 
         final_score = (
             lexical_score * weights["lexical"]
+            + role_match * weights.get("role_match", 0.15)
             + embedding_score * weights["embedding"]
             + recency_score * weights["recency"]
         ) * seniority_match - penalty - role_penalty
@@ -345,20 +350,39 @@ class ATSScorer:
                 result = result[:-len(suffix)]
         return result
 
-    def _compute_role_similarity(self, job_family, candidate_families):
-        if not candidate_families:
+    def _parse_weighted_role_families(self, raw_list):
+        roles = []
+        weights = []
+        for item in raw_list:
+            if isinstance(item, dict):
+                role = item.get("role", "")
+                w = float(item.get("weight", 1.0))
+            else:
+                role = item
+                w = 1.0
+            role = self._normalize_role_key(role)
+            if role:
+                roles.append(role)
+                weights.append(max(0.0, min(1.0, w)))
+        return roles, weights
+
+    def _compute_role_similarity(self, job_family, candidate_roles, candidate_weights=None):
+        if not candidate_roles:
             return 0.0
+        if candidate_weights is None:
+            candidate_weights = [1.0] * len(candidate_roles)
         model = self._get_embedding_model()
         if job_family not in self._role_sim_cache:
             self._role_sim_cache[job_family] = model.encode(job_family, normalize_embeddings=True)
         job_emb = self._role_sim_cache[job_family]
         best = 0.0
-        for cf in candidate_families:
+        for i, cf in enumerate(candidate_roles):
             if cf not in self._role_sim_cache:
                 self._role_sim_cache[cf] = model.encode(cf, normalize_embeddings=True)
             sim = float(self._role_sim_cache[cf] @ job_emb)
-            if sim > best:
-                best = sim
+            weighted = sim * candidate_weights[i]
+            if weighted > best:
+                best = weighted
         return max(0.0, min(1.0, best))
 
     def _compute_management_match(self, resume, job):
@@ -392,9 +416,13 @@ class ATSScorer:
 
         try:
             model = self._get_embedding_model()
-            emb_resume = model.encode(resume_text[:10000], normalize_embeddings=True)
+            if resume_text != self._cached_resume_text:
+                self._cached_resume_embedding = model.encode(
+                    resume_text[:10000], normalize_embeddings=True
+                )
+                self._cached_resume_text = resume_text
             emb_job = model.encode(job_description[:10000], normalize_embeddings=True)
-            sim = float(emb_resume @ emb_job)
+            sim = float(self._cached_resume_embedding @ emb_job)
             return max(0.0, min(1.0, sim))
         except Exception:
             log.warning("Embedding scoring failed, falling back")

@@ -84,7 +84,7 @@ def build_resume_prompt(resume_text):
         "candidate_seniority": "string",
         "management_type": "string",
         "primary_role_type": "string",
-        "role_families": ["string"],
+        "role_families": [{"role": "string", "weight": "float"}],
         "skills": ["string"],
         "skills_with_strength": [{"skill": "string", "strength": "string"}],
         "domains": ["string"],
@@ -110,8 +110,10 @@ def build_resume_prompt(resume_text):
         "- Management type: ic, ic_lead, people_manager, executive_manager, unclear. "
         "lead/tech-lead/team-lead -> ic_lead; manager-of-people/director -> people_manager.\n"
         "- Seniority: intern, junior, mid, senior, staff, principal, unknown.\n"
-        "- Skills_with_strength: rate each as 'expert', 'strong', 'proficient', or 'familiar'. "
-        "Skills listed first or most frequently/deeply -> higher rating.\n"
+"- Role_families: assign a weight (0.0-1.0) indicating strength in that role family. "
+"Your primary role type -> weight 1.0, secondary -> 0.6-0.8, tertiary -> 0.3-0.5, distant -> 0.1-0.2.\n"
+"- Skills_with_strength: rate each as 'expert', 'strong', 'proficient', or 'familiar'. "
+"Skills listed first or most frequently/deeply -> higher rating.\n"
         "- Domains: expand to include related areas.\n\n"
         f"Resume text:\n{resume_text[:12000]}"
     )
@@ -184,15 +186,41 @@ def normalize_skills_with_strength(raw_list):
     return result
 
 
+def _normalize_role_families(raw):
+    entries = raw if isinstance(raw, list) else []
+    seen = {}
+    for item in entries:
+        if isinstance(item, dict):
+            role = normalize_text(str(item.get("role", ""))).lower()
+            weight = float(item.get("weight", 1.0))
+        else:
+            role = normalize_text(str(item)).lower()
+            weight = 1.0
+        if not role:
+            continue
+        weight = max(0.0, min(1.0, weight))
+        if role not in seen or weight > seen[role]:
+            seen[role] = weight
+    return [{"role": r, "weight": w} for r, w in seen.items()]
+
+
+def _get_role_family_names(families):
+    names = set()
+    for item in families:
+        if isinstance(item, dict):
+            names.add(item.get("role", ""))
+        else:
+            names.add(item)
+    return names
+
+
 def normalize_resume_profile(raw_profile, resume_text):
     profile = raw_profile if isinstance(raw_profile, dict) else {}
-    role_families = sorted(set(
-        normalize_text(str(f)).lower() for f in listify(profile.get("role_families"))
-    )) or []
+    role_families = _normalize_role_families(profile.get("role_families"))
 
     primary = normalize_text(str(profile.get("primary_role_type", ""))).lower()
     if not primary or primary == "unknown":
-        primary = role_families[0] if role_families else "unknown"
+        primary = role_families[0]["role"] if role_families else "unknown"
 
     skills_with_strength = normalize_skills_with_strength(profile.get("skills_with_strength"))
 
@@ -294,7 +322,7 @@ def compute_score(resume_profile, job_profile):
 
     role_match = 1.0 if (
         job_profile["role_family"] == "unknown"
-        or job_profile["role_family"] in set(resume_profile.get("role_families", []))
+        or job_profile["role_family"] in _get_role_family_names(resume_profile.get("role_families", []))
     ) else 0.0
 
     management_match = 1.0

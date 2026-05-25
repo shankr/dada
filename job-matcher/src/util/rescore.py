@@ -91,6 +91,7 @@ def main():
             "postedDate": job.get("postedDate", ""),
             "source": job.get("source", ""),
             "normalizedJob": job_profile,
+            "normalizedResumeProfile": resume_profile,
             "scoreBreakdown": breakdown,
             "atsScore": score,
             "atsReasoning": reasoning,
