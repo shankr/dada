@@ -17,6 +17,19 @@ SENIORITY_ORDER = {
 }
 
 
+_SECTION_HEADERS = [
+    r"technical\s+skills",
+    r"experience",
+    r"selected\s+projects",
+    r"education",
+]
+
+_EDUCATION_KEYWORDS = [
+    "bachelor", "master", "phd", "degree", "bs ", "ms ", "ba ",
+    "education", "university", "college",
+]
+
+
 class ATSScorer:
     def __init__(self, config, cache_db):
         self.config = config
@@ -273,7 +286,10 @@ class ATSScorer:
             if cr == role_family:
                 role_match = max(role_match, candidate_weights[i])
         if role_match == 0.0 and role_family != "unknown":
-            role_match = self._compute_role_similarity(role_family, candidate_roles, candidate_weights)
+            fallback_roles = [cr for cr, cw in zip(candidate_roles, candidate_weights) if cw < 1.0]
+            fallback_weights = [cw for cr, cw in zip(candidate_roles, candidate_weights) if cw < 1.0]
+            if fallback_roles:
+                role_match = self._compute_role_similarity(role_family, fallback_roles, fallback_weights)
 
         management_match, management_notes = self._compute_management_match(
             resume_profile, job_profile
@@ -481,6 +497,7 @@ class ATSScorer:
     def _analyze_qualifications(self, job_profile, job, resume_text):
         cfg = self.get_scoring_config()
         resume_lower = resume_text.lower()
+        sections = self._parse_resume_sections(resume_text)
 
         required_skills = job_profile.get("required_skills", [])
         preferred_skills = job_profile.get("preferred_skills", [])
@@ -509,12 +526,14 @@ class ATSScorer:
             required_bullets,
             cfg["required_qualifications_penalty_per_bullet"],
             cfg["required_qualifications_penalty_max"],
+            sections=sections,
         )
         preferred_analysis = self._score_bullets(
             resume_text,
             preferred_bullets,
             cfg["preferred_qualifications_penalty_per_bullet"],
             cfg["preferred_qualifications_penalty_max"],
+            sections=sections,
         )
 
         required_penalty = min(
@@ -577,6 +596,42 @@ class ATSScorer:
         bullets = re.split(r'\n\s*[-•*]\s*|\n\s*\d+\.\s*|\n(?=\s{2,}[A-Z])', text)
         return [b.strip() for b in bullets if len(b.strip()) > 15]
 
+    @staticmethod
+    def _parse_resume_sections(text):
+        sections = {}
+        header_pattern = re.compile(
+            r"^\s*(" + "|".join(_SECTION_HEADERS) + r")\s*$",
+            re.MULTILINE | re.IGNORECASE,
+        )
+        matches = list(header_pattern.finditer(text))
+        if not matches:
+            return sections
+
+        prev_end = 0
+        prev_name = "summary"
+        for m in matches:
+            chunk = text[prev_end : m.start()].strip()
+            if chunk:
+                sections[prev_name] = chunk
+            prev_end = m.end()
+            prev_name = m.group(1).lower().replace(" ", "_").replace("-", "_")
+
+        tail = text[prev_end:].strip()
+        if tail:
+            sections[prev_name] = tail
+        return sections
+
+    @staticmethod
+    def _route_bullet_to_section(bullet, sections):
+        if not sections:
+            return None
+        bullet_lower = bullet.lower()
+        if any(kw in bullet_lower for kw in _EDUCATION_KEYWORDS):
+            edu = sections.get("education")
+            if edu:
+                return edu
+        return None
+
     def _compute_semantic_similarity(self, text_a, text_b):
         if not text_a or not text_b:
             return 0.0
@@ -588,7 +643,7 @@ class ATSScorer:
         except Exception:
             return 0.5
 
-    def _score_bullets(self, resume_text, bullets, per_bullet_penalty, max_penalty):
+    def _score_bullets(self, resume_text, bullets, per_bullet_penalty, max_penalty, sections=None):
         if not bullets:
             return {
                 "coverage_ratio": None,
@@ -598,11 +653,32 @@ class ATSScorer:
                 "weak_penalty": 0.0,
             }
 
+        model = self._get_embedding_model()
+        cache = {}
+        def _get_emb(text):
+            if text not in cache:
+                cache[text] = model.encode(text[:5000], normalize_embeddings=True)
+            return cache[text]
+
+        full_emb = _get_emb(resume_text)
+        edu_emb = None
+        if sections:
+            edu = sections.get("education")
+            if edu:
+                edu_emb = _get_emb(edu)
+
         scored = []
         weak_matches = []
         for bullet in bullets:
-            sim = self._compute_semantic_similarity(resume_text, bullet)
-            entry = {"bullet": bullet, "score": sim}
+            if edu_emb is not None and any(kw in bullet.lower() for kw in _EDUCATION_KEYWORDS):
+                emb_a = edu_emb
+                section_used = "education"
+            else:
+                emb_a = full_emb
+                section_used = "full"
+            emb_b = _get_emb(bullet)
+            sim = float(emb_a @ emb_b)
+            entry = {"bullet": bullet, "score": max(0.0, min(1.0, sim)), "section_used": section_used}
             scored.append(entry)
             if sim < 0.55:
                 weak_matches.append(entry)
