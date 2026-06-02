@@ -325,6 +325,14 @@ def compute_score(resume_profile, job_profile):
         or job_profile["role_family"] in _get_role_family_names(resume_profile.get("role_families", []))
     ) else 0.0
 
+    secondary_roles = job_profile.get("secondary_role_families", [])
+    if secondary_roles and role_match > 0:
+        family_names = _get_role_family_names(resume_profile.get("role_families", []))
+        secondary_matches = []
+        for sr in secondary_roles:
+            secondary_matches.append(1.0 if sr in family_names else 0.0)
+        role_match = (role_match * 2 + sum(secondary_matches)) / (2 + len(secondary_matches))
+
     management_match = 1.0
     management_notes = []
     resume_mgmt = resume_profile["management_type"]
@@ -367,7 +375,6 @@ def compute_score(resume_profile, job_profile):
         "missing_required": missing_required,
         "missing_preferred": missing_preferred,
         "role_match": role_match,
-        "role_penalty": 0,
         "skill_strength_factor": skill_strength_factor,
         "management_match": management_match,
         "seniority_match": seniority_match,
@@ -376,14 +383,15 @@ def compute_score(resume_profile, job_profile):
 
 
 def build_reasoning(job_profile, score_data):
+    role_match = score_data.get("role_match", 0)
     lines = [
-        f"Normalized role: {job_profile['role_family']} / {job_profile['seniority']} / {job_profile['management_type']}.",
+        f"Normalized role: {job_profile['role_family']} / {job_profile['seniority']} / {job_profile['management_type']}. Role match: {role_match:.2f}.",
         f"Required skill match: {len(score_data['matched_required'])}/{len(job_profile['required_skills'])}.",
     ]
 
-    role_penalty = score_data.get("role_penalty", 0)
-    if role_penalty > 0:
-        lines.append(f"Role mismatch penalty: -{role_penalty:.2f}.")
+    secondary_roles = job_profile.get("secondary_role_families", [])
+    if secondary_roles:
+        lines.append(f"  Secondary roles: {', '.join(secondary_roles)}.")
 
     if job_profile["preferred_skills"]:
         lines.append(
@@ -446,7 +454,6 @@ def openrouter_score_jobs(api_key, model, resume_text, jobs):
                     "preferredSkillsRatio": score_data["preferred_skills_ratio"],
                     "domainMatch": score_data["domain_ratio"],
                     "roleMatch": score_data["role_match"],
-                    "rolePenalty": score_data.get("role_penalty", 0),
                     "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
                     "managementMatch": score_data["management_match"],
                     "seniorityMatch": score_data["seniority_match"],
@@ -511,7 +518,6 @@ def main():
                     "preferredSkillsRatio": score_data["preferred_skills_ratio"],
                     "domainMatch": score_data["domain_ratio"],
                     "roleMatch": score_data["role_match"],
-                    "rolePenalty": score_data.get("role_penalty", 0),
                     "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
                     "managementMatch": score_data["management_match"],
                     "seniorityMatch": score_data["seniority_match"],

@@ -63,7 +63,6 @@ def main():
             "preferredSkillsRatio": score_data["preferred_skills_ratio"],
             "domainMatch": score_data["domain_ratio"],
             "roleMatch": score_data["role_match"],
-            "rolePenalty": score_data.get("role_penalty", 0),
             "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
             "managementMatch": score_data["management_match"],
             "seniorityMatch": score_data["seniority_match"],

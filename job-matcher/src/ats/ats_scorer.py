@@ -172,7 +172,6 @@ class ATSScorer:
                 "preferredSkillsRatio": score_data["preferred_skills_ratio"],
                 "domainMatch": score_data["domain_ratio"],
                 "roleMatch": score_data["role_match"],
-                "rolePenalty": score_data.get("role_penalty", 0),
                 "skillStrengthFactor": score_data.get("skill_strength_factor", 1.0),
                 "managementMatch": score_data["management_match"],
                 "seniorityMatch": score_data["seniority_match"],
@@ -290,22 +289,25 @@ class ATSScorer:
             fallback_weights = [cw for cr, cw in zip(candidate_roles, candidate_weights) if cw < 1.0]
             if fallback_roles:
                 role_match = self._compute_role_similarity(role_family, fallback_roles, fallback_weights)
+                role_match = role_match ** 2
+
+        secondary_roles = job_profile.get("secondary_role_families", [])
+        if secondary_roles and role_match > 0:
+            candidate_names = set(candidate_roles)
+            secondary_matches = []
+            for sr in secondary_roles:
+                sr = self._normalize_role_key(sr)
+                if sr in candidate_names:
+                    idx = candidate_roles.index(sr)
+                    secondary_matches.append(candidate_weights[idx])
+                else:
+                    sim = self._compute_role_similarity(sr, candidate_roles, candidate_weights)
+                    secondary_matches.append(sim)
+            role_match = (role_match * 2 + sum(secondary_matches)) / (2 + len(secondary_matches))
 
         management_match, management_notes = self._compute_management_match(
             resume_profile, job_profile
         )
-
-        role_penalty = 0.0
-        if role_match == 0.0:
-            role_penalty = 0.25
-        elif role_match < 0.3:
-            role_penalty = 0.25
-        elif role_match < 0.6:
-            role_penalty = 0.18
-        elif role_match < 0.8:
-            role_penalty = 0.10
-        if management_match <= 0.2:
-            role_penalty += 0.15
 
         seniority_match = self._compute_seniority_match(
             resume_profile.get("candidate_seniority", "unknown"),
@@ -321,7 +323,7 @@ class ATSScorer:
 
         embedding_score = self._compute_embedding_score(
             resume_text, job.get("description", ""), job_profile
-        )
+        ) * role_match
 
         recency_score = self._compute_recency_score(job)
 
@@ -333,7 +335,7 @@ class ATSScorer:
             + role_match * weights.get("role_match", 0.15)
             + embedding_score * weights["embedding"]
             + recency_score * weights["recency"]
-        ) * seniority_match - penalty - role_penalty
+        ) * seniority_match - penalty
         final_score = max(0.0, min(1.0, final_score))
 
         return {
@@ -347,7 +349,6 @@ class ATSScorer:
             "missing_required": missing_required,
             "missing_preferred": sorted(set(preferred_skills) - resume_skills),
             "role_match": role_match,
-            "role_penalty": role_penalty,
             "skill_strength_factor": skill_strength_factor,
             "management_match": management_match,
             "seniority_match": seniority_match,
@@ -451,7 +452,11 @@ class ATSScorer:
 
         posted = job.get("postedDate", "")
         if not posted:
-            return 0.0
+            desc = job.get("description", "")
+            if desc:
+                m = re.search(r"Posted\s*:\s*\w+\s+\d+,?\s*\d{4}", desc)
+                if m:
+                    posted = m.group(0)
 
         try:
             posted_date = self._parse_date(posted)
@@ -709,14 +714,15 @@ class ATSScorer:
         qual = score_data.get("qualification_analysis", {})
         required = qual.get("required", {})
         preferred = qual.get("preferred", {})
+        role_match = score_data.get("role_match", 0)
         lines = [
-            f"Normalized role: {job_profile['role_family']} / {job_profile['seniority']} / {job_profile['management_type']}.",
+            f"Normalized role: {job_profile['role_family']} / {job_profile['seniority']} / {job_profile['management_type']}. Role match: {role_match:.2f}.",
             f"Required skill match: {len(score_data['matched_required'])}/{len(job_profile['required_skills'])}.",
         ]
 
-        role_penalty = score_data.get("role_penalty", 0)
-        if role_penalty > 0:
-            lines.append(f"Role mismatch penalty: -{role_penalty:.2f}.")
+        secondary_roles = job_profile.get("secondary_role_families", [])
+        if secondary_roles:
+            lines.append(f"  Secondary roles: {', '.join(secondary_roles)}.")
         if job_profile.get("preferred_skills"):
             lines.append(
                 f"Preferred skill match: {len(score_data['matched_preferred'])}/{len(job_profile['preferred_skills'])}."

@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -97,6 +98,13 @@ def main():
                             log.info("  ✓ %s (cached listing)", job.get("title", "?")[:60])
                         else:
                             log.info("  ✓ %s", job["title"])
+
+                        if not job.get("postedDate"):
+                            desc_for_date = job.get("description", "")
+                            if desc_for_date:
+                                m = re.search(r"Posted\s*:\s*\w+\s+\d+,?\s*\d{4}", desc_for_date)
+                                if m:
+                                    job["postedDate"] = m.group(0)
 
                         desc = job.get("description", "")
                         if len(desc) > max_job_chars:
