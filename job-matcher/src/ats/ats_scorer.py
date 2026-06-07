@@ -315,9 +315,8 @@ class ATSScorer:
         )
 
         lexical_score = (
-            required_ratio * 0.50 * skill_strength_factor
-            + preferred_ratio * 0.25
-            + management_match * 0.15
+            required_ratio * 0.70 * skill_strength_factor
+            + preferred_ratio * 0.20
             + domain_ratio * 0.10
         )
 
@@ -328,14 +327,13 @@ class ATSScorer:
         recency_score = self._compute_recency_score(job)
 
         qualification_analysis = self._analyze_qualifications(job_profile, job, resume_text)
-        penalty = qualification_analysis["total_penalty"]
 
         final_score = (
             lexical_score * weights["lexical"]
             + role_match * weights.get("role_match", 0.15)
             + embedding_score * weights["embedding"]
             + recency_score * weights["recency"]
-        ) * seniority_match - penalty
+        ) * seniority_match * management_match
         final_score = max(0.0, min(1.0, final_score))
 
         return {
@@ -353,7 +351,7 @@ class ATSScorer:
             "management_match": management_match,
             "seniority_match": seniority_match,
             "management_notes": management_notes,
-            "penalty": penalty,
+            "penalty": qualification_analysis["total_penalty"],
             "embedding_score": embedding_score,
             "lexical_score": lexical_score,
             "qualification_analysis": qualification_analysis,
@@ -769,5 +767,5 @@ class ATSScorer:
                     + ", ".join(unsupported_preferred)
                     + f" ({len(preferred.get('named_tech_checked', []))} checked)."
                 )
-        lines.append(f"Lexical: {score_data.get('lexical_score', 0):.2f}, Embedding: {score_data.get('embedding_score', 0):.2f}, Penalty: {score_data.get('penalty', 0):.2f}")
+        lines.append(f"Lexical: {score_data.get('lexical_score', 0):.2f}, Embedding: {score_data.get('embedding_score', 0):.2f}, Required: {score_data.get('required_skills_ratio', 0):.2f}")
         return "\n".join(lines)
