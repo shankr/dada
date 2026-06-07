@@ -41,8 +41,8 @@ scoring:
   weights:
     lexical: 0.15
     role_match: 0.20
-    embedding: 0.45
-    recency: 0.05
+    embedding: 0.40
+    recency: 0.10
   min_skill_overlap: 2
   required_qualifications_threshold: 0.45
   required_qualifications_penalty_max: 0.30

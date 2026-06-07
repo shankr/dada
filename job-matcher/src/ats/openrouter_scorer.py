@@ -136,6 +136,7 @@ def build_job_prompt(job):
         "hard_gates": ["string"],
         "work_mode": "string",
         "location_constraints": ["string"],
+        "posted_date": "string|null",
         "evidence": ["string"],
     }
     return (
@@ -154,7 +155,9 @@ def build_job_prompt(job):
 "Strip cloud provider prefixes (aws, amazon, azure, gcp) from service names (DynamoDB not aws-dynamodb, S3 not aws-s3, SQS not aws-sqs).\n"
         "- Management type: ic, ic_lead, people_manager, executive_manager, unclear. "
         "tech-lead/lead -> unclear/ic_lead; manager-of-people -> people_manager.\n"
-        "- Seniority: intern, junior, mid, senior, staff, principal, unknown.\n\n"
+        "- Seniority: intern, junior, mid, senior, staff, principal, unknown.\n"
+        "- Posted date: extract the posting/opening date if mentioned in the description. "
+        "Return as YYYY-MM-DD if an absolute date is found, or null if not mentioned.\n\n"
         f"Job title: {job.get('title', '')}\n"
         f"Company: {job.get('company', '')}\n"
         f"Location: {job.get('location', '')}\n"
@@ -278,6 +281,7 @@ def normalize_job_profile(raw_profile, job):
         "hard_gates": listify(profile.get("hard_gates")),
         "work_mode": normalize_text(profile.get("work_mode") or "unknown").lower(),
         "location_constraints": listify(profile.get("location_constraints")),
+        "posted_date": (normalize_text(str(profile.get("posted_date", ""))) or None) if profile.get("posted_date") else None,
         "evidence": listify(profile.get("evidence"))[:8],
     }
 

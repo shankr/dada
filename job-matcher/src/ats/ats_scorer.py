@@ -51,7 +51,7 @@ class ATSScorer:
                 "embedding": 0.45,
                 "recency": 0.15,
             },
-            "recency": {"half_life_days": 30, "max_bonus": 0.10},
+            "recency": {"half_life_days": 30, "max_bonus": 0.50},
             "embedding_match_threshold": 0.62,
             "required_qualifications_penalty_max": 0.30,
             "required_qualifications_penalty_per_bullet": 0.06,
@@ -324,6 +324,8 @@ class ATSScorer:
             resume_text, job.get("description", ""), job_profile
         ) * role_match
 
+        if job_profile.get("posted_date"):
+            job["postedDate"] = job_profile["posted_date"]
         recency_score = self._compute_recency_score(job)
 
         qualification_analysis = self._analyze_qualifications(job_profile, job, resume_text)
@@ -456,16 +458,38 @@ class ATSScorer:
                 if m:
                     posted = m.group(0)
 
+        # Handle bare integer like "28" meaning "28 days ago"
+        if posted and posted.strip().isdigit():
+            days = int(posted.strip())
+            if 0 <= days <= 365:
+                return max_bonus * (0.5 ** (days / half_life_days))
+
+        posted_date = None
         try:
             posted_date = self._parse_date(posted)
-            if posted_date is None:
-                return 0.0
-            days_ago = (datetime.now(timezone.utc) - posted_date).days
-            if days_ago < 0:
-                return max_bonus
-            return max_bonus * (0.5 ** (days_ago / half_life_days))
         except Exception:
+            pass
+
+        # Fall back to firstSeenAt if postedDate is unparseable
+        if posted_date is None:
+            first_seen = job.get("firstSeenAt", "")
+            if first_seen:
+                try:
+                    if first_seen.endswith("Z"):
+                        first_seen = first_seen[:-1] + "+00:00"
+                    posted_date = datetime.fromisoformat(first_seen)
+                    if posted_date.tzinfo is None:
+                        posted_date = posted_date.replace(tzinfo=timezone.utc)
+                except Exception:
+                    pass
+
+        if posted_date is None:
             return 0.0
+
+        days_ago = (datetime.now(timezone.utc) - posted_date).days
+        if days_ago < 0:
+            return max_bonus
+        return max_bonus * (0.5 ** (days_ago / half_life_days))
 
     def _parse_date(self, date_str):
         patterns = [

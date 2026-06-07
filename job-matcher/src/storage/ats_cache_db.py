@@ -322,6 +322,7 @@ class ATSCacheDB:
             return None
         if not job.get("postedDate"):
             job["postedDate"] = row["first_seen_at"]
+        job["firstSeenAt"] = row["first_seen_at"]
         return job
 
     def set_scraped_job(self, board_name, job):
